@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm-cache/
+
+# Build output
+dist/
+build/
+out-tsc/
+.angular/
+.sass-cache/
+
+# Test and coverage output
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.pid.lock
+/storage/
+/scanner-import/
+/uploads/
+/apps/backend/storage/
+/apps/backend/scanner-import/
+/apps/backend/uploads/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# IDEs and OS files
+.agents/
+.codex/
+.idea/
+.vscode/
+.history/
+.DS_Store
+Thumbs.db
+Desktop.ini

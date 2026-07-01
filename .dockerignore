@@ -1,0 +1,44 @@
+# Git and editor state
+.git
+.github
+.agents
+.codex
+.idea
+.vscode
+
+# Dependencies and caches
+node_modules
+.pnpm-store
+.npm-cache
+.angular/cache
+__pycache__
+*.py[cod]
+
+# Build and test output
+dist
+build
+out-tsc
+coverage
+logs
+*.log
+
+# Runtime data
+/storage/
+/scanner-import/
+/uploads/
+/apps/backend/storage/
+/apps/backend/scanner-import/
+/apps/backend/uploads/
+
+# Non-image project artifacts
+docs
+README.md
+
+# Local configuration and OS files
+.env
+.env.*
+!.env.example
+!.env.*.example
+.DS_Store
+Thumbs.db
+Desktop.ini

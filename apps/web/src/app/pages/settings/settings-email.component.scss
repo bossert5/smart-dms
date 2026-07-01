@@ -1,0 +1,164 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px - var(--app-content-padding) - var(--app-content-padding));
+  min-height: 0;
+}
+
+.settings-email-page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.settings-email-page > nz-alert {
+  flex: 0 0 auto;
+  margin-bottom: 18px;
+}
+
+.settings-email-table {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.settings-email-table strong,
+.settings-email-table small {
+  display: block;
+}
+
+.sync-error,
+.empty-state {
+  color: var(--app-text-muted);
+}
+
+.sync-error {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions-column,
+.actions-cell {
+  width: 132px;
+  min-width: 132px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-cell button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.actions-cell button + button {
+  margin-left: 6px;
+}
+
+.actions-cell button:focus-visible {
+  outline: 2px solid var(--app-focus-ring, #1677ff);
+  outline-offset: 2px;
+}
+
+.disabled-column,
+.disabled-cell {
+  width: 112px;
+  min-width: 112px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mailbox-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.name-active-row,
+.connection-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.name-active-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.name-active-row label[nz-checkbox],
+.dialog-checkbox-row {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.connection-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) auto;
+  align-items: end;
+}
+
+.dialog-checkbox-row {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 32px;
+  min-height: 32px;
+  margin-bottom: 24px;
+}
+
+.port-form-item nz-input-number {
+  width: 100%;
+}
+
+.import-mode-row,
+.section-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.import-mode-row {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.section-heading {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.folder-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 14px;
+  padding: 12px;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
+}
+
+@media (max-width: 760px) {
+  .mailbox-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .connection-row {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading,
+  .import-mode-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

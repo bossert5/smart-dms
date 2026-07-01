@@ -1,0 +1,28 @@
+.login-shell {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  color: var(--app-text);
+  background: var(--app-bg);
+}
+
+.login-panel {
+  width: min(420px, 100%);
+  padding: 16px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.login-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 20px;
+}
+
+.login-panel h1 {
+  margin: 0;
+}

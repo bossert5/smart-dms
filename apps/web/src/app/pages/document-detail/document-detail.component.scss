@@ -1,0 +1,35 @@
+.document-detail-workspace {
+  position: relative;
+  height: calc(100vh - 60px - var(--app-content-padding) - var(--app-content-padding));
+  min-height: 0;
+}
+
+.document-detail-workspace__pane {
+  display: flex;
+  min-height: 0;
+  height: 100%;
+}
+
+.document-detail-workspace__pane--active {
+  position: relative;
+  z-index: 1;
+}
+
+.document-detail-workspace__pane--inactive {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (max-width: 1200px) {
+  .document-detail-workspace {
+    height: auto;
+    min-height: 0;
+  }
+
+  .document-detail-workspace__pane {
+    height: auto;
+  }
+}

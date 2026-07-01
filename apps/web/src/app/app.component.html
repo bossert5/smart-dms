@@ -1,0 +1,496 @@
+@if (auth.user()) {
+  <nz-layout class="app-shell">
+    <nz-header class="app-header">
+      <div class="header-brand">
+        <button
+          data-testid="sider-toggle"
+          class="sider-toggle"
+          type="button"
+          nz-button
+          nzType="text"
+          nzShape="circle"
+          [attr.aria-label]="
+            (isSiderCollapsed() ? 'app.shell.expandMenu' : 'app.shell.collapseMenu') | translate
+          "
+          [attr.aria-pressed]="isSiderCollapsed()"
+          (click)="toggleSider()"
+        >
+          <span nz-icon [nzType]="isSiderCollapsed() ? 'menu-unfold' : 'menu-fold'"></span>
+        </button>
+        <strong>{{ 'common.productName' | translate }}</strong>
+        @if (isSiderCollapsed() && shellTitleKeys().length > 0) {
+          <nav class="header-breadcrumb" [attr.aria-label]="'app.shell.currentPage' | translate">
+            <ol>
+              @for (titleKey of shellTitleKeys(); track titleKey; let isLast = $last) {
+                <li>
+                  <span>{{ titleKey | translate }}</span>
+                  @if (!isLast) {
+                    <span class="header-breadcrumb__separator" aria-hidden="true"> | </span>
+                  }
+                </li>
+              }
+            </ol>
+          </nav>
+        }
+      </div>
+
+      <div class="header-upload">
+        @if (tenantContext.hasNoActiveTenants()) {
+          <nz-alert
+            class="header-tenant-warning"
+            nzType="error"
+            nzShowIcon
+            [nzMessage]="'app.shell.noTenantAssigned' | translate"
+          ></nz-alert>
+        } @else {
+          <app-document-upload-action></app-document-upload-action>
+        }
+      </div>
+
+      <div class="header-actions">
+        @if (tenantContext.hasMultipleActiveTenants()) {
+          <nz-select
+            class="tenant-selector"
+            data-testid="tenant-selector"
+            [ngModel]="tenantContext.activeScope()"
+            (ngModelChange)="tenantContext.setScope($event)"
+            [attr.aria-label]="'tenants.selector.label' | translate"
+          >
+            <nz-option nzValue="all" [nzLabel]="'tenants.selector.all' | translate"></nz-option>
+            @for (tenant of tenantContext.activeTenants(); track tenant.id) {
+              <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+            }
+          </nz-select>
+        }
+        <app-notification-center></app-notification-center>
+        <button
+          data-testid="theme-toggle"
+          type="button"
+          nz-button
+          nzType="text"
+          nzShape="circle"
+          nz-tooltip
+          [nzTooltipTitle]="theme.toggleLabelKey() | translate"
+          [attr.aria-label]="theme.toggleLabelKey() | translate"
+          [attr.aria-pressed]="theme.isDark()"
+          (click)="theme.toggle()"
+        >
+          <span nz-icon [nzType]="theme.toggleIcon()"></span>
+        </button>
+        <button
+          data-testid="logout-button"
+          type="button"
+          nz-button
+          nzType="text"
+          nzShape="circle"
+          nz-tooltip
+          [nzTooltipTitle]="'app.userMenu.logout' | translate"
+          [attr.aria-label]="'app.userMenu.logout' | translate"
+          (click)="logout()"
+        >
+          <span nz-icon nzType="logout"></span>
+        </button>
+      </div>
+    </nz-header>
+
+    <nz-layout class="app-main">
+      <nz-sider
+        nzWidth="260px"
+        [nzCollapsedWidth]="64"
+        [nzCollapsible]="true"
+        [nzCollapsed]="isSiderCollapsed()"
+        [nzTrigger]="null"
+        [nzTheme]="theme.isDark() ? 'dark' : 'light'"
+        (nzCollapsedChange)="updateSiderCollapsed($event)"
+        class="app-sider"
+      >
+        <nav class="sider-content" [class.sider-content-collapsed]="isSiderCollapsed()">
+          <ul
+            nz-menu
+            [nzTheme]="theme.isDark() ? 'dark' : 'light'"
+            nzMode="inline"
+            [nzInlineCollapsed]="isSiderCollapsed()"
+            class="sider-menu"
+          >
+            <li
+              nz-menu-item
+              routerLink="/dashboard"
+              [nzMatchRouter]="true"
+              [nzSelected]="isRouteActive('/dashboard')"
+              [class.sider-menu-item-active]="isRouteActive('/dashboard')"
+              [attr.aria-current]="isRouteActive('/dashboard') ? 'page' : null"
+            >
+              <span nz-icon nzType="dashboard"></span>
+              <span>{{ 'app.nav.dashboard' | translate }}</span>
+            </li>
+            <li
+              nz-menu-item
+              routerLink="/documents"
+              [nzMatchRouter]="true"
+              [nzSelected]="isRouteActive('/documents')"
+              [class.sider-menu-item-active]="isRouteActive('/documents')"
+              [attr.aria-current]="isRouteActive('/documents') ? 'page' : null"
+            >
+              <span nz-icon nzType="file-text"></span>
+              <span>{{ 'app.nav.documents' | translate }}</span>
+            </li>
+            <li
+              nz-menu-item
+              routerLink="/inbox"
+              [nzMatchRouter]="true"
+              [nzSelected]="isRouteActive('/inbox')"
+              [class.sider-menu-item-active]="isRouteActive('/inbox')"
+              [attr.aria-current]="isRouteActive('/inbox') ? 'page' : null"
+            >
+              <span nz-icon nzType="inbox"></span>
+              <span>{{ 'app.nav.inbox' | translate }}</span>
+            </li>
+            <li
+              nz-menu-item
+              routerLink="/calendar"
+              [nzMatchRouter]="true"
+              [nzSelected]="isRouteActive('/calendar')"
+              [class.sider-menu-item-active]="isRouteActive('/calendar')"
+              [attr.aria-current]="isRouteActive('/calendar') ? 'page' : null"
+            >
+              <span nz-icon nzType="calendar"></span>
+              <span>{{ 'app.nav.calendar' | translate }}</span>
+            </li>
+            <li
+              nz-menu-item
+              routerLink="/email"
+              [nzMatchRouter]="true"
+              [nzSelected]="isRouteActive('/email')"
+              [class.sider-menu-item-active]="isRouteActive('/email')"
+              [attr.aria-current]="isRouteActive('/email') ? 'page' : null"
+            >
+              <span nz-icon nzType="mail"></span>
+              <span>{{ 'app.nav.email' | translate }}</span>
+            </li>
+          </ul>
+
+          @if (openDocuments.items().length > 0) {
+            <section
+              class="sidebar-section open-documents-nav"
+              [attr.aria-label]="'documents.open.menuAria' | translate"
+            >
+              @if (isSiderCollapsed()) {
+                <button
+                  nz-button
+                  nzType="text"
+                  type="button"
+                  class="open-documents-collapsed-trigger"
+                  data-testid="open-documents-collapsed-trigger"
+                  nz-dropdown
+                  [nzDropdownMenu]="openDocumentsDropdownMenu"
+                  [nzTrigger]="'hover'"
+                  [nzPlacement]="$any('rightTop')"
+                  [nzClickHide]="false"
+                  [nzVisible]="isOpenDocumentsDropdownVisible()"
+                  (nzVisibleChange)="setOpenDocumentsDropdownVisible($event)"
+                  [attr.aria-label]="
+                    'documents.open.collapsedAria'
+                      | translate: { count: openDocuments.items().length }
+                  "
+                  aria-haspopup="menu"
+                  [attr.aria-expanded]="isOpenDocumentsDropdownVisible()"
+                  (keydown)="handleOpenDocumentsDropdownKeydown($event)"
+                >
+                  <span nz-icon nzType="pushpin"></span>
+                  <span class="open-documents-collapsed-count" aria-hidden="true">
+                    {{ openDocuments.items().length }}
+                  </span>
+                </button>
+                <nz-dropdown-menu #openDocumentsDropdownMenu="nzDropdownMenu">
+                  <ul
+                    nz-menu
+                    [nzSelectable]="true"
+                    class="open-documents-dropdown-menu"
+                    data-testid="open-documents-dropdown-menu"
+                    [attr.aria-label]="'documents.open.menuAria' | translate"
+                  >
+                    @for (document of openDocuments.items(); track document.id) {
+                      @let documentTitle =
+                        document.title || ('documentDetail.fallbackTitle' | translate);
+                      <li
+                        nz-menu-item
+                        class="open-documents-dropdown-item"
+                        [nzSelected]="activeDocumentId() === document.id"
+                      >
+                        <div class="open-documents-dropdown-row">
+                          <a
+                            class="open-documents-dropdown-link"
+                            [routerLink]="['/documents', document.id]"
+                            [attr.title]="documentTitle"
+                            (click)="hideOpenDocumentsDropdown()"
+                          >
+                            <span class="open-documents-dropdown-title">
+                              {{ documentTitle }}
+                            </span>
+                          </a>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            class="open-documents-dropdown-close"
+                            [attr.data-testid]="'open-document-dropdown-close-' + document.id"
+                            [attr.aria-label]="
+                              'documents.open.closeAria' | translate: { title: documentTitle }
+                            "
+                            (click)="closeOpenDocumentFromDropdown(document.id, $event)"
+                          >
+                            <span nz-icon nzType="close"></span>
+                          </button>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </nz-dropdown-menu>
+              } @else {
+                <div class="sidebar-section-label">
+                  {{ 'documents.open.title' | translate }}
+                </div>
+                <ul
+                  nz-menu
+                  [nzTheme]="theme.isDark() ? 'dark' : 'light'"
+                  nzMode="inline"
+                  cdkDropList
+                  cdkDropListLockAxis="y"
+                  [cdkDropListData]="openDocuments.items()"
+                  [nzInlineCollapsed]="isSiderCollapsed()"
+                  (cdkDropListDropped)="dropOpenDocument($event)"
+                  class="sider-menu"
+                >
+                  @for (document of openDocuments.items(); track document.id) {
+                    @let documentTitle =
+                      document.title || ('documentDetail.fallbackTitle' | translate);
+                    <li
+                      nz-menu-item
+                      cdkDrag
+                      cdkDragLockAxis="y"
+                      class="open-document-menu-item"
+                      [nzPaddingLeft]="24"
+                      [nzSelected]="activeDocumentId() === document.id"
+                    >
+                      <div class="open-document-menu-content">
+                        <a
+                          class="open-document-link"
+                          [routerLink]="['/documents', document.id]"
+                          [attr.title]="documentTitle"
+                        >
+                          <span class="open-document-title">{{ documentTitle }}</span>
+                        </a>
+                        <button
+                          nz-button
+                          nzType="text"
+                          nzShape="circle"
+                          nzSize="small"
+                          type="button"
+                          class="open-document-close"
+                          [attr.data-testid]="'open-document-close-' + document.id"
+                          [attr.aria-label]="
+                            'documents.open.closeAria' | translate: { title: documentTitle }
+                          "
+                          nz-tooltip
+                          [nzTooltipTitle]="'documents.open.close' | translate"
+                          (click)="closeOpenDocument(document.id, $event)"
+                        >
+                          <span nz-icon nzType="close"></span>
+                        </button>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </section>
+          }
+
+          <section
+            class="sidebar-section account-settings-nav"
+            [attr.aria-label]="'accountSettings.title' | translate"
+          >
+            <ul
+              nz-menu
+              [nzTheme]="theme.isDark() ? 'dark' : 'light'"
+              nzMode="inline"
+              [nzInlineCollapsed]="isSiderCollapsed()"
+              class="sider-menu"
+            >
+              <li
+                nz-menu-item
+                routerLink="/account/settings"
+                [nzMatchRouter]="true"
+                [nzSelected]="isRouteActive('/account/settings')"
+                [class.sider-menu-item-active]="isRouteActive('/account/settings')"
+                [attr.aria-current]="isRouteActive('/account/settings') ? 'page' : null"
+              >
+                <span nz-icon nzType="setting"></span>
+                <span>{{ 'app.nav.settings' | translate }}</span>
+              </li>
+            </ul>
+          </section>
+
+          @if (auth.isAdmin()) {
+            <section
+              class="sidebar-section administration-nav"
+              [attr.aria-label]="'app.breadcrumb.administration' | translate"
+            >
+              @if (preferences.isAdminNavigationHidden()) {
+                <button
+                  data-testid="admin-navigation-toggle"
+                  class="sidebar-section-heading administration-toggle administration-toggle-hidden"
+                  type="button"
+                  nz-button
+                  nzType="text"
+                  nz-tooltip
+                  [nzTooltipTitle]="'app.shell.showAdministration' | translate"
+                  [attr.aria-label]="'app.shell.showAdministration' | translate"
+                  [attr.aria-expanded]="false"
+                  aria-controls="administration-menu-panel"
+                  (click)="toggleAdminNavigationHidden()"
+                >
+                  @if (!isSiderCollapsed()) {
+                    <span class="administration-toggle-label">
+                      {{ 'app.nav.administration' | translate }}
+                    </span>
+                  }
+                  <span nz-icon nzType="up"></span>
+                </button>
+              } @else {
+                @if (isSiderCollapsed()) {
+                  <button
+                    data-testid="admin-navigation-toggle"
+                    class="administration-toggle administration-toggle-collapsed"
+                    type="button"
+                    nz-button
+                    nzType="text"
+                    nz-tooltip
+                    [nzTooltipTitle]="'app.shell.hideAdministration' | translate"
+                    [attr.aria-label]="'app.shell.hideAdministration' | translate"
+                    [attr.aria-expanded]="true"
+                    aria-controls="administration-menu-panel"
+                    (click)="toggleAdminNavigationHidden()"
+                  >
+                    <span nz-icon nzType="down"></span>
+                  </button>
+                } @else {
+                  <div class="sidebar-section-heading">
+                    <div class="sidebar-section-label">
+                      {{ 'app.nav.administration' | translate }}
+                    </div>
+                    <button
+                      data-testid="admin-navigation-toggle"
+                      class="administration-toggle-heading"
+                      type="button"
+                      nz-button
+                      nzType="text"
+                      nzShape="circle"
+                      nzSize="small"
+                      nz-tooltip
+                      [nzTooltipTitle]="'app.shell.hideAdministration' | translate"
+                      [attr.aria-label]="'app.shell.hideAdministration' | translate"
+                      [attr.aria-expanded]="true"
+                      aria-controls="administration-menu-panel"
+                      (click)="toggleAdminNavigationHidden()"
+                    >
+                      <span nz-icon nzType="down"></span>
+                    </button>
+                  </div>
+                }
+              }
+              <div
+                id="administration-menu-panel"
+                class="administration-menu-panel"
+                [class.administration-menu-panel-hidden]="preferences.isAdminNavigationHidden()"
+                [attr.aria-hidden]="preferences.isAdminNavigationHidden() ? 'true' : 'false'"
+                [attr.inert]="preferences.isAdminNavigationHidden() ? '' : null"
+              >
+                <ul
+                  nz-menu
+                  [nzTheme]="theme.isDark() ? 'dark' : 'light'"
+                  nzMode="inline"
+                  [nzInlineCollapsed]="isSiderCollapsed()"
+                  class="sider-menu"
+                >
+                  <li
+                    nz-menu-item
+                    routerLink="/settings/general"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/settings/general')"
+                    [class.sider-menu-item-active]="isRouteActive('/settings/general')"
+                    [attr.aria-current]="isRouteActive('/settings/general') ? 'page' : null"
+                  >
+                    <span nz-icon nzType="setting"></span>
+                    <span>{{ 'app.nav.general' | translate }}</span>
+                  </li>
+                  <li
+                    nz-menu-item
+                    routerLink="/users"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/users')"
+                    [class.sider-menu-item-active]="isRouteActive('/users')"
+                    [attr.aria-current]="isRouteActive('/users') ? 'page' : null"
+                  >
+                    <span nz-icon nzType="team"></span>
+                    <span>{{ 'app.nav.users' | translate }}</span>
+                  </li>
+                  <li
+                    nz-menu-item
+                    routerLink="/settings/tenants"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/settings/tenants')"
+                    [class.sider-menu-item-active]="isRouteActive('/settings/tenants')"
+                    [attr.aria-current]="isRouteActive('/settings/tenants') ? 'page' : null"
+                  >
+                    <span nz-icon nzType="appstore"></span>
+                    <span>{{ 'app.nav.tenants' | translate }}</span>
+                  </li>
+                  <li
+                    nz-menu-item
+                    routerLink="/settings/documents"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/settings/documents')"
+                    [class.sider-menu-item-active]="isRouteActive('/settings/documents')"
+                    [attr.aria-current]="isRouteActive('/settings/documents') ? 'page' : null"
+                  >
+                    <span nz-icon nzType="file"></span>
+                    <span>{{ 'app.nav.documents' | translate }}</span>
+                  </li>
+                  <li
+                    nz-menu-item
+                    routerLink="/settings/ai"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/settings/ai')"
+                    [class.sider-menu-item-active]="isRouteActive('/settings/ai')"
+                    [attr.aria-current]="isRouteActive('/settings/ai') ? 'page' : null"
+                  >
+                    <app-ai-logo></app-ai-logo>
+                    <span>{{ 'app.nav.ai' | translate }}</span>
+                  </li>
+                  <li
+                    nz-menu-item
+                    routerLink="/settings/email"
+                    [nzMatchRouter]="true"
+                    [nzSelected]="isRouteActive('/settings/email')"
+                    [class.sider-menu-item-active]="isRouteActive('/settings/email')"
+                    [attr.aria-current]="isRouteActive('/settings/email') ? 'page' : null"
+                  >
+                    <span nz-icon nzType="mail"></span>
+                    <span>{{ 'app.nav.email' | translate }}</span>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          }
+        </nav>
+      </nz-sider>
+      <nz-content class="app-content">
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-layout>
+  </nz-layout>
+} @else {
+  <router-outlet></router-outlet>
+}

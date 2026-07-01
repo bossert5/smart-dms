@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared DTOs
+        run: pnpm --filter @smart-dms/shared-dto build
+
+      - name: Test shared DTOs
+        run: pnpm --filter @smart-dms/shared-dto test
+
+      - name: Generate Prisma Client
+        run: pnpm --filter backend prisma:generate
+
+      - name: Test backend
+        run: pnpm --filter backend test --runInBand
+
+      - name: Build backend
+        run: pnpm --filter backend build
+
+      - name: Test web
+        run: pnpm --filter web test --watch=false
+
+      - name: Build web
+        run: pnpm --filter web build
+
+      - name: Validate Docker Compose
+        run: docker compose --env-file .env.example config --quiet
+
+      - name: Validate Traefik Docker Compose
+        run: docker compose --env-file .env.example -f docker-compose.traefik.yml config --quiet

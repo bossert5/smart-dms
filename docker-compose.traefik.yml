@@ -1,0 +1,258 @@
+name: smart-dms
+
+x-smart-dms-backend-env: &smart-dms-backend-env
+  NODE_ENV: production
+  PORT: 3010
+  DATABASE_URL: postgresql://${SMART_DMS_POSTGRES_USER:-smart_dms}:${SMART_DMS_POSTGRES_PASSWORD:?Set SMART_DMS_POSTGRES_PASSWORD in .env}@postgres:5432/${SMART_DMS_POSTGRES_DB:-smart_dms}?schema=public
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${SMART_DMS_REDIS_PASSWORD:-}
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env}
+  JWT_ACCESS_TTL_SECONDS: ${JWT_ACCESS_TTL_SECONDS:-900}
+  REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-30}
+  DMS_SECRET_ENCRYPTION_KEY: ${DMS_SECRET_ENCRYPTION_KEY:?Set DMS_SECRET_ENCRYPTION_KEY in .env}
+  DMS_STORAGE_ROOT: /data/storage
+  DMS_SCANNER_IMPORT_DIR: /data/scanner-import
+  DMS_MAX_UPLOAD_SIZE_MB: ${DMS_MAX_UPLOAD_SIZE_MB:-100}
+  DMS_OCR_IMAGE_DPI: ${DMS_OCR_IMAGE_DPI:-600}
+  DMS_OCR_CLEAN: ${DMS_OCR_CLEAN:-true}
+  DMS_OCR_CLEAN_FINAL: ${DMS_OCR_CLEAN_FINAL:-false}
+  DMS_OCR_OPTIMIZE: ${DMS_OCR_OPTIMIZE:-1}
+  DMS_OCR_JOBS: ${DMS_OCR_JOBS:-2}
+  DMS_OCR_TIMEOUT_MS: ${DMS_OCR_TIMEOUT_MS:-1800000}
+  DMS_OCR_TESSERACT_TIMEOUT_SECONDS: ${DMS_OCR_TESSERACT_TIMEOUT_SECONDS:-30}
+  DMS_OCR_TESSERACT_NON_OCR_TIMEOUT_SECONDS: ${DMS_OCR_TESSERACT_NON_OCR_TIMEOUT_SECONDS:-10}
+  DMS_OCR_SERVICE_URL: ${DMS_OCR_SERVICE_URL:-}
+  DMS_DOCLING_SERVICE_URL: ${DMS_DOCLING_SERVICE_URL:-}
+  DMS_DOCLING_ENABLED: ${DMS_DOCLING_ENABLED:-true}
+  DMS_DOCLING_TIMEOUT_MS: ${DMS_DOCLING_TIMEOUT_MS:-600000}
+  DMS_DOCLING_MAX_PAGES: ${DMS_DOCLING_MAX_PAGES:-200}
+  DMS_DOCLING_MAX_FILE_SIZE_BYTES: ${DMS_DOCLING_MAX_FILE_SIZE_BYTES:-104857600}
+  DMS_DOCLING_DEBUG_JSON: ${DMS_DOCLING_DEBUG_JSON:-false}
+  DMS_THUMBNAIL_DPI: ${DMS_THUMBNAIL_DPI:-144}
+  DMS_THUMBNAIL_JPEG_QUALITY: ${DMS_THUMBNAIL_JPEG_QUALITY:-85}
+
+x-smart-dms-backend-volumes: &smart-dms-backend-volumes
+  - smart-dms-storage:/data/storage
+  - ${SMART_DMS_SCANNER_IMPORT_PATH:-./scanner-import}:/data/scanner-import
+
+x-smart-dms-api-build: &smart-dms-api-build
+  context: .
+  dockerfile: docker/api/Dockerfile
+
+x-smart-dms-web-build: &smart-dms-web-build
+  context: .
+  dockerfile: docker/web/Dockerfile
+
+x-smart-dms-ocr-runtime-build: &smart-dms-ocr-runtime-build
+  context: .
+  dockerfile: docker/ocr-runtime/Dockerfile
+  args:
+    TESSDATA_BEST_REF: ${TESSDATA_BEST_REF:-main}
+
+x-smart-dms-docling-runtime-build: &smart-dms-docling-runtime-build
+  context: .
+  dockerfile: docker/docling-runtime/Dockerfile
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - smart-dms-internal
+    environment:
+      POSTGRES_USER: ${SMART_DMS_POSTGRES_USER:-smart_dms}
+      POSTGRES_PASSWORD: ${SMART_DMS_POSTGRES_PASSWORD:?Set SMART_DMS_POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${SMART_DMS_POSTGRES_DB:-smart_dms}
+    volumes:
+      - smart-dms-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - smart-dms-internal
+    environment:
+      SMART_DMS_REDIS_PASSWORD: ${SMART_DMS_REDIS_PASSWORD:-}
+    command:
+      [
+        "sh",
+        "-c",
+        'if [ -n "$${SMART_DMS_REDIS_PASSWORD}" ]; then exec redis-server --appendonly yes --requirepass "$${SMART_DMS_REDIS_PASSWORD}"; else exec redis-server --appendonly yes; fi',
+      ]
+    volumes:
+      - smart-dms-redis-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'if [ -n "$${SMART_DMS_REDIS_PASSWORD}" ]; then redis-cli -a "$${SMART_DMS_REDIS_PASSWORD}" ping; else redis-cli ping; fi',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: smart-dms-api:source-local
+    build: *smart-dms-api-build
+    restart: "no"
+    command: ["./node_modules/.bin/prisma", "migrate", "deploy"]
+    networks:
+      smart-dms-internal: {}
+      smart-dms-backend-egress:
+        gw_priority: 100
+    environment:
+      <<: *smart-dms-backend-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: smart-dms-api:source-local
+    build: *smart-dms-api-build
+    restart: unless-stopped
+    command: ["node", "dist/src/main.js"]
+    networks:
+      smart-dms-internal: {}
+      smart-dms-backend-egress:
+        gw_priority: 100
+    environment:
+      <<: *smart-dms-backend-env
+    ports:
+      - "127.0.0.1:${SMART_DMS_API_PORT:-3010}:3010"
+    volumes: *smart-dms-backend-volumes
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3010/api/health'').then(async (r) => { const body = await r.text(); if (!r.ok) console.error(''health '' + r.status + '': '' + body); process.exit(r.ok ? 0 : 1); }).catch((error) => { console.error(error); process.exit(1); })"',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  processor:
+    image: smart-dms-api:source-local
+    build: *smart-dms-api-build
+    restart: unless-stopped
+    command: ["node", "dist/src/processor.js"]
+    networks:
+      smart-dms-internal: {}
+      smart-dms-backend-egress:
+        gw_priority: 100
+    environment:
+      <<: *smart-dms-backend-env
+      DMS_OCR_SERVICE_URL: http://ocr-runtime:8080
+      DMS_DOCLING_SERVICE_URL: http://docling-runtime:8080
+    volumes: *smart-dms-backend-volumes
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      ocr-runtime:
+        condition: service_healthy
+      docling-runtime:
+        condition: service_healthy
+
+  ocr-runtime:
+    image: smart-dms-ocr-runtime:source-local
+    build: *smart-dms-ocr-runtime-build
+    restart: unless-stopped
+    entrypoint: ["/app/.venv/bin/python3", "/usr/local/bin/smart-dms-runtime-server"]
+    networks:
+      - smart-dms-internal
+    environment:
+      SMART_DMS_RUNTIME_ROLE: ocr
+      SMART_DMS_STORAGE_ROOT: /data/storage
+    volumes: *smart-dms-backend-volumes
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/app/.venv/bin/python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3).read()",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  docling-runtime:
+    image: smart-dms-docling-runtime:source-local
+    build: *smart-dms-docling-runtime-build
+    restart: unless-stopped
+    networks:
+      - smart-dms-internal
+    environment:
+      SMART_DMS_RUNTIME_ROLE: docling
+      SMART_DMS_STORAGE_ROOT: /data/storage
+    volumes: *smart-dms-backend-volumes
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/app/.venv/bin/python3",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3).read()",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  web:
+    image: smart-dms-web:source-local
+    build: *smart-dms-web-build
+    restart: unless-stopped
+    networks:
+      smart-dms-internal: {}
+      smart-dms-traefik: {}
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "${SMART_DMS_TRAEFIK_NETWORK:-proxy}"
+      traefik.http.routers.smart-dms.rule: "Host(`${SMART_DMS_TRAEFIK_HOST:-dms.example.com}`)"
+      traefik.http.routers.smart-dms.entrypoints: "${SMART_DMS_TRAEFIK_ENTRYPOINT:-websecure}"
+      traefik.http.routers.smart-dms.tls: "true"
+      traefik.http.routers.smart-dms.tls.certresolver: "${SMART_DMS_TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      traefik.http.services.smart-dms.loadbalancer.server.port: "80"
+
+volumes:
+  smart-dms-postgres-data:
+    name: ${SMART_DMS_POSTGRES_VOLUME_NAME:-smart-dms_smart-dms-postgres-data}
+  smart-dms-redis-data:
+    name: ${SMART_DMS_REDIS_VOLUME_NAME:-smart-dms_smart-dms-redis-data}
+  smart-dms-storage:
+    name: ${SMART_DMS_STORAGE_VOLUME_NAME:-smart-dms_smart-dms-storage}
+
+networks:
+  smart-dms-internal:
+    name: ${SMART_DMS_INTERNAL_NETWORK_NAME:-smart-dms-internal}
+  smart-dms-backend-egress:
+    name: ${SMART_DMS_BACKEND_NETWORK_NAME:-smart-dms-backend-egress}
+    external: ${SMART_DMS_BACKEND_NETWORK_EXTERNAL:-false}
+  smart-dms-traefik:
+    name: ${SMART_DMS_TRAEFIK_NETWORK:-proxy}
+    external: true

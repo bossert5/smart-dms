@@ -1,0 +1,4 @@
+services:
+  api:
+    group_add:
+      - "${SMART_DMS_SCANNER_IMPORT_GID:?Set SMART_DMS_SCANNER_IMPORT_GID to the numeric Linux group ID that may access SMART_DMS_SCANNER_IMPORT_PATH.}"

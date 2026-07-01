@@ -1,0 +1,299 @@
+<section class="settings-email-page">
+  <ng-template #emailActions>
+    <button nz-button nzType="primary" type="button" (click)="openCreateDialog()">
+      <span nz-icon nzType="plus"></span>
+      {{ 'email.actions.newMailbox' | translate }}
+    </button>
+  </ng-template>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  <nz-modal
+    [nzVisible]="isConfigDialogOpen()"
+    [nzTitle]="dialogTitleKey() | translate"
+    [nzFooter]="configDialogFooter"
+    [nzWidth]="820"
+    (nzOnCancel)="closeConfigDialog()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical" [formGroup]="mailboxForm" (ngSubmit)="save()">
+        <div class="mailbox-form-grid">
+          @if (tenantContext.hasMultipleActiveTenants()) {
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="email-tenant">
+                {{ 'tenants.fields.tenant' | translate }}
+              </nz-form-label>
+              <nz-form-control>
+                <nz-select id="email-tenant" formControlName="tenantId" [nzDisabled]="isEditMode()">
+                  @for (tenant of tenantContext.uploadTenantOptions(); track tenant.id) {
+                    <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          }
+
+          <nz-form-item class="name-form-item">
+            <nz-form-label nzRequired nzFor="email-name">
+              {{ 'email.fields.name' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <div class="name-active-row">
+                <input id="email-name" nz-input formControlName="name" />
+                <label nz-checkbox formControlName="isDisabled">
+                  {{ 'email.fields.disabled' | translate }}
+                </label>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="email-host">
+              {{ 'email.fields.host' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <input id="email-host" nz-input formControlName="host" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <div class="connection-row">
+            <nz-form-item class="port-form-item">
+              <nz-form-label nzRequired nzFor="email-port">
+                {{ 'email.fields.port' | translate }}
+              </nz-form-label>
+              <nz-form-control>
+                <nz-input-number
+                  id="email-port"
+                  formControlName="port"
+                  [nzMin]="1"
+                  [nzMax]="65535"
+                ></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+
+            <label nz-checkbox class="dialog-checkbox-row" formControlName="tls">
+              {{ 'email.fields.tls' | translate }}
+            </label>
+          </div>
+
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="email-username">
+              {{ 'email.fields.username' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <input id="email-username" nz-input formControlName="username" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzRequired]="!isEditMode()" nzFor="email-password">
+              {{ 'email.fields.password' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <input id="email-password" nz-input type="password" formControlName="password" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div class="import-mode-row">
+          <span>{{ 'email.fields.importMode' | translate }}</span>
+          <nz-radio-group formControlName="importMode">
+            @for (mode of importModes; track mode) {
+              <label nz-radio-button [nzValue]="mode">
+                {{ 'email.importModes.' + mode | translate }}
+              </label>
+            }
+          </nz-radio-group>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzFor="email-sender-rules">
+            {{ 'email.fields.senderRules' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <textarea
+              id="email-sender-rules"
+              nz-input
+              rows="3"
+              formControlName="senderRulesText"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <section class="folder-section" aria-labelledby="email-folders-title">
+          <div class="section-heading">
+            <h2 id="email-folders-title">{{ 'email.folders.title' | translate }}</h2>
+            <button
+              nz-button
+              type="button"
+              [nzLoading]="isLoadingFolders()"
+              [disabled]="isTesting() || isSaving()"
+              (click)="loadRemoteFolders()"
+            >
+              <span nz-icon nzType="folder-open"></span>
+              {{ 'email.actions.loadFolders' | translate }}
+            </button>
+          </div>
+
+          <div class="folder-list">
+            @for (folder of folders(); track folder.path) {
+              <label
+                nz-checkbox
+                [nzChecked]="isFolderSelected(folder.path)"
+                (nzCheckedChange)="updateFolderSelection(folder.path, $event)"
+              >
+                {{ folder.path }}
+              </label>
+            } @empty {
+              <p class="empty-state">{{ 'email.folders.createHint' | translate }}</p>
+            }
+          </div>
+        </section>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #configDialogFooter>
+    <button
+      nz-button
+      type="button"
+      [disabled]="isSaving() || isTesting() || isLoadingFolders()"
+      (click)="closeConfigDialog()"
+    >
+      {{ 'common.cancel' | translate }}
+    </button>
+    @if (canSave()) {
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [nzLoading]="isSaving()"
+        [disabled]="isLoadingFolders()"
+        (click)="save()"
+      >
+        <span nz-icon nzType="save"></span>
+        {{ 'common.save' | translate }}
+      </button>
+    } @else {
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [nzLoading]="isTesting()"
+        [disabled]="isSaving() || isLoadingFolders()"
+        (click)="testDialogConnection()"
+      >
+        <span nz-icon nzType="api"></span>
+        {{ 'email.actions.test' | translate }}
+      </button>
+    }
+  </ng-template>
+
+  <app-table-panel [actions]="emailActions" [actionsAlign]="'start'">
+    <nz-table
+      #emailTableScroller="appInfiniteTable"
+      appInfiniteTable
+      class="settings-email-table"
+      [nzData]="mailboxes()"
+      [nzLoading]="isLoading()"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzNoResult]="'email.emptyMailboxes' | translate"
+      [nzScroll]="emailTableScroller.scroll()"
+      [appInfiniteTableHasMore]="false"
+      [appInfiniteTableLoading]="isLoading()"
+      [appInfiniteTableRenderKey]="mailboxes().length"
+    >
+      <thead>
+        <tr>
+          <th>{{ 'email.fields.name' | translate }}</th>
+          @if (tenantContext.hasMultipleActiveTenants()) {
+            <th>{{ 'tenants.fields.tenant' | translate }}</th>
+          }
+          <th>{{ 'email.fields.username' | translate }}</th>
+          <th>{{ 'email.table.hostPort' | translate }}</th>
+          <th>{{ 'email.fields.importMode' | translate }}</th>
+          <th>{{ 'email.table.folders' | translate }}</th>
+          <th>{{ 'email.table.lastSync' | translate }}</th>
+          <th class="disabled-column" nzWidth="112px">
+            {{ 'email.fields.disabled' | translate }}
+          </th>
+          <th
+            class="actions-column"
+            nzWidth="132px"
+            [attr.aria-label]="'email.table.actions' | translate"
+          ></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mailbox of mailboxes(); track mailbox.id) {
+          <tr>
+            <td>
+              <strong>{{ mailbox.name }}</strong>
+            </td>
+            @if (tenantContext.hasMultipleActiveTenants()) {
+              <td>{{ mailbox.tenant.name }}</td>
+            }
+            <td>{{ mailbox.username }}</td>
+            <td>{{ mailbox.host }}:{{ mailbox.port }}</td>
+            <td>
+              <nz-tag [nzColor]="mailbox.importMode === 'DISABLED' ? 'default' : 'blue'">
+                {{ 'email.importModes.' + mailbox.importMode | translate }}
+              </nz-tag>
+            </td>
+            <td>{{ selectedFolderCount(mailbox) }}</td>
+            <td>
+              <span>{{ formatLastSync(mailbox) }}</span>
+              @if (mailbox.lastSyncError) {
+                <small class="sync-error">{{ mailbox.lastSyncError }}</small>
+              }
+            </td>
+            <td class="disabled-cell">
+              <nz-tag [nzColor]="mailbox.isActive ? 'default' : 'warning'">
+                {{ (mailbox.isActive ? 'common.no' : 'common.yes') | translate }}
+              </nz-tag>
+            </td>
+            <td class="actions-cell">
+              <button
+                nz-button
+                type="button"
+                [attr.aria-label]="'common.edit' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.edit' | translate"
+                (click)="openEditDialog(mailbox)"
+              >
+                <span nz-icon nzType="edit"></span>
+              </button>
+              <button
+                nz-button
+                type="button"
+                [disabled]="isSyncing()"
+                [attr.aria-label]="'email.actions.sync' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'email.actions.sync' | translate"
+                (click)="sync(mailbox)"
+              >
+                <span nz-icon nzType="sync"></span>
+              </button>
+              <button
+                nz-button
+                nzDanger
+                type="button"
+                nz-popconfirm
+                [nzPopconfirmTitle]="'email.deleteConfirm' | translate: { name: mailbox.name }"
+                [attr.aria-label]="'common.delete' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.delete' | translate"
+                (nzOnConfirm)="deleteMailbox(mailbox)"
+              >
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </app-table-panel>
+</section>

@@ -1,0 +1,121 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.account-settings-page {
+  display: grid;
+  gap: 18px;
+  width: 100%;
+}
+
+.account-settings-page form,
+.account-settings-page nz-tabs {
+  width: 100%;
+}
+
+.setting-row p {
+  color: var(--app-text-muted);
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: 18px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.setting-row:first-child {
+  padding-top: 0;
+}
+
+.setting-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.setting-row div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.setting-row > :last-child {
+  justify-self: end;
+}
+
+.setting-row label,
+.setting-row strong {
+  color: var(--app-text);
+  font-weight: 700;
+}
+
+.setting-row p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.setting-row nz-select {
+  width: 100%;
+}
+
+.setting-row button,
+.setting-row a[nz-button] {
+  justify-self: start;
+}
+
+nz-card {
+  background: var(--app-surface);
+  border-color: var(--app-border-strong);
+}
+
+.password-requirements {
+  display: grid;
+  gap: 6px;
+  margin: -8px 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.password-requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--app-text-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.password-requirement.is-met {
+  color: #237804;
+}
+
+.password-requirement.is-unmet {
+  color: #cf1322;
+}
+
+:host-context(html[data-theme='dark']) nz-card {
+  background: var(--app-surface);
+  border-color: var(--app-border-strong);
+}
+
+:host-context(html[data-theme='dark']) .password-requirement.is-met {
+  color: #73d13d;
+}
+
+:host-context(html[data-theme='dark']) .password-requirement.is-unmet {
+  color: #ff7875;
+}
+
+@media (max-width: 680px) {
+  .setting-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .setting-row > :last-child {
+    justify-self: start;
+  }
+}

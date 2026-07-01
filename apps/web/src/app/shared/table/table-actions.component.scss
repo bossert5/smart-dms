@@ -1,0 +1,36 @@
+.app-table-actions {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.app-table-actions__changes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.app-table-actions__create {
+  order: -1;
+}
+
+@media (max-width: 720px) {
+  .app-table-actions,
+  .app-table-actions__changes {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-table-actions__create {
+    margin-left: 0;
+  }
+
+  .app-table-actions__changes {
+    margin-left: 0;
+  }
+}

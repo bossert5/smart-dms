@@ -1,0 +1,1 @@
+ALTER TYPE "DocumentHistoryEventType" ADD VALUE 'DOCUMENT_MOVED_TO_TENANT';

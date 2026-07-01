@@ -1,0 +1,222 @@
+.calendar-grid {
+  display: grid;
+  grid-template-columns: minmax(420px, 1fr) 420px;
+  gap: 18px;
+}
+
+.calendar-toolbar {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto minmax(170px, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.calendar-navigation {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 32px minmax(190px, max-content) 32px;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-period-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 190px;
+  gap: 8px;
+}
+
+.calendar-period-select {
+  width: 150px;
+}
+
+.calendar-period-year {
+  min-width: 44px;
+  color: var(--app-text-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+.calendar-mode-switch {
+  grid-column: 3;
+  justify-self: end;
+  max-width: 100%;
+}
+
+:host ::ng-deep .ant-picker-calendar {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+}
+
+:host ::ng-deep .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date-content {
+  height: 98px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .ant-picker-month-panel .ant-picker-calendar-date-content {
+  height: 132px;
+  overflow-y: auto;
+}
+
+.calendar-cell-events {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calendar-cell-events li {
+  min-width: 0;
+}
+
+.calendar-cell-event,
+.calendar-cell-more {
+  width: 100%;
+  min-width: 0;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.calendar-cell-event {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  overflow: hidden;
+  color: var(--app-text);
+  background: rgba(24, 144, 255, 0.12);
+  border-left: 3px solid #1890ff;
+}
+
+.calendar-cell-event:hover,
+.calendar-cell-event:focus-visible {
+  color: var(--app-text);
+  background: rgba(24, 144, 255, 0.2);
+}
+
+.calendar-cell-event:focus-visible,
+.calendar-cell-more:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 1px;
+}
+
+.calendar-cell-event[data-kind='DUE_DATE'] {
+  background: rgba(82, 196, 26, 0.14);
+  border-left-color: #52c41a;
+}
+
+.calendar-cell-event[data-kind='DEADLINE'] {
+  background: rgba(255, 77, 79, 0.14);
+  border-left-color: #ff4d4f;
+}
+
+.calendar-cell-event-time {
+  flex: 0 0 auto;
+  max-width: 42px;
+  overflow: hidden;
+  color: var(--app-text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-cell-event-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-cell-event--month {
+  height: 22px;
+  line-height: 22px;
+}
+
+.calendar-cell-event--month .calendar-cell-event-time {
+  max-width: 64px;
+}
+
+.calendar-cell-more {
+  display: block;
+  padding: 0 6px;
+  color: var(--app-text-muted);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.calendar-cell-more:hover {
+  color: var(--app-text);
+  background: var(--app-surface-muted);
+}
+
+.side-pane {
+  padding: 16px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 0;
+}
+
+@media (max-width: 980px) {
+  .calendar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-navigation {
+    grid-column: 1;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+  }
+
+  .calendar-mode-switch {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .calendar-mode-switch label {
+    width: 50%;
+    text-align: center;
+  }
+
+  .calendar-period-picker {
+    min-width: 0;
+  }
+
+  .calendar-period-select {
+    width: 100%;
+  }
+
+  :host ::ng-deep .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date {
+    margin: 0 2px;
+    padding-inline: 4px;
+  }
+
+  .calendar-cell-event,
+  .calendar-cell-more {
+    height: 18px;
+    font-size: 11px;
+    line-height: 18px;
+  }
+
+  .calendar-cell-event-time {
+    max-width: 34px;
+  }
+
+  .calendar-cell-event--month .calendar-cell-event-time {
+    max-width: 52px;
+  }
+}

@@ -1,0 +1,243 @@
+@if (error(); as errorKey) {
+  <nz-alert nzType="error" [nzMessage]="errorKey | translate" nzShowIcon></nz-alert>
+}
+
+@if (isLoading() && !summary()) {
+  <div class="loading-state">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+} @else if (summary()) {
+  <div class="dashboard-layout">
+    <section
+      class="dashboard-workspace"
+      [attr.aria-label]="'dashboard.sections.timeline' | translate"
+    >
+      @if (!hasTimelineEntries()) {
+        <nz-empty
+          class="dashboard-empty page-empty-state"
+          [nzNotFoundContent]="'dashboard.timeline.empty' | translate"
+        ></nz-empty>
+      } @else {
+        <div class="timeline-grid" role="list">
+          @for (entry of visibleCombinedEntries(); track entry.id) {
+            <article
+              class="timeline-card"
+              [class.timeline-card--overdue]="entry.isOverdue"
+              role="listitem"
+            >
+              <header class="timeline-card__header">
+                <div class="timeline-card__headline">
+                  <div class="timeline-date">
+                    @if (entryTimes(entry); as times) {
+                      <div class="timeline-date__content">
+                        <div class="timeline-date__line">
+                          <strong>{{ formatDate(entry.date) }}</strong>
+                          @if (times.length > 0) {
+                            <span class="timeline-date__times">
+                              @for (time of times; track time) {
+                                <small>{{ time }}</small>
+                              }
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <div class="timeline-tags">
+                    <nz-tag class="timeline-status" [nzColor]="relativeDueColor(entry)">
+                      {{ relativeDueLabel(entry) }}
+                    </nz-tag>
+                    @for (dateEntry of entry.dateEntries; track dateEntry.id) {
+                      <nz-tag [nzColor]="eventColor(dateEntry.kind)">
+                        <span nz-icon [nzType]="eventIcon(dateEntry.kind)"></span>
+                        {{ eventLabelKey(dateEntry.kind) | translate }}
+                      </nz-tag>
+                    }
+                    @if (entry.payments.length > 0) {
+                      <nz-tag nzColor="green">
+                        <span nz-icon nzType="dollar"></span>
+                        {{ 'dashboard.paymentTag' | translate }}
+                      </nz-tag>
+                    }
+                  </div>
+                </div>
+              </header>
+
+              <div class="timeline-card__body">
+                <div class="timeline-details">
+                  @if (isCombinedEntry(entry)) {
+                    <div class="timeline-detail">
+                      <span nz-icon [nzType]="combinedDetailIcon(entry)"></span>
+                      <div>
+                        <strong>{{ combinedDetailTitle(entry) }}</strong>
+                        @if (combinedDetailSubtext(entry); as subtext) {
+                          <span>{{ subtext }}</span>
+                        }
+                      </div>
+                    </div>
+                  } @else {
+                    @for (dateEntry of entry.dateEntries; track dateEntry.id) {
+                      <div class="timeline-detail">
+                        <span nz-icon [nzType]="eventIcon(dateEntry.kind)"></span>
+                        <div>
+                          <strong>{{ dateEntry.title }}</strong>
+                        </div>
+                      </div>
+                    }
+                    @for (payment of entry.payments; track payment.id) {
+                      <div class="timeline-detail">
+                        <span nz-icon nzType="dollar"></span>
+                        <div>
+                          <strong>{{ paymentTitle(payment) }}</strong>
+                          <span>{{ paymentSubtext(payment) }}</span>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+
+                <div class="timeline-document">
+                  <a [routerLink]="['/documents', entry.documentId]">{{ entry.documentTitle }}</a>
+                  <div class="timeline-meta">
+                    @if (entry.documentSender) {
+                      <span>{{ entry.documentSender }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <footer class="timeline-card__footer">
+                <nz-select
+                  class="assignee-select"
+                  nzSize="small"
+                  [ngModel]="combinedAssigneeId(entry)"
+                  [ngModelOptions]="{ standalone: true }"
+                  [nzDisabled]="!auth.canEditDocuments() || isCombinedEntryUpdating(entry)"
+                  [nzLoading]="isAssigneesLoading()"
+                  [attr.aria-label]="
+                    'dashboard.actions.assignCombinedAria'
+                      | translate: { title: entry.documentTitle }
+                  "
+                  (ngModelChange)="assignCombinedEntry(entry, $event)"
+                >
+                  @if (isMixedAssignee(entry)) {
+                    <nz-option
+                      [nzValue]="mixedAssigneeValue"
+                      [nzLabel]="'dashboard.actions.mixedAssignees' | translate"
+                      [nzDisabled]="true"
+                    ></nz-option>
+                  }
+                  <nz-option
+                    [nzValue]="null"
+                    [nzLabel]="'dashboard.actions.unassigned' | translate"
+                  ></nz-option>
+                  @for (assignee of assignees(); track assignee.id) {
+                    <nz-option [nzValue]="assignee.id" [nzLabel]="assignee.displayName"></nz-option>
+                  }
+                </nz-select>
+                @if (canCompleteCombinedEntry(entry)) {
+                  <button
+                    class="timeline-done-button"
+                    nz-button
+                    nzType="default"
+                    type="button"
+                    [nzLoading]="isCombinedEntryUpdating(entry)"
+                    [disabled]="!auth.canEditDocuments()"
+                    [attr.aria-label]="
+                      'dashboard.actions.markCombinedDoneAria'
+                        | translate: { title: entry.documentTitle }
+                    "
+                    (click)="markCombinedEntryDone(entry)"
+                  >
+                    <span nz-icon nzType="check-circle"></span>
+                    <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                  </button>
+                } @else {
+                  <div class="timeline-done-button-placeholder" aria-hidden="true"></div>
+                }
+              </footer>
+            </article>
+          }
+
+          @for (item of recentCompletedTimelineItems(); track item.id) {
+            <article class="timeline-card timeline-card--completed" role="listitem">
+              <header class="timeline-card__header">
+                <div class="timeline-card__headline">
+                  <div class="timeline-date">
+                    <div class="timeline-date__content">
+                      <div class="timeline-date__line">
+                        <strong>{{ formatDate(item.dueDate) }}</strong>
+                        @if (item.dueTime) {
+                          <span class="timeline-date__times">
+                            <small>{{ item.dueTime }}</small>
+                          </span>
+                        }
+                      </div>
+                      <nz-tag class="timeline-status" nzColor="default">
+                        {{ 'common.done' | translate }}
+                      </nz-tag>
+                    </div>
+                  </div>
+                  <div class="timeline-tags">
+                    <nz-tag nzColor="default">
+                      <span nz-icon [nzType]="completedItemIcon(item)"></span>
+                      {{ completedItemTagLabelKey(item) | translate }}
+                    </nz-tag>
+                  </div>
+                </div>
+              </header>
+
+              <div class="timeline-card__body">
+                <div class="timeline-details">
+                  <div class="timeline-detail timeline-detail--completed">
+                    <span nz-icon [nzType]="completedItemIcon(item)"></span>
+                    <div>
+                      <strong>{{ completedDetailTitle(item) }}</strong>
+                      @if (completedDetailSubtext(item); as subtext) {
+                        <span>{{ subtext }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="timeline-document">
+                  <a [routerLink]="['/documents', item.documentId]">
+                    {{ completedDocumentTitle(item) }}
+                  </a>
+                  <div class="timeline-meta">
+                    @if (completedByLabel(item); as completedBy) {
+                      <span>{{ completedBy }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <footer class="timeline-card__footer timeline-card__footer--completed">
+                <span>{{ completedRelativeLabel(item) }}</span>
+              </footer>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <aside class="overview-sidebar" [attr.aria-label]="'dashboard.widgets.title' | translate">
+      @for (tile of overviewTiles(); track tile.labelKey) {
+        <article
+          class="overview-tile"
+          [class.overview-tile--success]="tile.tone === 'success'"
+          [class.overview-tile--warning]="tile.tone === 'warning'"
+        >
+          <div class="overview-tile__icon">
+            <span nz-icon [nzType]="tile.icon"></span>
+          </div>
+          <div class="overview-tile__body">
+            <span>{{ tile.labelKey | translate }}</span>
+            <strong>{{ tile.value }}</strong>
+            <small>{{ tile.detail }}</small>
+          </div>
+        </article>
+      }
+    </aside>
+  </div>
+}

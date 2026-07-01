@@ -1,0 +1,214 @@
+.ai-page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 60px - var(--app-content-padding) - var(--app-content-padding));
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ai-page .settings-section {
+  max-width: none;
+  margin-top: 0;
+}
+
+.ai-tabs {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ai-tabs ::ng-deep .ant-tabs-content-holder {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-bg);
+}
+
+.ai-tabs ::ng-deep .ant-tabs-tabpane {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-bg);
+}
+
+.ai-tabs ::ng-deep .ant-tabs-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--app-bg);
+}
+
+.ai-tabs ::ng-deep .ant-tabs-tabpane-active {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.ai-provider-page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ai-provider-page app-table-create-dialog {
+  display: contents;
+}
+
+.ai-provider-page app-table-panel {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ai-provider-settings-table {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.ai-provider-settings-table input[nz-input],
+.ai-provider-settings-table nz-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.ai-provider-settings-table .ant-checkbox-wrapper {
+  justify-content: center;
+}
+
+.ai-provider-settings-table .checkbox-column,
+.ai-provider-settings-table .checkbox-cell {
+  min-width: 72px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ai-provider-settings-table .disabled-column,
+.ai-provider-settings-table .disabled-cell {
+  width: 112px;
+  min-width: 112px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ai-provider-settings-table .status-column,
+.ai-provider-settings-table .status-cell {
+  width: 132px;
+  min-width: 132px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ai-provider-settings-table .status-chip-anchor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+}
+
+.ai-provider-settings-table td.status-cell {
+  position: relative;
+}
+
+:host ::ng-deep .ai-provider-settings-table .status-chip-anchor .ant-tag {
+  margin-inline-end: 0;
+}
+
+.ai-provider-create-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-provider-create-form input[nz-input],
+.ai-provider-create-form nz-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.ai-provider-settings-table tr.is-draft td {
+  background: color-mix(in srgb, var(--app-surface-muted) 52%, transparent);
+}
+
+.ai-provider-settings-table td.is-changed-field,
+.ai-provider-settings-table tr:hover > td.is-changed-field,
+.ai-provider-settings-table td.is-changed-field.ant-table-cell-row-hover {
+  background: color-mix(in srgb, #faad14 18%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #d48806;
+}
+
+:host-context(html[data-theme='dark']) .ai-provider-settings-table td.is-changed-field,
+:host-context(html[data-theme='dark']) .ai-provider-settings-table tr:hover > td.is-changed-field,
+:host-context(html[data-theme='dark'])
+  .ai-provider-settings-table
+  td.is-changed-field.ant-table-cell-row-hover {
+  background: color-mix(in srgb, #faad14 24%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #ffc53d;
+}
+
+.ai-provider-settings-table .drag-column,
+.ai-provider-settings-table .drag-cell {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  padding-right: 4px;
+  padding-left: 4px;
+  text-align: center;
+}
+
+.ai-provider-settings-table .drag-cell button {
+  cursor: grab;
+}
+
+.provider-actions-column,
+.provider-actions-cell {
+  width: 132px;
+  min-width: 132px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.provider-actions-cell {
+  white-space: nowrap;
+}
+
+.provider-actions-cell button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.provider-actions-cell button + button {
+  margin-left: 6px;
+}
+
+.ai-provider-api-key-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-provider-api-key-cell input {
+  flex: 1 1 170px;
+}

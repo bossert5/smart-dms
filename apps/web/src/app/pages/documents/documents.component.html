@@ -1,0 +1,615 @@
+<ng-template #documentsToolbar>
+  <section class="toolbar" [formGroup]="filtersForm">
+    <div class="toolbar__row">
+      <div class="view-toggle" role="group" [attr.aria-label]="'documents.view.label' | translate">
+        <button
+          nz-button
+          type="button"
+          [nzType]="viewMode() === 'list' ? 'primary' : 'default'"
+          [attr.aria-pressed]="viewMode() === 'list'"
+          [title]="'documents.view.list' | translate"
+          (click)="setViewMode('list')"
+        >
+          <span nz-icon nzType="unordered-list"></span>
+        </button>
+        <button
+          nz-button
+          type="button"
+          [nzType]="viewMode() === 'grid' ? 'primary' : 'default'"
+          [attr.aria-pressed]="viewMode() === 'grid'"
+          [title]="'documents.view.grid' | translate"
+          (click)="setViewMode('grid')"
+        >
+          <span nz-icon nzType="appstore"></span>
+        </button>
+      </div>
+
+      <div class="toolbar__search-group">
+        <nz-input-group class="toolbar__search-input" [nzSuffix]="searchSuffix">
+          <input
+            nz-input
+            [placeholder]="'documents.search.placeholder' | translate"
+            formControlName="query"
+            (keydown.enter)="reload()"
+          />
+        </nz-input-group>
+      </div>
+      <ng-template #searchSuffix>
+        <button
+          nz-button
+          nzType="text"
+          nzSize="small"
+          type="button"
+          class="toolbar__search-submit"
+          [attr.aria-label]="'common.search' | translate"
+          (click)="reload()"
+        >
+          <span nz-icon nzType="search"></span>
+        </button>
+      </ng-template>
+
+      <button nz-button type="button" class="toolbar__action" (click)="resetListState()">
+        <span nz-icon nzType="close-circle"></span>
+        {{ 'documents.actions.resetList' | translate }}
+      </button>
+    </div>
+  </section>
+</ng-template>
+
+<ng-template #documentsRightActions>
+  @if (hasSelectedDocuments()) {
+    <button
+      nz-button
+      type="button"
+      [disabled]="!canBulkOpen() || isBulkActionRunning()"
+      (click)="openSelectedDocuments()"
+    >
+      <span nz-icon nzType="pushpin"></span>
+      {{ 'documents.bulk.actions.open' | translate }}
+    </button>
+    <button
+      nz-button
+      type="button"
+      [nzLoading]="isBulkActionRunning()"
+      [disabled]="!canBulkDownload() || isBulkActionRunning()"
+      (click)="downloadSelectedDocuments()"
+    >
+      <span nz-icon nzType="download"></span>
+      {{ 'documents.bulk.actions.download' | translate }}
+    </button>
+
+    @if (auth.canEditDocuments()) {
+      <button
+        nz-button
+        nz-dropdown
+        type="button"
+        [nzDropdownMenu]="documentsMoveMenu"
+        [disabled]="!canBulkMove() || isBulkActionRunning()"
+      >
+        <span nz-icon nzType="folder-open"></span>
+        {{ 'documents.bulk.actions.move' | translate }}
+        <span nz-icon nzType="down"></span>
+      </button>
+      <nz-dropdown-menu #documentsMoveMenu="nzDropdownMenu">
+        <ul nz-menu>
+          <li
+            nz-menu-item
+            [nzDisabled]="!canBulkMove() || isBulkActionRunning()"
+            (click)="moveSelectedDocumentsToInbox()"
+          >
+            <span nz-icon nzType="inbox"></span>
+            {{ 'documents.bulk.moveTargets.inbox' | translate }}
+          </li>
+          <li
+            nz-menu-item
+            [nzDisabled]="!canBulkMove() || isBulkActionRunning()"
+            (click)="archiveSelectedDocuments()"
+          >
+            <span nz-icon nzType="folder"></span>
+            {{ 'documents.bulk.moveTargets.archive' | translate }}
+          </li>
+          <li
+            nz-menu-item
+            class="danger-menu-item"
+            [nzDisabled]="!canBulkMove() || isBulkActionRunning()"
+            (click)="requestTrashSelectedDocuments()"
+          >
+            <span nz-icon nzType="delete"></span>
+            {{ 'documents.bulk.moveTargets.trash' | translate }}
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    }
+  }
+</ng-template>
+
+<section class="documents-controls">
+  <ng-container [ngTemplateOutlet]="documentsToolbar"></ng-container>
+</section>
+
+@if (bulkError()) {
+  <nz-alert nzType="error" [nzMessage]="bulkError()! | translate"></nz-alert>
+}
+
+<nz-modal
+  [nzVisible]="pendingBulkMove() !== null"
+  [nzTitle]="pendingBulkMoveTitleKey() | translate"
+  [nzFooter]="bulkMoveConfirmFooter"
+  [nzWidth]="520"
+  (nzOnCancel)="cancelBulkMove()"
+>
+  <ng-container *nzModalContent>
+    <p>
+      {{ pendingBulkMoveMessageKey() | translate: { count: pendingBulkMoveDocuments().length } }}
+    </p>
+  </ng-container>
+</nz-modal>
+
+<ng-template #bulkMoveConfirmFooter>
+  <button nz-button type="button" [disabled]="isBulkActionRunning()" (click)="cancelBulkMove()">
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button
+    nz-button
+    [nzDanger]="pendingBulkMoveTarget() === 'trash'"
+    nzType="primary"
+    type="button"
+    [nzLoading]="isBulkActionRunning()"
+    (click)="confirmBulkMove()"
+  >
+    <span nz-icon [nzType]="pendingBulkMoveIcon()"></span>
+    {{ pendingBulkMoveConfirmKey() | translate }}
+  </button>
+</ng-template>
+
+@if (isLoading() && documents().length === 0) {
+  <div class="loading-state">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+} @else if (viewMode() === 'list' && (documents().length > 0 || hasActiveSearch())) {
+  <app-table-panel [actions]="documentsRightActions">
+    <nz-table
+      #documentTableScroller="appInfiniteTable"
+      appInfiniteTable
+      class="document-table"
+      [nzData]="documents()"
+      [nzLoading]="isLoading()"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzPageIndex]="page()"
+      [nzPageSize]="pageSize()"
+      [nzNoResult]="'documents.search.noResults' | translate"
+      [nzScroll]="documentTableScroller.scroll()"
+      [appInfiniteTableHasMore]="hasMoreDocuments()"
+      [appInfiniteTableLoading]="isLoading()"
+      [appInfiniteTableLoadingMore]="isLoadingMore()"
+      [appInfiniteTableRenderKey]="documents().length"
+      (appInfiniteTableNearEnd)="loadNextPage()"
+      (nzQueryParams)="tableQueryParamsChanged($event)"
+      nzTableLayout="auto"
+      nzSize="small"
+    >
+      <thead>
+        <tr>
+          <th class="col-select" nzWidth="56px">
+            <label
+              nz-checkbox
+              [nzChecked]="allLoadedSelected()"
+              [nzIndeterminate]="someLoadedSelected()"
+              [nzDisabled]="documents().length === 0"
+              (nzCheckedChange)="toggleAllLoadedDocuments($event)"
+            ></label>
+          </th>
+          <th
+            class="col-title"
+            nzColumnKey="title"
+            [nzSortFn]="true"
+            [nzSortOrder]="tableSortOrder('title')"
+            [nzSortDirections]="sortDirections"
+          >
+            <span class="document-table__heading">
+              {{ 'documents.table.title' | translate }}
+            </span>
+          </th>
+          <th
+            class="col-sender"
+            nzWidth="220px"
+            nzColumnKey="sender"
+            [nzSortFn]="true"
+            [nzSortOrder]="tableSortOrder('sender')"
+            [nzSortDirections]="sortDirections"
+            [nzFilters]="senderFilters()"
+            [nzFilterFn]="true"
+            (nzFilterChange)="senderFilterChanged($event)"
+          >
+            <span class="document-table__heading">
+              {{ 'documents.table.sender' | translate }}
+            </span>
+          </th>
+          <th
+            class="col-document-type"
+            nzWidth="200px"
+            nzColumnKey="documentType"
+            [nzSortFn]="true"
+            [nzSortOrder]="tableSortOrder('documentType')"
+            [nzSortDirections]="sortDirections"
+            [nzFilters]="documentTypeFilters()"
+            [nzFilterFn]="true"
+            (nzFilterChange)="documentTypeFilterChanged($event)"
+          >
+            <span class="document-table__heading">
+              {{ 'documents.table.type' | translate }}
+            </span>
+          </th>
+          <th
+            class="col-date"
+            nzWidth="184px"
+            nzColumnKey="documentDate"
+            [nzSortFn]="true"
+            [nzSortOrder]="tableSortOrder('documentDate')"
+            [nzSortDirections]="sortDirections"
+            [nzFilters]="dateFilters()"
+            [nzFilterMultiple]="false"
+            [nzFilterFn]="true"
+            (nzFilterChange)="dateFilterChanged($event)"
+          >
+            <span class="document-table__heading">
+              {{ 'documents.table.date' | translate }}
+            </span>
+          </th>
+          <th
+            class="col-actions"
+            nzWidth="146px"
+            [attr.aria-label]="'documentDetail.actions.menu' | translate"
+          ></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (document of documents(); track document.id) {
+          <tr (contextmenu)="openDocumentContextMenu($event, document, documentContextMenu)">
+            <td class="col-select">
+              <label
+                nz-checkbox
+                [nzChecked]="isSelected(document)"
+                (nzCheckedChange)="toggleDocumentSelection(document, $event)"
+              ></label>
+            </td>
+            <td class="col-title">
+              <div class="row-title">
+                @if (thumbnailUrl(document); as thumbnail) {
+                  <a
+                    class="row-preview-link"
+                    nz-popover
+                    nzPopoverPlacement="right"
+                    nzPopoverOverlayClassName="document-thumbnail-popover"
+                    [nzPopoverContent]="thumbnailPopover"
+                    [nzPopoverMouseEnterDelay]="thumbnailPopoverDelaySeconds"
+                    [routerLink]="['/documents', document.id]"
+                    [attr.aria-label]="
+                      'documents.actions.openDocument' | translate: { title: document.title }
+                    "
+                    (mousedown)="preventMiddleMouseNavigation($event)"
+                    (auxclick)="handleDocumentAuxClick($event, document)"
+                  >
+                    <span nz-icon nzType="eye"></span>
+                  </a>
+                  <ng-template #thumbnailPopover>
+                    <div class="thumbnail-popover">
+                      <img [src]="thumbnail" [alt]="document.title" />
+                    </div>
+                  </ng-template>
+                } @else {
+                  <a
+                    class="row-preview-link"
+                    [routerLink]="['/documents', document.id]"
+                    [attr.aria-label]="
+                      'documents.actions.openDocument' | translate: { title: document.title }
+                    "
+                    (mousedown)="preventMiddleMouseNavigation($event)"
+                    (auxclick)="handleDocumentAuxClick($event, document)"
+                  >
+                    <span nz-icon nzType="eye"></span>
+                  </a>
+                }
+                <a
+                  [routerLink]="['/documents', document.id]"
+                  [attr.title]="document.summary || document.title"
+                  (mousedown)="preventMiddleMouseNavigation($event)"
+                  (auxclick)="handleDocumentAuxClick($event, document)"
+                >
+                  {{ document.title }}
+                </a>
+                @if (document.status !== 'READY') {
+                  <nz-tag class="row-status" [nzColor]="statusColor(document.status)">
+                    <span nz-icon [nzType]="statusIcon(document.status)"></span>
+                    <span class="row-status__label">
+                      {{ documentStatusLabelKey(document.status) | translate }}
+                    </span>
+                  </nz-tag>
+                }
+                @for (kind of document.calendarEventKinds; track kind) {
+                  <span
+                    class="row-event-icon"
+                    [class]="'row-event-icon row-event-icon--' + kind.toLowerCase()"
+                    nz-tooltip
+                    [nzTooltipTitle]="calendarEventKindLabelKey(kind) | translate"
+                    [attr.aria-label]="calendarEventKindLabelKey(kind) | translate"
+                  >
+                    <span nz-icon [nzType]="calendarEventIcon(kind)"></span>
+                  </span>
+                }
+              </div>
+            </td>
+            <td class="col-sender">
+              {{ document.sender || ('common.emptyValue' | translate) }}
+            </td>
+            <td class="col-document-type">
+              @if (document.documentType) {
+                {{ documentTypeName(document.documentType) }}
+              } @else {
+                <span class="row-empty">{{ 'common.emptyValue' | translate }}</span>
+              }
+            </td>
+            <td class="col-date">{{ shortDate(document.documentDate || document.createdAt) }}</td>
+            <td class="col-actions" (contextmenu)="$event.stopPropagation()">
+              <div class="row-actions">
+                <button
+                  nz-button
+                  type="button"
+                  nz-tooltip
+                  [nzTooltipTitle]="
+                    (isOpenDocument(document)
+                      ? 'documentDetail.actions.unpin'
+                      : 'documentDetail.actions.pin'
+                    ) | translate
+                  "
+                  [attr.aria-label]="
+                    ((isOpenDocument(document)
+                      ? 'documentDetail.actions.unpin'
+                      : 'documentDetail.actions.pin'
+                    ) | translate) +
+                    ' ' +
+                    document.title
+                  "
+                  [disabled]="isBulkActionRunning()"
+                  (click)="toggleOpenDocument(document)"
+                >
+                  <span nz-icon nzType="pushpin"></span>
+                </button>
+                <button
+                  nz-button
+                  type="button"
+                  nz-tooltip
+                  [nzTooltipTitle]="'documents.bulk.actions.download' | translate"
+                  [attr.aria-label]="
+                    'documentDetail.actions.downloadPdfAria' | translate: { title: document.title }
+                  "
+                  [nzLoading]="isBulkActionRunning()"
+                  [disabled]="isBulkActionRunning()"
+                  (click)="downloadDocument(document)"
+                >
+                  <span nz-icon nzType="download"></span>
+                </button>
+                @if (auth.canEditDocuments()) {
+                  <button
+                    nz-button
+                    nz-dropdown
+                    type="button"
+                    nz-tooltip
+                    [nzTooltipTitle]="'documentDetail.actions.move' | translate"
+                    [nzDropdownMenu]="documentRowMoveMenu"
+                    [nzTrigger]="'click'"
+                    [disabled]="!canMoveDocument(document) || isBulkActionRunning()"
+                    [attr.aria-label]="
+                      ('documentDetail.actions.move' | translate) + ' ' + document.title
+                    "
+                    aria-haspopup="menu"
+                  >
+                    <span nz-icon nzType="folder-open"></span>
+                  </button>
+                  <nz-dropdown-menu #documentRowMoveMenu="nzDropdownMenu">
+                    <ul nz-menu>
+                      <li
+                        nz-menu-item
+                        [nzDisabled]="!canMoveDocument(document) || isBulkActionRunning()"
+                        (click)="moveDocumentToInbox(document)"
+                      >
+                        <span nz-icon nzType="inbox"></span>
+                        {{ 'documents.bulk.moveTargets.inbox' | translate }}
+                      </li>
+                      <li
+                        nz-menu-item
+                        [nzDisabled]="!canMoveDocument(document) || isBulkActionRunning()"
+                        (click)="archiveDocument(document)"
+                      >
+                        <span nz-icon nzType="folder"></span>
+                        {{ 'documents.bulk.moveTargets.archive' | translate }}
+                      </li>
+                      <li
+                        nz-menu-item
+                        class="danger-menu-item"
+                        [nzDisabled]="!canMoveDocument(document) || isBulkActionRunning()"
+                        (click)="requestTrashDocument(document)"
+                      >
+                        <span nz-icon nzType="delete"></span>
+                        {{ 'documents.bulk.moveTargets.trash' | translate }}
+                      </li>
+                    </ul>
+                  </nz-dropdown-menu>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </app-table-panel>
+} @else if (documents().length === 0) {
+  <nz-empty class="page-empty-state" [nzNotFoundContent]="'documents.empty' | translate"></nz-empty>
+} @else if (viewMode() === 'grid') {
+  <div
+    #documentGrid
+    class="document-grid"
+    [class.is-refreshing]="isLoading()"
+    (scroll)="loadMoreOnScroll($event)"
+  >
+    @for (document of documents(); track document.id) {
+      <article
+        class="document-card"
+        (contextmenu)="openDocumentContextMenu($event, document, documentContextMenu)"
+      >
+        <a
+          class="document-card__media"
+          [routerLink]="['/documents', document.id]"
+          [attr.aria-label]="document.title"
+          (mousedown)="preventMiddleMouseNavigation($event)"
+          (auxclick)="handleDocumentAuxClick($event, document)"
+        >
+          @if (thumbnailUrl(document); as thumb) {
+            <img [src]="thumb" [alt]="document.title" />
+          } @else {
+            <div class="document-card__placeholder">
+              <span nz-icon nzType="file-text"></span>
+            </div>
+          }
+
+          <span class="document-card__status">
+            <nz-tag [nzColor]="statusColor(document.status)">
+              <span nz-icon [nzType]="statusIcon(document.status)"></span>
+              {{ documentStatusLabelKey(document.status) | translate }}
+            </nz-tag>
+          </span>
+        </a>
+
+        <div class="document-card__body">
+          <h3 class="document-card__title">
+            <a
+              [routerLink]="['/documents', document.id]"
+              [attr.title]="document.summary || document.title"
+              (mousedown)="preventMiddleMouseNavigation($event)"
+              (auxclick)="handleDocumentAuxClick($event, document)"
+            >
+              {{ document.title }}
+            </a>
+          </h3>
+
+          <div class="document-card__details">
+            @if (showTenantFields()) {
+              <span
+                class="document-card__detail"
+                nz-tooltip
+                [nzTooltipTitle]="'tenants.fields.tenant' | translate"
+              >
+                <span nz-icon nzType="appstore"></span>
+                <span class="document-card__detail-text">{{ document.tenant.name }}</span>
+              </span>
+            }
+            <span
+              class="document-card__detail"
+              nz-tooltip
+              [nzTooltipTitle]="'documents.table.sender' | translate"
+            >
+              <span nz-icon nzType="user"></span>
+              <span class="document-card__detail-text">
+                {{ document.sender || ('common.emptyValue' | translate) }}
+              </span>
+            </span>
+            <span
+              class="document-card__detail"
+              nz-tooltip
+              [nzTooltipTitle]="'documentDetail.fields.documentType' | translate"
+            >
+              <span nz-icon nzType="folder"></span>
+              <span class="document-card__detail-text">
+                @if (document.documentType) {
+                  {{ documentTypeName(document.documentType) }}
+                } @else {
+                  {{ 'common.emptyValue' | translate }}
+                }
+              </span>
+            </span>
+            <span
+              class="document-card__detail"
+              nz-tooltip
+              [nzTooltipTitle]="'documents.table.date' | translate"
+            >
+              <span nz-icon nzType="calendar"></span>
+              <span class="document-card__detail-text">
+                {{ shortDate(document.documentDate || document.createdAt) }}
+              </span>
+            </span>
+          </div>
+
+          @if (hasAiMetadata(document) || document.calendarEventKinds.length > 0) {
+            <div class="document-card__indicators">
+              @if (hasAiMetadata(document)) {
+                <span
+                  class="row-ai-icon"
+                  nz-tooltip
+                  [nzTooltipTitle]="aiIndicatorTooltip(document)"
+                >
+                  <app-ai-logo [label]="aiIndicatorTooltip(document)"></app-ai-logo>
+                </span>
+              }
+              @for (kind of document.calendarEventKinds; track kind) {
+                <span
+                  class="row-event-icon"
+                  [class]="'row-event-icon row-event-icon--' + kind.toLowerCase()"
+                  nz-tooltip
+                  [nzTooltipTitle]="calendarEventKindLabelKey(kind) | translate"
+                  [attr.aria-label]="calendarEventKindLabelKey(kind) | translate"
+                >
+                  <span nz-icon [nzType]="calendarEventIcon(kind)"></span>
+                </span>
+              }
+            </div>
+          }
+        </div>
+      </article>
+    }
+  </div>
+}
+
+@if (documents().length > 0) {
+  <div
+    class="document-infinite-loader"
+    [class.document-infinite-loader--list]="viewMode() === 'list'"
+    role="status"
+    aria-live="polite"
+    [attr.aria-busy]="isLoadingMore()"
+  >
+    @if (isLoadingMore()) {
+      <nz-spin nzSimple></nz-spin>
+      <span class="document-infinite-loader__text">
+        {{ 'documents.loadingMore' | translate }}
+      </span>
+    } @else if (hasMoreDocuments()) {
+      <button nz-button type="button" (click)="loadNextPage()">
+        <span nz-icon nzType="down"></span>
+        {{ 'common.loadMore' | translate }}
+      </button>
+    }
+  </div>
+}
+
+<nz-dropdown-menu #documentContextMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li
+      nz-menu-item
+      data-testid="document-context-view-open"
+      (click)="showAndOpenContextDocument()"
+    >
+      {{ 'documents.contextMenu.viewAndOpen' | translate }}
+    </li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item [nzDisabled]="true">
+      {{ 'documents.contextMenu.download' | translate }}
+    </li>
+    <li nz-menu-item [nzDisabled]="true">
+      {{ 'documents.contextMenu.rename' | translate }}
+    </li>
+    <li nz-menu-item [nzDisabled]="true">
+      {{ 'documents.contextMenu.archive' | translate }}
+    </li>
+  </ul>
+</nz-dropdown-menu>

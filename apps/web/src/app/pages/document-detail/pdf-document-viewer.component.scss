@@ -1,0 +1,100 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.pdf-viewer-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+}
+
+.pdf-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdf-viewer-page {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pdf-viewer-spacer {
+  flex: 1 1 auto;
+}
+
+.pdf-viewer-loading {
+  display: grid;
+  gap: 6px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.pdf-viewer-stage {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  background: var(--app-surface-muted);
+}
+
+:host ::ng-deep pdf-viewer {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .page,
+:host ::ng-deep pdf-viewer .pdfViewer .canvasWrapper,
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer,
+:host ::ng-deep pdf-viewer .pdfViewer .annotationLayer,
+:host ::ng-deep pdf-viewer .pdfViewer .annotationEditorLayer,
+:host ::ng-deep pdf-viewer .pdfViewer .xfaLayer {
+  // pdf.js positions the canvas, text, and annotation layers using content-box dimensions.
+  box-sizing: content-box;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer {
+  overflow: clip;
+  opacity: 1;
+  z-index: 0;
+  --pdf-selection-highlight: rgb(24 144 255 / 32%);
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer > :not(.markedContent),
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer .markedContent span:not(.markedContent) {
+  color: transparent;
+  text-shadow: none;
+  -webkit-text-fill-color: transparent;
+  z-index: 1;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer ::selection {
+  color: transparent;
+  background-color: var(--pdf-selection-highlight);
+  text-shadow: none;
+  -webkit-text-fill-color: transparent;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer br::selection {
+  background-color: transparent;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer .endOfContent {
+  z-index: 0;
+}
+
+:host ::ng-deep pdf-viewer .pdfViewer .textLayer.selecting .endOfContent {
+  top: 0;
+}

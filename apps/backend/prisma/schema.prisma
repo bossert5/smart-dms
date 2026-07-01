@@ -1,0 +1,662 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DocumentSource {
+  SCANNER
+  UPLOAD
+  EMAIL
+}
+
+enum DocumentStatus {
+  NEW
+  INGESTING
+  OCR_PENDING
+  OCR_RUNNING
+  READY
+  AI_PENDING
+  AI_RUNNING
+  FAILED
+  ARCHIVED
+}
+
+enum DocumentAttributeValueType {
+  TEXT
+  NUMBER
+  DATE
+  BOOLEAN
+}
+
+enum FileArtifactType {
+  ORIGINAL
+  NORMALIZED_IMAGE
+  FINAL_PDF
+  THUMBNAIL
+  ERROR_ARTIFACT
+  DOCLING_DEBUG_JSON
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+enum ProcessingJobType {
+  INGEST_DOCUMENT
+  OCR_DOCUMENT
+  CREATE_THUMBNAIL
+  EXTRACT_AI_METADATA
+}
+
+enum ProcessingJobStatus {
+  WAITING
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum AiProviderType {
+  OPENAI_COMPATIBLE
+}
+
+enum AiProviderStatus {
+  UNKNOWN
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum CalendarEventKind {
+  DUE_DATE
+  DEADLINE
+  APPOINTMENT
+}
+
+enum DocumentEntrySource {
+  AI_EXTRACTED
+  MANUAL
+}
+
+enum DocumentPaymentStatus {
+  OPEN
+  PAID
+  IGNORED
+}
+
+enum DocumentHistoryEventType {
+  SCANNER_DOCUMENT_DETECTED
+  DOCUMENT_UPLOADED
+  EMAIL_ATTACHMENT_IMPORTED
+  DOCUMENT_PROCESSING_QUEUED
+  DOCUMENT_REPROCESS_REQUESTED
+  OCR_PROCESSING_STARTED
+  OCR_PROCESSING_COMPLETED
+  DOCUMENT_PROCESSING_FAILED
+  AI_METADATA_EXTRACTED
+  DOCUMENT_METADATA_UPDATED
+  DOCUMENT_TAGS_UPDATED
+  DOCUMENT_ACCEPTED
+  DOCUMENT_MOVED_TO_INBOX
+  DOCUMENT_MOVED_TO_TENANT
+  DOCUMENT_ARCHIVED
+}
+
+enum EmailImportMode {
+  DISABLED
+  OCR_ONLY
+  OCR_AND_AI
+}
+
+enum EditLockScope {
+  INBOX
+  DOCUMENT
+}
+
+model Document {
+  id                   String                   @id @default(uuid()) @db.Uuid
+  tenantId             String                   @db.Uuid
+  tenant               Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  title                String?
+  titleSource          DocumentEntrySource      @default(AI_EXTRACTED)
+  documentTypeId       String?                  @db.Uuid
+  documentTypeSource   DocumentEntrySource      @default(AI_EXTRACTED)
+  documentType         DocumentType?            @relation(fields: [documentTypeId], references: [id], onDelete: SetNull)
+  originalFileName     String
+  source               DocumentSource
+  mimeType             String
+  status               DocumentStatus           @default(NEW)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  acceptedAt           DateTime?
+  acceptedById         String?                  @db.Uuid
+  acceptedBy           User?                    @relation("AcceptedDocuments", fields: [acceptedById], references: [id], onDelete: SetNull)
+  aiProcessedAt        DateTime?
+  pdfPath              String?
+  thumbnailPath        String?
+  documentDate         DateTime?
+  documentDateSource   DocumentEntrySource      @default(AI_EXTRACTED)
+  ocrLanguage          String?
+  summary              String?
+  sender               String?
+  senderSource         DocumentEntrySource      @default(AI_EXTRACTED)
+  recipient            String?
+  note                 String?
+  ocrText              String?
+  extractedMarkdown    String?                  @db.Text
+  fileSize             Int?
+  pageCount            Int?
+  checksum             String?
+  autoAiAfterOcr       Boolean                  @default(true)
+  aiDeferredByEditLock Boolean                  @default(false)
+  failedReason         String?
+  titleSearchVector    Unsupported("tsvector")?
+  contentSearchVector  Unsupported("tsvector")?
+  senderSearchVector   Unsupported("tsvector")?
+  tagSearchVector      Unsupported("tsvector")?
+  artifacts            FileArtifact[]
+  tags                 DocumentTag[]
+  attributes           DocumentAttribute[]
+  payments             DocumentPayment[]
+  references           DocumentReference[]
+  jobs                 ProcessingJob[]
+  calendarEvents       DocumentCalendarEvent[]
+  historyEvents        DocumentHistoryEvent[]
+  emailAttachments     EmailAttachment[]
+
+  @@index([tenantId])
+  @@index([documentTypeId])
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@index([acceptedAt])
+  @@index([acceptedById])
+  @@index([documentDate])
+  @@index([titleSource])
+  @@index([documentTypeSource])
+  @@index([documentDateSource])
+  @@index([senderSource])
+  @@index([titleSearchVector], type: Gin)
+  @@index([contentSearchVector], type: Gin)
+  @@index([senderSearchVector], type: Gin)
+  @@index([tagSearchVector], type: Gin)
+}
+
+model Tenant {
+  id                String                 @id @default(uuid()) @db.Uuid
+  key               String                 @unique
+  name              String
+  scannerImportPath String?                @unique
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  documents         Document[]
+  tags              Tag[]
+  mailboxes         EmailMailbox[]
+  memberships       UserTenantMembership[]
+
+  @@index([isActive])
+  @@index([name])
+}
+
+model DocumentType {
+  id               String                         @id @default(uuid()) @db.Uuid
+  key              String                         @unique
+  name             String
+  active           Boolean                        @default(true)
+  isSystem         Boolean                        @default(false)
+  displayOrder     Int                            @default(0)
+  createdAt        DateTime                       @default(now())
+  updatedAt        DateTime                       @updatedAt
+  documents        Document[]
+  fieldDefinitions DocumentFieldDefinitionScope[]
+
+  @@index([active])
+  @@index([isSystem])
+  @@index([displayOrder])
+}
+
+model DocumentPayment {
+  id             String                  @id @default(uuid()) @db.Uuid
+  documentId     String                  @db.Uuid
+  document       Document                @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  iban           String?
+  recipient      String?
+  purpose        String?
+  amount         Decimal?                @db.Decimal(14, 2)
+  currency       String?                 @default("EUR")
+  status         DocumentPaymentStatus   @default(OPEN)
+  paidAt         DateTime?
+  paidById       String?                 @db.Uuid
+  paidBy         User?                   @relation("PaidDocumentPayments", fields: [paidById], references: [id], onDelete: SetNull)
+  assignedToId   String?                 @db.Uuid
+  assignedTo     User?                   @relation("AssignedDocumentPayments", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedAt     DateTime?
+  source         DocumentEntrySource     @default(AI_EXTRACTED)
+  displayOrder   Int                     @default(0)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  calendarEvents DocumentCalendarEvent[]
+
+  @@index([documentId])
+  @@index([documentId, source])
+  @@index([status])
+  @@index([paidById])
+  @@index([assignedToId])
+  @@index([recipient])
+}
+
+model DocumentReference {
+  id              String              @id @default(uuid()) @db.Uuid
+  documentId      String              @db.Uuid
+  document        Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  referenceNumber String
+  referenceType   String
+  source          DocumentEntrySource @default(AI_EXTRACTED)
+  displayOrder    Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([documentId])
+  @@index([documentId, source])
+  @@index([referenceNumber])
+}
+
+model DocumentCalendarEvent {
+  id            String              @id @default(uuid()) @db.Uuid
+  documentId    String              @db.Uuid
+  document      Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  paymentId     String?             @db.Uuid
+  payment       DocumentPayment?    @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  kind          CalendarEventKind
+  title         String
+  description   String?
+  date          DateTime            @db.Date
+  time          String?
+  endDate       DateTime?           @db.Date
+  endTime       String?
+  source        DocumentEntrySource @default(AI_EXTRACTED)
+  sourceText    String?
+  assignedToId  String?             @db.Uuid
+  assignedTo    User?               @relation("AssignedCalendarEvents", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedAt    DateTime?
+  completedAt   DateTime?
+  completedById String?             @db.Uuid
+  completedBy   User?               @relation("CompletedCalendarEvents", fields: [completedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([documentId])
+  @@index([paymentId])
+  @@index([documentId, source])
+  @@index([kind])
+  @@index([date])
+  @@index([source])
+  @@index([assignedToId])
+  @@index([completedAt])
+  @@index([completedById])
+}
+
+model DocumentHistoryEvent {
+  id          String                   @id @default(uuid()) @db.Uuid
+  documentId  String                   @db.Uuid
+  document    Document                 @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  actorUserId String?                  @db.Uuid
+  actorUser   User?                    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  type        DocumentHistoryEventType
+  summary     String
+  changes     Json?
+  metadata    Json?
+  createdAt   DateTime                 @default(now())
+
+  @@index([documentId, createdAt])
+  @@index([actorUserId])
+  @@index([type])
+}
+
+model FileArtifact {
+  id           String           @id @default(uuid()) @db.Uuid
+  documentId   String           @db.Uuid
+  document     Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  artifactType FileArtifactType
+  path         String
+  mimeType     String
+  size         Int
+  checksum     String?
+  createdAt    DateTime         @default(now())
+
+  @@index([documentId])
+  @@index([artifactType])
+  @@index([documentId, artifactType, createdAt, id], map: "FileArtifact_document_type_createdAt_idx")
+}
+
+model Tag {
+  id        String        @id @default(uuid()) @db.Uuid
+  tenantId  String        @db.Uuid
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  name      String
+  createdAt DateTime      @default(now())
+  createdBy String?       @db.Uuid
+  documents DocumentTag[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([name])
+}
+
+model DocumentTag {
+  documentId String              @db.Uuid
+  tagId      String              @db.Uuid
+  document   Document            @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag        Tag                 @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  source     DocumentEntrySource @default(AI_EXTRACTED)
+
+  @@id([documentId, tagId])
+  @@index([documentId, source])
+  @@index([tagId])
+}
+
+model DocumentAttribute {
+  id                String                     @id @default(uuid()) @db.Uuid
+  documentId        String                     @db.Uuid
+  document          Document                   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  fieldDefinitionId String?                    @db.Uuid
+  fieldDefinition   DocumentFieldDefinition?   @relation(fields: [fieldDefinitionId], references: [id], onDelete: SetNull)
+  key               String
+  value             String
+  valueType         DocumentAttributeValueType
+  source            DocumentEntrySource        @default(MANUAL)
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+
+  @@unique([documentId, key])
+  @@index([documentId])
+  @@index([fieldDefinitionId])
+  @@index([documentId, source])
+}
+
+model DocumentFieldDefinition {
+  id                        String                         @id @default(uuid()) @db.Uuid
+  key                       String                         @unique
+  label                     String
+  valueType                 DocumentAttributeValueType
+  required                  Boolean                        @default(false)
+  active                    Boolean                        @default(true)
+  displayOrder              Int                            @default(0)
+  appliesToAllDocumentTypes Boolean                        @default(true)
+  includeInFullTextSearch   Boolean                        @default(false)
+  includeInAiExtraction     Boolean                        @default(false)
+  createdAt                 DateTime                       @default(now())
+  updatedAt                 DateTime                       @updatedAt
+  documentTypes             DocumentFieldDefinitionScope[]
+  attributes                DocumentAttribute[]
+
+  @@index([active])
+  @@index([displayOrder])
+}
+
+model DocumentFieldDefinitionScope {
+  fieldDefinitionId String                  @db.Uuid
+  documentTypeId    String                  @db.Uuid
+  fieldDefinition   DocumentFieldDefinition @relation(fields: [fieldDefinitionId], references: [id], onDelete: Cascade)
+  documentType      DocumentType            @relation(fields: [documentTypeId], references: [id], onDelete: Cascade)
+
+  @@id([fieldDefinitionId, documentTypeId])
+  @@index([documentTypeId])
+}
+
+model User {
+  id                       String                  @id @default(uuid()) @db.Uuid
+  username                 String                  @unique
+  displayName              String
+  passwordHash             String
+  role                     UserRole
+  isActive                 Boolean                 @default(true)
+  passwordChangeRequired   Boolean                 @default(false)
+  createdAt                DateTime                @default(now())
+  updatedAt                DateTime                @updatedAt
+  refreshTokens            RefreshToken[]
+  tenantMemberships        UserTenantMembership[]
+  auditEvents              AuditEvent[]
+  acceptedDocuments        Document[]              @relation("AcceptedDocuments")
+  paidDocumentPayments     DocumentPayment[]       @relation("PaidDocumentPayments")
+  assignedDocumentPayments DocumentPayment[]       @relation("AssignedDocumentPayments")
+  assignedCalendarEvents   DocumentCalendarEvent[] @relation("AssignedCalendarEvents")
+  completedCalendarEvents  DocumentCalendarEvent[] @relation("CompletedCalendarEvents")
+  documentHistoryEvents    DocumentHistoryEvent[]
+  editLocks                EditLock[]
+}
+
+model UserTenantMembership {
+  userId    String   @db.Uuid
+  tenantId  String   @db.Uuid
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tenantId])
+  @@index([tenantId])
+  @@index([userId, isDefault])
+}
+
+model RefreshToken {
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @db.Uuid
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash         String    @unique
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId String?   @db.Uuid
+  userAgent         String?
+  ipAddress         String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model ProcessingJob {
+  id                   String              @id @default(uuid()) @db.Uuid
+  bullJobId            String?
+  jobType              ProcessingJobType
+  documentId           String?             @db.Uuid
+  document             Document?           @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  status               ProcessingJobStatus @default(WAITING)
+  attempts             Int                 @default(0)
+  progress             Int                 @default(0)
+  createdAt            DateTime            @default(now())
+  startedAt            DateTime?
+  finishedAt           DateTime?
+  errorCode            String?
+  errorMessage         String?
+  assignedAiProviderId String?             @db.Uuid
+  assignedAiProvider   AiProvider?         @relation(fields: [assignedAiProviderId], references: [id], onDelete: SetNull)
+  payload              Json?
+  result               Json?
+
+  @@index([documentId])
+  @@index([status])
+  @@index([jobType])
+  @@index([assignedAiProviderId])
+  @@index([documentId, createdAt(sort: Desc), id(sort: Desc)], map: "ProcessingJob_document_createdAt_idx")
+  @@index([jobType, status, createdAt, id], map: "ProcessingJob_type_status_createdAt_idx")
+}
+
+model SystemSetting {
+  key       String   @id
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AiProvider {
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String
+  type            AiProviderType   @default(OPENAI_COMPATIBLE)
+  baseUrl         String
+  encryptedApiKey String?
+  selectedModel   String?
+  priority        Int
+  isActive        Boolean          @default(true)
+  status          AiProviderStatus @default(UNKNOWN)
+  lastCheckedAt   DateTime?
+  lastError       String?
+  availableModels Json             @default("[]")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  assignedJobs    ProcessingJob[]
+
+  @@index([priority])
+  @@index([isActive])
+  @@index([status])
+}
+
+model AiMetadataPrompt {
+  key               String   @id @db.VarChar(64)
+  label             String
+  description       String
+  promptText        String   @db.Text
+  defaultPromptText String   @db.Text
+  displayOrder      Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([displayOrder])
+}
+
+model AuditEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  actorUserId String?  @db.Uuid
+  actorUser   User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  action      String
+  entityType  String
+  entityId    String?
+  createdAt   DateTime @default(now())
+  metadata    Json?
+
+  @@index([actorUserId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model EditLock {
+  id               String        @id @default(uuid()) @db.Uuid
+  scope            EditLockScope
+  resourceId       String
+  ownerUserId      String        @db.Uuid
+  owner            User          @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  ownerDisplayName String
+  clientId         String
+  socketId         String
+  tenantIds        String[]      @default([])
+  expiresAt        DateTime
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@unique([scope, resourceId])
+  @@index([ownerUserId])
+  @@index([socketId])
+  @@index([expiresAt])
+}
+
+model EmailMailbox {
+  id                String                 @id @default(uuid()) @db.Uuid
+  tenantId          String                 @db.Uuid
+  tenant            Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  name              String
+  host              String
+  port              Int                    @default(993)
+  username          String
+  encryptedPassword String
+  tls               Boolean                @default(true)
+  importMode        EmailImportMode        @default(OCR_ONLY)
+  isActive          Boolean                @default(true)
+  lastSyncAt        DateTime?
+  lastSyncError     String?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  folders           EmailFolderSelection[]
+  senderRules       EmailSenderRule[]
+  messages          EmailMessage[]
+
+  @@index([tenantId])
+  @@index([isActive])
+  @@index([host])
+}
+
+model EmailFolderSelection {
+  id             String       @id @default(uuid()) @db.Uuid
+  mailboxId      String       @db.Uuid
+  mailbox        EmailMailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+  folderPath     String
+  selected       Boolean      @default(true)
+  uidValidity    BigInt       @default(0)
+  highestSeenUid BigInt       @default(0)
+  lastSyncAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([mailboxId, folderPath])
+  @@index([mailboxId, selected])
+}
+
+model EmailSenderRule {
+  id                String       @id @default(uuid()) @db.Uuid
+  mailboxId         String       @db.Uuid
+  mailbox           EmailMailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+  pattern           String
+  normalizedPattern String
+  createdAt         DateTime     @default(now())
+
+  @@unique([mailboxId, normalizedPattern])
+  @@index([mailboxId])
+}
+
+model EmailMessage {
+  id            String            @id @default(uuid()) @db.Uuid
+  mailboxId     String            @db.Uuid
+  mailbox       EmailMailbox      @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+  folderPath    String
+  uid           BigInt
+  uidValidity   BigInt            @default(0)
+  messageId     String?
+  subject       String?
+  fromAddress   String?
+  fromName      String?
+  sentAt        DateTime?
+  receivedAt    DateTime?
+  textPreview   String?
+  bodyText      String?
+  processedAt   DateTime?
+  skippedReason String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  attachments   EmailAttachment[]
+
+  @@unique([mailboxId, folderPath, uidValidity, uid])
+  @@index([mailboxId, receivedAt])
+  @@index([fromAddress])
+  @@index([mailboxId, folderPath, receivedAt(sort: Desc), createdAt(sort: Desc), id], map: "EmailMessage_mailbox_folder_receivedAt_idx")
+}
+
+model EmailAttachment {
+  id          String       @id @default(uuid()) @db.Uuid
+  messageId   String       @db.Uuid
+  message     EmailMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fileName    String
+  mimeType    String
+  size        Int
+  checksum    String?
+  storagePath String?
+  documentId  String?      @db.Uuid
+  document    Document?    @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  createdAt   DateTime     @default(now())
+
+  @@unique([messageId, fileName, checksum])
+  @@index([documentId])
+  @@index([checksum])
+}

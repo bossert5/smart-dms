@@ -1,0 +1,146 @@
+<section class="calendar-grid">
+  <ng-template #calendarHeader>
+    <div class="calendar-toolbar">
+      <div class="calendar-navigation">
+        <button
+          nz-button
+          nzShape="circle"
+          type="button"
+          class="calendar-nav-button"
+          data-testid="calendar-previous"
+          [attr.aria-label]="previousNavigationLabelKey() | translate"
+          [title]="previousNavigationLabelKey() | translate"
+          (click)="navigatePrevious()"
+        >
+          <span nz-icon nzType="left"></span>
+        </button>
+
+        <div class="calendar-period-picker">
+          @if (calendarMode() === 'month') {
+            <nz-select
+              class="calendar-period-select"
+              [ngModel]="selectedMonthIndex()"
+              [attr.aria-label]="'calendar.navigation.monthSelect' | translate"
+              (ngModelChange)="selectMonth($event)"
+            >
+              @for (month of monthOptions; track month.value) {
+                <nz-option
+                  [nzValue]="month.value"
+                  [nzLabel]="month.labelKey | translate"
+                ></nz-option>
+              }
+            </nz-select>
+            <span class="calendar-period-year">{{ selectedYear() }}</span>
+          } @else {
+            <nz-select
+              class="calendar-period-select"
+              [ngModel]="selectedYear()"
+              [attr.aria-label]="'calendar.navigation.yearSelect' | translate"
+              (ngModelChange)="selectYear($event)"
+            >
+              @for (year of yearOptions(); track year) {
+                <nz-option [nzValue]="year" [nzLabel]="year.toString()"></nz-option>
+              }
+            </nz-select>
+          }
+        </div>
+
+        <button
+          nz-button
+          nzShape="circle"
+          type="button"
+          class="calendar-nav-button"
+          data-testid="calendar-next"
+          [attr.aria-label]="nextNavigationLabelKey() | translate"
+          [title]="nextNavigationLabelKey() | translate"
+          (click)="navigateNext()"
+        >
+          <span nz-icon nzType="right"></span>
+        </button>
+      </div>
+
+      <nz-radio-group
+        class="calendar-mode-switch"
+        [ngModel]="calendarMode()"
+        (ngModelChange)="changeMode($event)"
+      >
+        <label nz-radio-button nzValue="month">{{ 'calendar.modes.month' | translate }}</label>
+        <label nz-radio-button nzValue="year">{{ 'calendar.modes.year' | translate }}</label>
+      </nz-radio-group>
+    </div>
+  </ng-template>
+
+  <nz-calendar
+    [nzMode]="calendarMode()"
+    [nzValue]="selectedDate()"
+    [nzCustomHeader]="calendarHeader"
+    (nzModeChange)="changeMode($event)"
+    (nzSelectChange)="selectDate($event)"
+  >
+    <ul *nzDateCell="let date" class="calendar-cell-events">
+      @for (event of visibleEventsForDate(date); track event.id) {
+        <li>
+          <a
+            class="calendar-cell-event"
+            data-testid="calendar-cell-event"
+            [attr.data-kind]="event.kind"
+            [routerLink]="['/documents', event.documentId]"
+            [title]="event.title"
+            (click)="stopCellEventPropagation($event)"
+          >
+            @if (event.time) {
+              <span class="calendar-cell-event-time">{{ event.time }}</span>
+            }
+            <span class="calendar-cell-event-title">{{ event.title }}</span>
+          </a>
+        </li>
+      }
+      @if (hiddenEventCount(date) > 0) {
+        <li>
+          <button
+            type="button"
+            class="calendar-cell-more"
+            data-testid="calendar-cell-more"
+            [attr.aria-label]="
+              'calendar.moreEvents' | translate: { count: hiddenEventCount(date) }
+            "
+            (click)="selectOverflowDate(date, $event)"
+          >
+            +{{ hiddenEventCount(date) }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    <ul *nzMonthCell="let month" class="calendar-cell-events calendar-cell-events--month">
+      @for (event of eventsForMonth(month); track event.id) {
+        <li>
+          <a
+            class="calendar-cell-event calendar-cell-event--month"
+            data-testid="calendar-month-cell-event"
+            [attr.data-kind]="event.kind"
+            [routerLink]="['/documents', event.documentId]"
+            [title]="event.title"
+            (click)="stopCellEventPropagation($event)"
+          >
+            <span class="calendar-cell-event-time">{{ monthCellEventPrefix(event) }}</span>
+            <span class="calendar-cell-event-title">{{ event.title }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nz-calendar>
+  <div class="side-pane">
+    <h2>{{ sidePaneTitle() }}</h2>
+    @for (event of sidePaneEvents(); track event.id) {
+      <app-calendar-event-card
+        data-testid="calendar-side-pane-event"
+        [event]="event"
+        [showSender]="true"
+        [linkToDocument]="true"
+      ></app-calendar-event-card>
+    } @empty {
+      <p>{{ sidePaneEmptyLabelKey() | translate }}</p>
+    }
+  </div>
+</section>

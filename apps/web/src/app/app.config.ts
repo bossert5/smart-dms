@@ -1,0 +1,148 @@
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, RouteReuseStrategy } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+
+import { routes } from './app.routes';
+import { en_US, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { provideNzIcons } from 'ng-zorro-antd/icon';
+import {
+  AppstoreOutline,
+  ApiOutline,
+  BellOutline,
+  CalendarOutline,
+  CheckCircleOutline,
+  CheckSquareOutline,
+  ClockCircleOutline,
+  CloudUploadOutline,
+  CloseCircleOutline,
+  CloseOutline,
+  CopyOutline,
+  DeleteOutline,
+  DownOutline,
+  DollarOutline,
+  EditOutline,
+  ExclamationCircleOutline,
+  EyeInvisibleOutline,
+  EyeOutline,
+  FileOutline,
+  FileTextOutline,
+  FireOutline,
+  FolderOutline,
+  FolderOpenOutline,
+  HolderOutline,
+  InboxOutline,
+  LeftOutline,
+  LogoutOutline,
+  MailOutline,
+  MessageOutline,
+  MenuFoldOutline,
+  MenuUnfoldOutline,
+  MinusOutline,
+  MoonOutline,
+  MutedOutline,
+  PlusOutline,
+  PushpinOutline,
+  RightOutline,
+  ReloadOutline,
+  RotateRightOutline,
+  SaveOutline,
+  ScanOutline,
+  SearchOutline,
+  SettingOutline,
+  StopOutline,
+  SunOutline,
+  SyncOutline,
+  TeamOutline,
+  UndoOutline,
+  UnorderedListOutline,
+  UpOutline,
+  UserAddOutline,
+  UserOutline,
+} from '@ant-design/icons-angular/icons';
+import { registerLocaleData } from '@angular/common';
+import de from '@angular/common/locales/de';
+import en from '@angular/common/locales/en';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { providePdfWorker } from './core/pdf/pdf-worker.provider';
+import { DocumentsRouteReuseStrategy } from './core/routing/documents-route-reuse.strategy';
+
+registerLocaleData(de);
+registerLocaleData(en);
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    { provide: RouteReuseStrategy, useExisting: DocumentsRouteReuseStrategy },
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideAnimationsAsync(),
+    provideNzI18n(en_US),
+    providePdfWorker(),
+    provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: '/i18n/',
+        suffix: '.json',
+        useHttpBackend: true,
+      }),
+      fallbackLang: 'en',
+      lang: 'en',
+    }),
+    provideNzIcons([
+      AppstoreOutline,
+      ApiOutline,
+      BellOutline,
+      CalendarOutline,
+      CheckCircleOutline,
+      CheckSquareOutline,
+      ClockCircleOutline,
+      CloudUploadOutline,
+      CloseCircleOutline,
+      CloseOutline,
+      CopyOutline,
+      DeleteOutline,
+      DownOutline,
+      DollarOutline,
+      EditOutline,
+      ExclamationCircleOutline,
+      EyeInvisibleOutline,
+      EyeOutline,
+      FileOutline,
+      FileTextOutline,
+      FireOutline,
+      FolderOutline,
+      FolderOpenOutline,
+      HolderOutline,
+      InboxOutline,
+      LeftOutline,
+      LogoutOutline,
+      MailOutline,
+      MessageOutline,
+      MenuFoldOutline,
+      MenuUnfoldOutline,
+      MinusOutline,
+      MoonOutline,
+      MutedOutline,
+      PlusOutline,
+      PushpinOutline,
+      RightOutline,
+      ReloadOutline,
+      RotateRightOutline,
+      SaveOutline,
+      ScanOutline,
+      SearchOutline,
+      SettingOutline,
+      StopOutline,
+      SunOutline,
+      SyncOutline,
+      TeamOutline,
+      UndoOutline,
+      UnorderedListOutline,
+      UpOutline,
+      UserAddOutline,
+      UserOutline,
+    ]),
+  ],
+};

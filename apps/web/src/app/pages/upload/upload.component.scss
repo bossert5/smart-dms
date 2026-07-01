@@ -1,0 +1,15 @@
+.upload-panel {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+  padding: 16px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -1,0 +1,336 @@
+import type { DocumentDetailDto } from '@smart-dms/shared-dto';
+import {
+  documentMetadataFormValue,
+  metadataUpdateRequest,
+  tagsUpdateRequest,
+} from './document-detail.form';
+
+const tenant = {
+  id: '00000000-0000-4000-8000-000000000010',
+  key: 'default',
+  name: 'Default',
+  isActive: true,
+};
+
+const document: DocumentDetailDto = {
+  id: '00000000-0000-4000-8000-000000000001',
+  title: 'Invoice',
+  tenant,
+  documentType: null,
+  originalFileName: 'invoice.pdf',
+  source: 'UPLOAD',
+  mimeType: 'application/pdf',
+  status: 'READY',
+  createdAt: '2026-05-01T00:00:00.000Z',
+  updatedAt: '2026-05-02T00:00:00.000Z',
+  acceptedAt: '2026-05-02T00:00:00.000Z',
+  acceptedById: null,
+  aiProcessedAt: null,
+  documentDate: '2026-04-30T00:00:00.000Z',
+  summary: 'Rechnung',
+  sender: 'Sender GmbH',
+  recipient: null,
+  note: null,
+  fileSize: 1024,
+  pageCount: 1,
+  tags: [
+    {
+      id: '00000000-0000-4000-8000-000000000002',
+      name: 'finance',
+      createdAt: '2026-05-01T00:00:00.000Z',
+      createdBy: null,
+      source: 'AI_EXTRACTED',
+    },
+  ],
+  thumbnailUrl: null,
+  calendarEventKinds: [],
+  ocrText: null,
+  failedReason: null,
+  pdfUrl: null,
+  attributes: [
+    {
+      id: '00000000-0000-4000-8000-000000000003',
+      fieldDefinitionId: '00000000-0000-4000-8000-000000000006',
+      key: 'invoiceNo',
+      label: 'Rechnungsnummer',
+      value: 'R-100',
+      valueType: 'TEXT',
+      source: 'AI_EXTRACTED',
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+  ],
+  payments: [
+    {
+      id: '00000000-0000-4000-8000-000000000004',
+      iban: 'DE02120300000000202051',
+      recipient: 'Sender GmbH',
+      purpose: 'R-100',
+      amount: 120.5,
+      currency: 'EUR',
+      status: 'OPEN',
+      paidAt: null,
+      paidById: null,
+      source: 'AI_EXTRACTED',
+      displayOrder: 0,
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+  ],
+  references: [
+    {
+      id: '00000000-0000-4000-8000-000000000005',
+      referenceNumber: 'R-100',
+      referenceType: 'Rechnung',
+      source: 'AI_EXTRACTED',
+      displayOrder: 0,
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+  ],
+  fieldDefinitions: [
+    {
+      id: '00000000-0000-4000-8000-000000000006',
+      key: 'invoiceNo',
+      label: 'Rechnungsnummer',
+      valueType: 'TEXT',
+      required: false,
+      active: true,
+      displayOrder: 0,
+      appliesToAllDocumentTypes: true,
+      documentTypeIds: [],
+      includeInFullTextSearch: true,
+      includeInAiExtraction: true,
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+  ],
+  documentTypes: [],
+  artifacts: [],
+  calendarEvents: [
+    {
+      id: '00000000-0000-4000-8000-000000000007',
+      documentId: '00000000-0000-4000-8000-000000000001',
+      paymentId: null,
+      tenant,
+      documentSender: 'Sender GmbH',
+      kind: 'DEADLINE',
+      title: 'Reply deadline',
+      description: 'Send reply',
+      date: '2026-05-15',
+      time: '10:30',
+      endDate: null,
+      endTime: null,
+      source: 'AI_EXTRACTED',
+      sourceText: 'reply by 15 May',
+      assignedToId: null,
+      assignedTo: null,
+      assignedAt: null,
+      completedAt: null,
+      completedById: null,
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+    {
+      id: '00000000-0000-4000-8000-000000000008',
+      documentId: '00000000-0000-4000-8000-000000000001',
+      paymentId: '00000000-0000-4000-8000-000000000004',
+      tenant,
+      documentSender: 'Sender GmbH',
+      kind: 'DUE_DATE',
+      title: 'Payment due',
+      description: null,
+      date: '2026-05-29',
+      time: null,
+      endDate: null,
+      endTime: null,
+      source: 'AI_EXTRACTED',
+      sourceText: null,
+      assignedToId: null,
+      assignedTo: null,
+      assignedAt: null,
+      completedAt: null,
+      completedById: null,
+      createdAt: '2026-05-01T00:00:00.000Z',
+      updatedAt: '2026-05-01T00:00:00.000Z',
+    },
+  ],
+};
+
+describe('document detail form mapping', () => {
+  it('creates editable form text from a document detail DTO', () => {
+    expect(documentMetadataFormValue(document)).toEqual({
+      title: 'Invoice',
+      documentTypeId: '',
+      documentDate: '2026-04-30',
+      summary: 'Rechnung',
+      sender: 'Sender GmbH',
+      recipient: '',
+      note: '',
+      payments: [
+        {
+          id: '00000000-0000-4000-8000-000000000004',
+          iban: 'DE02120300000000202051',
+          recipient: 'Sender GmbH',
+          purpose: 'R-100',
+          amount: 120.5,
+          currency: 'EUR',
+          status: 'OPEN',
+          paidAt: null,
+          assignedToId: '',
+          dueDate: '',
+        },
+      ],
+      calendarEvents: [
+        {
+          id: '00000000-0000-4000-8000-000000000007',
+          kind: 'DEADLINE',
+          title: 'Reply deadline',
+          description: 'Send reply',
+          date: '2026-05-15',
+          time: '10:30',
+          endDate: '',
+          endTime: '',
+          sourceText: 'reply by 15 May',
+          assignedToId: '',
+          completedAt: null,
+        },
+      ],
+      references: [
+        {
+          id: '00000000-0000-4000-8000-000000000005',
+          referenceNumber: 'R-100',
+          referenceType: 'Rechnung',
+        },
+      ],
+      attributes: [
+        {
+          fieldDefinitionId: '00000000-0000-4000-8000-000000000006',
+          key: 'invoiceNo',
+          value: 'R-100',
+          valueType: 'TEXT',
+        },
+      ],
+      tagText: 'finance',
+    });
+  });
+
+  it('maps form text to metadata update requests', () => {
+    expect(
+      metadataUpdateRequest({
+        title: ' Invoice ',
+        documentTypeId: '',
+        documentDate: '2026-04-30',
+        summary: ' Summary ',
+        sender: '',
+        recipient: ' Receiver AG ',
+        note: '',
+        payments: [
+          {
+            id: '00000000-0000-4000-8000-000000000004',
+            iban: ' DE02120300000000202051 ',
+            recipient: 'Sender GmbH',
+            purpose: 'R-100',
+            amount: 120.5,
+            currency: 'EUR',
+          },
+        ],
+        calendarEvents: [
+          {
+            id: '00000000-0000-4000-8000-000000000007',
+            kind: 'DEADLINE',
+            title: ' Reply deadline ',
+            description: ' Send reply ',
+            date: '2026-05-15',
+            time: '10:30',
+            endDate: '',
+            endTime: '',
+            sourceText: ' reply by 15 May ',
+          },
+          {
+            id: '',
+            kind: 'APPOINTMENT',
+            title: '',
+            description: '',
+            date: '',
+            time: '',
+            endDate: '',
+            endTime: '',
+            sourceText: '',
+          },
+        ],
+        references: [
+          {
+            id: '00000000-0000-4000-8000-000000000005',
+            referenceNumber: ' R-100 ',
+            referenceType: ' Rechnung ',
+          },
+        ],
+        attributes: [
+          {
+            fieldDefinitionId: '00000000-0000-4000-8000-000000000006',
+            key: 'invoiceNo',
+            value: 'R-100',
+            valueType: 'TEXT',
+          },
+        ],
+        tagText: '',
+      }),
+    ).toEqual({
+      title: 'Invoice',
+      documentTypeId: null,
+      documentDate: '2026-04-30T00:00:00.000Z',
+      summary: 'Summary',
+      sender: null,
+      recipient: 'Receiver AG',
+      note: null,
+      payments: [
+        {
+          id: '00000000-0000-4000-8000-000000000004',
+          iban: 'DE02120300000000202051',
+          recipient: 'Sender GmbH',
+          purpose: 'R-100',
+          amount: 120.5,
+          currency: 'EUR',
+          status: 'OPEN',
+          paidAt: null,
+          dueDate: null,
+        },
+      ],
+      calendarEvents: [
+        {
+          id: '00000000-0000-4000-8000-000000000007',
+          kind: 'DEADLINE',
+          title: 'Reply deadline',
+          description: 'Send reply',
+          date: '2026-05-15',
+          time: '10:30',
+          endDate: null,
+          endTime: null,
+          sourceText: 'reply by 15 May',
+        },
+      ],
+      references: [
+        {
+          id: '00000000-0000-4000-8000-000000000005',
+          referenceNumber: 'R-100',
+          referenceType: 'Rechnung',
+        },
+      ],
+      attributes: [
+        {
+          fieldDefinitionId: '00000000-0000-4000-8000-000000000006',
+          key: 'invoiceNo',
+          value: 'R-100',
+          valueType: 'TEXT',
+        },
+      ],
+    });
+  });
+
+  it('deduplicates and trims tag text', () => {
+    expect(tagsUpdateRequest(' finance, urgent, finance ,, ')).toEqual({
+      tags: ['finance', 'urgent'],
+    });
+  });
+});

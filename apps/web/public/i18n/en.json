@@ -1,0 +1,1153 @@
+{
+  "common": {
+    "activate": "Activate",
+    "active": "Active",
+    "ai": "AI",
+    "appName": "Smart DMS",
+    "productName": "SmartDMS",
+    "cancel": "Cancel",
+    "create": "Create",
+    "cpu": "CPU",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "done": "Done",
+    "edit": "Edit",
+    "empty": "empty",
+    "emptyValue": "—",
+    "gpu": "GPU",
+    "inactive": "Inactive",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more...",
+    "logout": "Logout",
+    "no": "No",
+    "ocr": "OCR",
+    "open": "Open",
+    "refresh": "Refresh",
+    "remove": "Remove",
+    "save": "Save",
+    "search": "Search",
+    "system": "System",
+    "unsavedChangesConfirm": "You have unsaved changes. Leave this page and discard them?",
+    "unknown": "Unknown",
+    "upload": "Upload",
+    "yes": "Yes"
+  },
+  "language": {
+    "label": "Language",
+    "options": {
+      "de": "Deutsch",
+      "en": "English"
+    }
+  },
+  "app": {
+    "breadcrumb": {
+      "administration": "Administration"
+    },
+    "shell": {
+      "collapseMenu": "Collapse menu",
+      "currentPage": "Current page",
+      "expandMenu": "Expand menu",
+      "hideAdministration": "Hide administration",
+      "noTenantAssigned": "No tenant is assigned to this user. A tenant is required.",
+      "showAdministration": "Show administration"
+    },
+    "nav": {
+      "administration": "ADMINISTRATION",
+      "ai": "AI",
+      "calendar": "Calendar",
+      "dashboard": "Dashboard",
+      "documents": "Documents",
+      "email": "Email",
+      "general": "General",
+      "inbox": "Inbox",
+      "settings": "Settings",
+      "tenants": "Tenants",
+      "upload": "Upload",
+      "users": "Users"
+    },
+    "userMenu": {
+      "logout": "Log out",
+      "settings": "Settings"
+    }
+  },
+  "accountSettings": {
+    "language": {
+      "help": "Controls language, date formats, and NG-ZORRO text.",
+      "label": "Language"
+    },
+    "notifications": {
+      "markSeen": "Mark as read",
+      "muted": {
+        "help": "New entries stay in the notification center, but toast messages are suppressed.",
+        "label": "Mute notifications"
+      },
+      "unread": {
+        "label": "Unread notifications",
+        "value": "{{count}} unread"
+      }
+    },
+    "password": {
+      "change": "Change password",
+      "help": "Opens the protected password change flow for your account.",
+      "label": "Password",
+      "success": "Password was changed."
+    },
+    "startPage": {
+      "help": "This page opens after sign-in.",
+      "label": "Default start page",
+      "options": {
+        "calendar": "Calendar",
+        "dashboard": "Dashboard",
+        "documents": "Documents",
+        "email": "Email",
+        "inbox": "Inbox"
+      }
+    },
+    "subtitle": "Personal appearance, workspace context, and security.",
+    "tabs": {
+      "appearance": "Appearance",
+      "securityNotifications": "Security & Notifications",
+      "workspace": "Workspace"
+    },
+    "tenant": {
+      "help": "Sets the preselected tenant scope for working with documents.",
+      "label": "Default tenant"
+    },
+    "theme": {
+      "dark": "Dark",
+      "help": "Switches between light and dark appearance.",
+      "label": "Theme",
+      "light": "Light"
+    },
+    "title": "Settings"
+  },
+  "theme": {
+    "activateDark": "Activate dark mode",
+    "activateLight": "Activate light mode"
+  },
+  "auth": {
+    "login": {
+      "error": "Sign-in failed.",
+      "password": "Password",
+      "submit": "Sign in",
+      "username": "Username"
+    },
+    "passwordChange": {
+      "confirmPassword": "Confirm new password",
+      "currentPassword": "Current password",
+      "error": "Password could not be changed.",
+      "newPassword": "New password",
+      "submit": "Save password",
+      "title": "Change password"
+    }
+  },
+  "validation": {
+    "met": "Met",
+    "password": {
+      "confirmation": "Passwords match",
+      "minLength": "At least 8 characters",
+      "number": "At least 1 number",
+      "requirements": "Password requirements",
+      "special": "At least 1 special character"
+    },
+    "unmet": "Not met"
+  },
+  "notifications": {
+    "aria": "Notifications",
+    "empty": "No notifications",
+    "muted": "Muted",
+    "mutedAria": "Notifications muted",
+    "status": {
+      "live": "Live",
+      "offline": "Offline"
+    },
+    "title": "Notifications"
+  },
+  "documents": {
+    "actions": {
+      "openDocument": "Open {{title}}",
+      "resetList": "Reset filters"
+    },
+    "bulk": {
+      "actions": {
+        "archive": "Archive selected",
+        "archiveWithCount": "Archive {{count}} Documents",
+        "download": "Download",
+        "downloadWithCount": "Download {{count}} documents",
+        "move": "Move",
+        "moveWithCount": "Move {{count}} documents",
+        "open": "Pin",
+        "openWithCount": "Pin {{count}} documents",
+        "reprocess": "Reprocess selected",
+        "startAi": "Start AI for selected"
+      },
+      "errors": {
+        "aiFailed": "AI processing could not be started for some selected documents.",
+        "archiveFailed": "Some selected documents could not be archived.",
+        "deleteFailed": "Some selected documents could not be deleted.",
+        "downloadFailed": "Some selected documents could not be downloaded.",
+        "moveToInboxFailed": "Some selected documents could not be moved to the inbox.",
+        "reprocessFailed": "Some selected documents could not be reprocessed."
+      },
+      "moveTargets": {
+        "archive": "Archive",
+        "inbox": "Inbox",
+        "trash": "Trash"
+      },
+      "success": {
+        "aiStarted": "AI processing was started for selected documents.",
+        "archived": "Selected documents were archived.",
+        "deleted": "Selected documents were permanently deleted.",
+        "downloadStarted": "Downloads were started for selected documents.",
+        "movedToInbox": "Selected documents were moved to the inbox.",
+        "reprocessStarted": "Reprocessing was started for selected documents."
+      },
+      "moveConfirm": {
+        "archive": {
+          "confirm": "Archive documents",
+          "message": "Move {{count}} selected documents to the archive?",
+          "title": "Archive documents"
+        },
+        "inbox": {
+          "confirm": "Move to inbox",
+          "message": "Move {{count}} selected documents back to the inbox?",
+          "title": "Move documents to inbox"
+        },
+        "trash": {
+          "confirm": "Delete permanently",
+          "message": "Permanently delete {{count}} selected documents? This cannot be undone.",
+          "title": "Delete documents"
+        }
+      },
+      "trashConfirm": {
+        "confirm": "Delete permanently",
+        "message": "Delete {{count}} selected documents permanently? This cannot be undone.",
+        "title": "Delete documents"
+      }
+    },
+    "ai": {
+      "PROCESSED": "AI processed",
+      "IN_PROGRESS": "AI processing",
+      "QUEUED": "Queued for AI",
+      "NOT_PROCESSED": "Not yet processed",
+      "NONE": ""
+    },
+    "aiProcessed": "AI processed",
+    "contextMenu": {
+      "archive": "Archive",
+      "download": "Download",
+      "rename": "Rename",
+      "viewAndOpen": "Pin and open"
+    },
+    "empty": "No documents found",
+    "loadingMore": "Loading more documents...",
+    "filters": {
+      "archive": "Archive",
+      "date": {
+        "label": "Date",
+        "last3Months": "Last 3 months",
+        "last6Months": "Last 6 months",
+        "lastMonth": "Last month",
+        "lastWeek": "Last week",
+        "lastYear": "Last year",
+        "none": "Any date"
+      },
+      "documentType": "Document type",
+      "sender": "Sender",
+      "source": "Source",
+      "status": "Status",
+      "tags": "Tags"
+    },
+    "open": {
+      "close": "Remove pin",
+      "closeAll": "Remove all pins",
+      "closeAria": "Remove pin for {{title}}",
+      "collapsedAria": "Pinned documents ({{count}})",
+      "menuAria": "Pinned documents",
+      "title": "Pinned documents"
+    },
+    "upload": {
+      "errors": {
+        "configFailed": "Upload configuration could not be loaded.",
+        "missingTenant": "Select a tenant for this upload.",
+        "sizeExceeded": "PDF exceeds the configured upload limit.",
+        "unsupportedType": "Only PDF files can be uploaded here.",
+        "uploadFailed": "PDF upload failed."
+      },
+      "hint": "Drop a PDF here or click to choose one.",
+      "maxSize": "PDF up to {{size}}",
+      "pdfOnly": "PDF files only",
+      "selectTenantTitle": "Select tenant",
+      "start": "Upload",
+      "title": "Upload area",
+      "uploading": "Uploading {{fileName}}"
+    },
+    "search": {
+      "fields": {
+        "all": "Title + content",
+        "content": "Content",
+        "title": "Title"
+      },
+      "noResults": "No results found",
+      "placeholder": "Search title or content"
+    },
+    "sort": {
+      "createdAt": "Created",
+      "documentDate": "Document date",
+      "documentType": "Document type",
+      "relevance": "Relevance",
+      "sender": "Sender",
+      "status": "Status",
+      "title": "Document name",
+      "updatedAt": "Updated"
+    },
+    "subtitle": "Search, processing, and metadata status of the inventory.",
+    "table": {
+      "date": "Date",
+      "sender": "Sender",
+      "status": "Status",
+      "tags": "Tags",
+      "title": "Document name",
+      "type": "Type"
+    },
+    "title": "Documents",
+    "view": {
+      "grid": "Grid view",
+      "label": "View mode",
+      "list": "List view"
+    }
+  },
+  "dashboard": {
+    "actions": {
+      "assignCombinedAria": "Assign entry {{title}}",
+      "assignDateAria": "Assign date entry {{title}}",
+      "assignPaymentAria": "Assign payment {{title}}",
+      "empty": "No open tasks",
+      "markCombinedDoneAria": "Mark entry {{title}} as done",
+      "markDateDoneAria": "Mark date entry {{title}} as done",
+      "markDone": "Mark as done",
+      "markPaymentDoneAria": "Mark payment {{title}} as done",
+      "mixedAssignees": "Mixed",
+      "unassigned": "Unassigned",
+      "types": {
+        "INBOX_READY": "Inbox ready",
+        "MISSING_METADATA": "Metadata missing",
+        "OPEN_PAYMENT": "Payment open",
+        "PROCESSING_FAILED": "Processing failed"
+      }
+    },
+    "empty": "Everything is in good shape.",
+    "errors": {
+      "loadFailed": "Dashboard could not be loaded.",
+      "updateFailed": "Task could not be updated."
+    },
+    "buckets": {
+      "next14Days": "Next 14 days",
+      "overdue": "Overdue"
+    },
+    "dateEntries": {
+      "emptyOverdue": "No overdue date entries.",
+      "emptyUpcoming": "No date entries in the next 14 days."
+    },
+    "health": {
+      "activeJobs": "Active jobs",
+      "aiProviders": "AI providers",
+      "emailErrors": "E-Mail-Sync",
+      "failedJobs": "Failed",
+      "tenantBreakdown": "Tenants",
+      "waitingJobs": "Waiting"
+    },
+    "kpis": {
+      "dueThisWeek": "Deadlines this week",
+      "failedOcr": "{{count}} OCR",
+      "failedProcessing": "Failed",
+      "inbox": "Unprocessed inbox",
+      "inboxReady": "{{count}} ready to accept",
+      "missingMetadata": "Metadata missing",
+      "openPayments": "Open payments",
+      "overdue": "Overdue",
+      "title": "KPIs"
+    },
+    "recent": {
+      "empty": "No new documents"
+    },
+    "recentCompleted": {
+      "empty": "No recently completed items.",
+      "types": {
+        "deadline": "Deadline",
+        "payment": "Payment"
+      }
+    },
+    "paymentTag": "Payment",
+    "payments": {
+      "emptyOverdue": "No overdue payments.",
+      "emptyUpcoming": "No payments in the next 14 days."
+    },
+    "sections": {
+      "actionItems": "Action items",
+      "dateEntries": "Date entries",
+      "dateEntriesCount": "{{count}} entries",
+      "payments": "Payments",
+      "paymentsCount": "{{count}} payments",
+      "recentCompleted": "Recently completed",
+      "recentDocuments": "New documents",
+      "systemHealth": "System health",
+      "timeline": "Chronology",
+      "timelineCount": "{{count}} entries",
+      "upcoming": "Today and this week"
+    },
+    "subtitle": "Workload, deadlines, and processing at a glance.",
+    "timeline": {
+      "columns": {
+        "actions": "Actions",
+        "date": "Date",
+        "details": "Details",
+        "document": "Document",
+        "type": "Type"
+      },
+      "empty": "No open date or payment entries in this window.",
+      "relative": {
+        "completedJustNow": "done just now",
+        "completedManyMinutesAgo": "done {{count}} minutes ago",
+        "completedOneMinuteAgo": "done 1 minute ago",
+        "dueMany": "in {{count}} days",
+        "dueOne": "in 1 day",
+        "overdueMany": "overdue for {{count}} days",
+        "overdueOne": "overdue for 1 day",
+        "today": "today"
+      },
+      "types": {
+        "dateEntry": "Date",
+        "payment": "Payment"
+      }
+    },
+    "title": "Dashboard",
+    "upcoming": {
+      "empty": "No deadlines this week"
+    },
+    "widgets": {
+      "aiWorkers": "AI workers",
+      "aiWorkersDetail": "Connected workers",
+      "documents": "Documents",
+      "documentsDetail": "Active documents",
+      "emails": "Emails",
+      "emailsDetail": "{{processed}} processed · {{open}} open",
+      "inbox": "Inbox",
+      "inboxDetail": "{{ready}} ready · {{open}} open",
+      "openDateEntries": "Date entries",
+      "openDateEntriesDetail": "Open entries",
+      "openPayments": "Payments",
+      "openPaymentsDetail": "Open payments",
+      "title": "Dashboard overview",
+      "users": "Users",
+      "usersDetail": "Active users"
+    }
+  },
+  "inbox": {
+    "actions": {
+      "accept": "Accept",
+      "acceptAllLoaded": "Accept all loaded",
+      "acceptAllDocuments": "Accept all documents",
+      "acceptDisabled": "Only possible after processing is complete",
+      "acceptSelected": "Accept selected",
+      "acceptSelectedWithCount": "Accept {{count}} documents",
+      "cancelEdit": "Cancel edit",
+      "deleteConfirm": "Delete {{title}} permanently?",
+      "deleteDocument": "Delete {{title}}",
+      "edit": "Edit",
+      "openDocument": "Open {{title}}",
+      "reprocess": "Reprocess",
+      "reprocessDocument": "Reprocess {{title}}",
+      "reprocessSelected": "Reprocess selected",
+      "resetField": "Reset field",
+      "revertChanges": "Revert changes",
+      "saveChanges": "Save changes"
+    },
+    "edit": {
+      "offline": "Realtime connection is required for edit mode."
+    },
+    "empty": "No pending documents",
+    "errors": {
+      "acceptFailed": "Documents could not be accepted.",
+      "editLockFailed": "Edit mode could not be started because the inbox is locked or AI processing is active.",
+      "editLockLost": "Edit mode was closed because the server lock was released.",
+      "deleteFailed": "Document could not be deleted.",
+      "loadFailed": "Inbox could not be loaded.",
+      "reprocessFailed": "Documents could not be reprocessed.",
+      "saveMetadataFailed": "Inbox metadata could not be saved."
+    },
+    "subtitle": "Review new documents and accept them after processing.",
+    "success": {
+      "acceptedMany": "Documents were accepted.",
+      "acceptedOne": "Document was accepted.",
+      "reprocessStartedMany": "Reprocessing was started.",
+      "reprocessStartedOne": "Reprocessing was started."
+    },
+    "search": {
+      "noResults": "No results found",
+      "placeholder": "Search inbox"
+    },
+    "table": {
+      "actions": "Actions"
+    },
+    "title": "Inbox"
+  },
+  "email": {
+    "actions": {
+      "loadFolders": "Load folders",
+      "newMailbox": "New configuration",
+      "sync": "Synchronize",
+      "test": "Test connection"
+    },
+    "configDialog": {
+      "createTitle": "New email configuration",
+      "editTitle": "Edit email configuration"
+    },
+    "deleteConfirm": "Remove mailbox {{name}}?",
+    "emptyMailboxes": "No IMAP mailboxes connected yet.",
+    "emptyMessages": "No emails found.",
+    "errors": {
+      "deleteFailed": "Mailbox could not be removed.",
+      "foldersFailed": "Folders could not be loaded.",
+      "loadFailed": "Mailboxes could not be loaded.",
+      "messagesFailed": "Emails could not be loaded.",
+      "passwordRequired": "A password is required for a new mailbox.",
+      "saveFailed": "Mailbox could not be saved.",
+      "syncFailed": "Synchronization failed.",
+      "testFailed": "IMAP connection could not be established."
+    },
+    "fields": {
+      "active": "Active",
+      "disabled": "Disabled",
+      "host": "Host",
+      "importMode": "Automation",
+      "name": "Name",
+      "password": "Password",
+      "port": "Port",
+      "senderRules": "Allowed senders",
+      "tls": "TLS",
+      "username": "Username"
+    },
+    "folders": {
+      "createHint": "Load folders to choose what should be synchronized.",
+      "empty": "No folders loaded or selected yet.",
+      "title": "Folders"
+    },
+    "importModes": {
+      "DISABLED": "View only",
+      "OCR_AND_AI": "OCR + AI",
+      "OCR_ONLY": "OCR only"
+    },
+    "messages": {
+      "attachments": "Attachments",
+      "folder": "Folder",
+      "mailbox": "Mailbox",
+      "from": "From",
+      "openDocument": "Open document {{fileName}}",
+      "processingStatus": "Document status",
+      "receivedAt": "Received",
+      "subject": "Subject",
+      "title": "Emails"
+    },
+    "preview": {
+      "emptyPdf": "No PDF preview available.",
+      "emptyText": "No email text available.",
+      "pdf": "PDF",
+      "text": "Text"
+    },
+    "processing": {
+      "FAILED": "Failed",
+      "PROCESSING": "Processing",
+      "PROCESSED": "Processed",
+      "SKIPPED": "Not imported"
+    },
+    "subtitle": "Incoming emails and document processing from connected mailboxes.",
+    "success": {
+      "deleted": "Mailbox was removed.",
+      "saved": "Mailbox was saved.",
+      "synced": "Mailbox was synchronized.",
+      "tested": "IMAP connection successful."
+    },
+    "table": {
+      "actions": "Actions",
+      "folders": "Folders",
+      "hostPort": "Host/Port",
+      "lastSync": "Last synchronization"
+    },
+    "title": "Email mailboxes"
+  },
+  "documentDetail": {
+    "actions": {
+      "archive": "Archive",
+      "accept": "Accept",
+      "cancelEdit": "Cancel Edit",
+      "copyValue": "Copy {{label}}",
+      "downloadPdf": "Download PDF",
+      "downloadPdfAria": "Download PDF {{title}}",
+      "edit": "Edit",
+      "menu": "Actions",
+      "move": "Move",
+      "moveTenant": "Change tenant",
+      "pdf": "PDF",
+      "pin": "Pin",
+      "reprocess": "Reprocess",
+      "revertChanges": "Revert Changes",
+      "saveChanges": "Save Changes",
+      "startAi": "Start AI",
+      "unpin": "Unpin"
+    },
+    "ai": {
+      "notProcessed": "Not processed",
+      "processed": "Processed",
+      "running": "AI processing is running"
+    },
+    "aiScopes": {
+      "regenerateAdditionalFields": "Regenerate additional fields with AI",
+      "regenerateCalendarEvents": "Regenerate calendar events with AI",
+      "regenerateDocumentDate": "Regenerate document date with AI",
+      "regenerateDocumentType": "Regenerate document type with AI",
+      "regenerateParties": "Regenerate parties with AI",
+      "regeneratePayments": "Regenerate payments with AI",
+      "regenerateReferences": "Regenerate references with AI",
+      "regenerateSummary": "Regenerate summary with AI",
+      "regenerateTags": "Regenerate tags with AI",
+      "regenerateTitle": "Regenerate title with AI"
+    },
+    "backToList": "Back to list",
+    "calendar": {
+      "add": "Calendar event",
+      "date": "Date",
+      "description": "Description",
+      "empty": "No calendar events.",
+      "emptyEditable": "No freely editable calendar events.",
+      "endDate": "End date",
+      "endTime": "End time",
+      "kind": "Type",
+      "linkedPaymentHint": "These entries belong to payment due dates and are edited through the payment data.",
+      "linkedPaymentTitle": "Payment due dates",
+      "removeAria": "Remove calendar event {{index}}",
+      "sourceText": "Source text",
+      "time": "Time",
+      "title": "Title"
+    },
+    "closeDocument": "Remove pin",
+    "errors": {
+      "acceptFailed": "Document could not be accepted.",
+      "aiFailed": "AI processing could not be started.",
+      "archiveFailed": "Document could not be archived.",
+      "deleteFailed": "Document could not be deleted.",
+      "editLockFailed": "Edit mode could not be started because this document is locked.",
+      "editLockLost": "Edit mode was closed because the server lock was released.",
+      "loadFailed": "Document could not be loaded.",
+      "missingId": "Document ID is missing.",
+      "moveToInboxFailed": "Document could not be moved to the inbox.",
+      "moveToTenantFailed": "Document could not be moved to another tenant.",
+      "pdfFailed": "PDF could not be loaded.",
+      "reprocessFailed": "Reprocessing could not be started.",
+      "requiredCoreMetadata": "Document name, sender, document type, and date are required outside the inbox.",
+      "saveChangesFailed": "Changes could not be saved.",
+      "saveMetadataFailed": "Metadata could not be saved.",
+      "saveTagsFailed": "Tags could not be saved."
+    },
+    "extraFields": {
+      "title": "Additional fields"
+    },
+    "fallbackTitle": "Document",
+    "fields": {
+      "documentDate": "Document date",
+      "documentType": "Document type",
+      "noDocumentType": "No document type",
+      "recipient": "Recipient",
+      "summary": "Summary"
+    },
+    "history": {
+      "context": {
+        "calendarEvents": "Calendar events",
+        "job": "Job",
+        "status": "Status",
+        "type": "Type"
+      },
+      "empty": "No history yet",
+      "errors": {
+        "loadFailed": "History could not be loaded."
+      },
+      "title": "Document history"
+    },
+    "moveTenant": {
+      "confirm": "Move",
+      "targetTenant": "Target tenant",
+      "title": "Move document to another tenant"
+    },
+    "ocr": {
+      "empty": "No OCR text available."
+    },
+    "pageCount": {
+      "many": "{{count}} pages",
+      "one": "1 page"
+    },
+    "payments": {
+      "add": "Payment",
+      "amount": "Amount",
+      "currency": "Currency",
+      "dueDate": "Due date",
+      "empty": "No payment data.",
+      "iban": "IBAN",
+      "purpose": "Purpose",
+      "removeAria": "Remove payment {{index}}",
+      "title": "Payment data"
+    },
+    "pdf": {
+      "loading": "Loading PDF",
+      "notAvailable": "PDF not available yet",
+      "pageStatus": "Page {{page}} / {{pageCount}}",
+      "previewTitle": "PDF preview",
+      "resetZoom": "Reset zoom",
+      "toolbarAria": "PDF tools",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "statusPrefix": "Status:"
+    },
+    "processingFailed": "Processing failed",
+    "references": {
+      "add": "Reference",
+      "empty": "No references.",
+      "number": "Reference number",
+      "removeAria": "Remove reference {{index}}",
+      "title": "References",
+      "type": "Reference type"
+    },
+    "sections": {
+      "content": "Content and parties",
+      "documentData": "Document data"
+    },
+    "summary": {
+      "pageCount": "Page count",
+      "size": "Size"
+    },
+    "tabs": {
+      "calendar": "Calendar",
+      "history": "History",
+      "metadata": "Document",
+      "payments": "Payments",
+      "references": "References",
+      "tags": "Tags"
+    },
+    "tasks": {
+      "assignedTo": "Assigned to",
+      "markNotDone": "Mark as not done",
+      "noAssignee": "Nobody"
+    },
+    "tags": {
+      "add": "Add",
+      "empty": "No tags.",
+      "inputLabel": "New tag",
+      "listAria": "Document tags",
+      "removeAria": "Remove tag {{tag}}",
+      "save": "Save tags"
+    },
+    "trashConfirm": {
+      "confirm": "Delete permanently",
+      "message": "Delete {{title}} permanently? This cannot be undone.",
+      "title": "Delete document"
+    }
+  },
+  "upload": {
+    "actions": {
+      "upload": "Upload"
+    },
+    "errors": {
+      "configFailed": "Upload configuration could not be loaded.",
+      "missingTenant": "Select a tenant for this upload.",
+      "sizeExceeded": "File exceeds the configured upload limit.",
+      "unsupportedType": "File type is not supported.",
+      "uploadFailed": "Upload failed."
+    },
+    "fileTypes": "File types",
+    "maxSize": "Maximum size",
+    "subtitle": "Add PDF, TIFF, JPEG, or PNG files to the document pipeline.",
+    "title": "Upload"
+  },
+  "calendar": {
+    "allDay": "all day",
+    "emptyDay": "No events on this day.",
+    "emptyMonth": "No events in this month.",
+    "filters": {
+      "type": "Type",
+      "types": "Types"
+    },
+    "modes": {
+      "month": "Month",
+      "year": "Year"
+    },
+    "months": {
+      "april": "April",
+      "august": "August",
+      "december": "December",
+      "february": "February",
+      "january": "January",
+      "july": "July",
+      "june": "June",
+      "march": "March",
+      "may": "May",
+      "november": "November",
+      "october": "October",
+      "september": "September"
+    },
+    "moreEvents": "{{count}} more events",
+    "navigation": {
+      "monthSelect": "Select month",
+      "nextMonth": "Next month",
+      "nextYear": "Next year",
+      "previousMonth": "Previous month",
+      "previousYear": "Previous year",
+      "yearSelect": "Select year"
+    },
+    "subtitle": "Due dates, deadlines, and appointments from documents.",
+    "title": "Calendar"
+  },
+  "users": {
+    "actions": {
+      "createUser": "Create user",
+      "revertChanges": "Revert changes",
+      "saveChanges": "Save changes"
+    },
+    "create": {
+      "title": "Create user"
+    },
+    "errors": {
+      "activeAdminRequired": "There must always be at least one active admin.",
+      "createFailed": "User could not be created.",
+      "deleteFailed": "User could not be deleted.",
+      "loadFailed": "Users could not be loaded.",
+      "saveFailed": "User could not be saved."
+    },
+    "fields": {
+      "active": "Active",
+      "confirmInitialPassword": "Confirm initial password",
+      "disabled": "Disabled",
+      "initialPassword": "Initial password",
+      "name": "Name",
+      "role": "Role",
+      "tenants": "Tenants",
+      "username": "Username"
+    },
+    "deleteConfirm": "Delete user {{name}}?",
+    "subtitle": "Manage roles and active accounts.",
+    "title": "Users",
+    "validation": {
+      "nameMaxLength": "Name must be at most 200 characters.",
+      "nameRequired": "Enter a name.",
+      "roleRequired": "Select a role.",
+      "usernameMaxLength": "Username must be at most 100 characters.",
+      "usernameRequired": "Enter a username."
+    }
+  },
+  "tenants": {
+    "actions": {
+      "new": "New tenant",
+      "revertChanges": "Revert changes",
+      "saveChanges": "Save changes"
+    },
+    "create": {
+      "title": "Create tenant"
+    },
+    "delete": {
+      "confirm": "Delete tenant",
+      "confirmationLabel": "Type {{name}} to confirm",
+      "documentActionLabel": "Documents in this tenant",
+      "documentActions": {
+        "delete": "Delete documents",
+        "move": "Move documents to another tenant"
+      },
+      "targetTenantLabel": "Target tenant",
+      "title": "Delete tenant",
+      "userAssignments": "User assignments to this tenant will be removed.",
+      "warning": "Tenant {{name}} has {{users}} users and {{documents}} documents."
+    },
+    "empty": "No tenants configured.",
+    "errors": {
+      "createFailed": "Tenant could not be created. Check that key and scanner import path are unique.",
+      "deleteFailed": "Tenant could not be deleted.",
+      "loadFailed": "Tenants could not be loaded.",
+      "saveFailed": "Tenant could not be saved. Check that key and scanner import path are unique."
+    },
+    "fields": {
+      "actions": "Actions",
+      "active": "Active",
+      "disabled": "Disabled",
+      "documents": "Documents",
+      "key": "Key",
+      "name": "Name",
+      "scannerImportPath": "Scanner import path",
+      "tenant": "Tenant",
+      "users": "Users"
+    },
+    "selector": {
+      "all": "All tenants",
+      "label": "Tenant scope"
+    },
+    "success": {
+      "deleted": "Tenant was deleted.",
+      "saved": "Tenant was saved."
+    },
+    "title": "Tenants"
+  },
+  "settings": {
+    "ai": {
+      "errors": {
+        "loadFailed": "AI settings could not be loaded.",
+        "modelPreviewEmpty": "No models were found.",
+        "modelPreviewFailed": "Models could not be loaded.",
+        "modelRefreshFailed": "Models could not be refreshed.",
+        "providerCreateFailed": "AI provider could not be created.",
+        "providerRemoveFailed": "AI provider could not be removed.",
+        "providerUpdateFailed": "AI provider could not be saved.",
+        "providersLoadFailed": "AI providers could not be loaded.",
+        "promptUpdateFailed": "AI prompt could not be saved."
+      },
+      "modelName": "Model",
+      "overview": {
+        "liveConnected": "Connected",
+        "liveConnectedHint": "Realtime AI provider updates are active.",
+        "liveConnection": "Live connection",
+        "liveDisconnected": "Disconnected",
+        "liveDisconnectedHint": "Provider status refreshes after reconnect.",
+        "providerConnection": "AI provider connection",
+        "providerIssueHint": "{{count}} provider needs attention.",
+        "providerReadyHint": "AI provider routing is ready.",
+        "providersReady": "{{ready}}/{{total}} ready",
+        "selectedModels": "Selected models",
+        "selectedModelsCount": "{{count}} selected",
+        "selectedModelsEmpty": "No model selected",
+        "selectedModelsMore": "and {{count}} more",
+        "title": "AI status overview"
+      },
+      "prompts": {
+        "reset": "Reset",
+        "resetConfirm": "Reset this prompt to the default text?",
+        "title": "Metadata extraction prompts"
+      },
+      "providerStatus": {
+        "AVAILABLE": "Available",
+        "UNAVAILABLE": "Unavailable",
+        "UNKNOWN": "Unknown"
+      },
+      "providers": {
+        "actions": "Actions",
+        "active": "Active",
+        "disabled": "Disabled",
+        "add": "Add provider",
+        "addTitle": "Add AI provider",
+        "createTitle": "Add AI provider",
+        "apiKey": "API key",
+        "apiKeyConfigured": "API key configured",
+        "apiKeyPlaceholder": "Leave empty to keep the current key",
+        "baseUrl": "OpenAI API base URL",
+        "clearApiKey": "Clear API key",
+        "deleteConfirm": "Delete AI provider {{name}}?",
+        "draft": "Draft",
+        "dragHandle": "Move provider",
+        "loadModels": "Load models",
+        "model": "Model",
+        "modelPlaceholder": "Select model",
+        "name": "Name",
+        "refreshModels": "Refresh models",
+        "revertChanges": "Revert changes",
+        "saveChanges": "Save changes",
+        "selected": "selected",
+        "selectedModel": "Selected model",
+        "selectedMetadataModel": "Metadata model",
+        "status": "Status"
+      },
+      "subtitle": "Manage OpenAI-compatible providers, models, and AI prompts.",
+      "success": {
+        "promptSaved": "AI prompt was saved."
+      },
+      "tabs": {
+        "prompts": "Prompts",
+        "providers": "Providers",
+        "status": "Status"
+      },
+      "title": "AI"
+    },
+    "documents": {
+      "actions": {
+        "revertChanges": "Revert changes",
+        "saveChanges": "Save changes"
+      },
+      "allDocumentTypes": "All document types",
+      "documentTypes": {
+        "create": "Create document type",
+        "createTitle": "Create document type",
+        "deleteConfirm": "Delete document type {{name}}?",
+        "dragHandle": "Move document type",
+        "save": "Save document type",
+        "system": "System category",
+        "systemRemoveDisabled": "System categories cannot be removed. Deactivate the category instead.",
+        "title": "Document types"
+      },
+      "systemDocumentTypes": {
+        "bank_document": "Bank document",
+        "certificate": "Certificate",
+        "contract": "Contract",
+        "correspondence": "Correspondence",
+        "credit_note": "Credit note",
+        "delivery_note": "Delivery note",
+        "education_document": "Education document",
+        "employment_document": "Employment document",
+        "form": "Form",
+        "government_notice": "Government notice",
+        "identity_document": "Identity document",
+        "insurance_document": "Insurance document",
+        "invoice": "Invoice",
+        "legal_document": "Legal document",
+        "medical_document": "Medical document",
+        "minutes": "Minutes",
+        "other": "Other",
+        "payment_reminder": "Payment reminder",
+        "payroll": "Payroll",
+        "property_document": "Property document",
+        "purchase_order": "Purchase order",
+        "quote": "Quote",
+        "receipt": "Receipt",
+        "report": "Report",
+        "tax_document": "Tax document",
+        "technical_document": "Technical document",
+        "vehicle_document": "Vehicle document",
+        "warranty_document": "Warranty document"
+      },
+      "errors": {
+        "documentTypeCreateFailed": "Document type could not be created.",
+        "documentTypeRemoveFailed": "Document type could not be removed.",
+        "documentTypeReorderFailed": "Document type order could not be saved.",
+        "documentTypeSaveFailed": "Document type could not be saved.",
+        "documentTypeUpdateFailed": "Document type could not be updated.",
+        "fieldCreateFailed": "Additional field could not be created.",
+        "fieldRemoveFailed": "Additional field could not be removed.",
+        "fieldSaveFailed": "Additional field could not be saved.",
+        "fieldUpdateFailed": "Additional field could not be updated.",
+        "loadFailed": "Document settings could not be loaded."
+      },
+      "fieldDefinitions": {
+        "create": "Create additional field",
+        "createTitle": "Create additional field",
+        "deleteConfirm": "Delete additional field {{label}}?",
+        "dragHandle": "Move additional field",
+        "save": "Save additional field",
+        "title": "Additional fields"
+      },
+      "fieldOptions": "Field options",
+      "fields": {
+        "actions": "Actions",
+        "active": "Active",
+        "disabled": "Disabled",
+        "aiWorker": "AI",
+        "allDocumentTypes": "All document types",
+        "displayOrder": "Display order",
+        "fts": "FTS",
+        "key": "Key",
+        "label": "Label",
+        "name": "Name",
+        "required": "Required field",
+        "systemCategory": "System category",
+        "type": "Type"
+      },
+      "flags": {
+        "required": "Required"
+      },
+      "subtitle": "Manage document types and additional fields.",
+      "success": {
+        "documentTypesSaved": "Document type changes were saved.",
+        "documentTypeRemoved": "Document type was removed.",
+        "documentTypeSaved": "Document type was saved.",
+        "fieldDefinitionsSaved": "Additional field changes were saved.",
+        "fieldSaved": "Additional field was saved."
+      },
+      "title": "Documents"
+    },
+    "email": {
+      "mailboxes": "Mailboxes",
+      "subtitle": "IMAP mailboxes, folder selection, and PDF import into the document pipeline.",
+      "title": "Email mailboxes"
+    },
+    "general": {
+      "errors": {
+        "loadFailed": "System settings could not be loaded.",
+        "saveFailed": "System settings could not be saved."
+      },
+      "language": {
+        "help": "Controls the interface language on this device.",
+        "label": "Language"
+      },
+      "aiMetadataLanguage": {
+        "help": "Controls the language used for AI-generated metadata values.",
+        "label": "AI metadata language",
+        "options": {
+          "documentLanguage": "Document language",
+          "deu": "German",
+          "eng": "English",
+          "fra": "French",
+          "spa": "Spanish",
+          "por": "Portuguese",
+          "chiSim": "Simplified Chinese"
+        }
+      },
+      "ocrReprocess": {
+        "help": "When disabled, an existing OCR layer is retained and used for search.",
+        "label": "Run OCR again when a text layer already exists"
+      },
+      "pdfRemoveBlankPages": {
+        "help": "Removes empty pages after OCR. Completely empty documents remain visible as failed processing.",
+        "label": "Automatically remove blank pages"
+      },
+      "documentsRequireAiBeforeAcceptance": {
+        "help": "When enabled, inbox documents can only be accepted after AI metadata extraction has completed.",
+        "label": "Accept documents only after AI metadata extraction"
+      },
+      "subtitle": "Manage system-wide processing settings.",
+      "success": {
+        "saved": "System settings were saved."
+      },
+      "title": "General"
+    }
+  },
+  "enums": {
+    "calendarEventKind": {
+      "APPOINTMENT": "Appointment",
+      "DEADLINE": "Deadline",
+      "DUE_DATE": "Due date"
+    },
+    "documentAttributeValueType": {
+      "BOOLEAN": "Boolean",
+      "DATE": "Date",
+      "NUMBER": "Number",
+      "TEXT": "Text"
+    },
+    "documentSource": {
+      "SCANNER": "Scanner",
+      "UPLOAD": "Upload",
+      "EMAIL": "Email"
+    },
+    "documentStatus": {
+      "AI_PENDING": "AI pending",
+      "AI_RUNNING": "AI running",
+      "ARCHIVED": "Archived",
+      "FAILED": "Failed",
+      "INGESTING": "Ingesting",
+      "NEW": "New",
+      "OCR_PENDING": "OCR pending",
+      "OCR_RUNNING": "OCR running",
+      "READY": "Ready"
+    },
+    "notificationSeverity": {
+      "error": "Error",
+      "info": "Info",
+      "success": "Done",
+      "warning": "Notice"
+    },
+    "userRole": {
+      "Admin": "Admin",
+      "User": "User"
+    }
+  }
+}

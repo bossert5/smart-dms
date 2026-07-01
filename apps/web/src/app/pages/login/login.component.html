@@ -1,0 +1,40 @@
+<main class="login-shell">
+  <section class="login-panel">
+    <header>
+      <h1>{{ 'common.appName' | translate }}</h1>
+      <app-language-selector></app-language-selector>
+    </header>
+    <form nz-form nzLayout="vertical" [formGroup]="form" (ngSubmit)="submit()">
+      <nz-form-item>
+        <nz-form-label nzFor="username">{{ 'auth.login.username' | translate }}</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            id="username"
+            type="text"
+            formControlName="username"
+            autocomplete="username"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzFor="password">{{ 'auth.login.password' | translate }}</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            id="password"
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      @if (errorKey(); as error) {
+        <nz-alert nzType="error" [nzMessage]="error | translate"></nz-alert>
+      }
+      <button nz-button nzType="primary" type="submit" [nzLoading]="isSubmitting()">
+        {{ 'auth.login.submit' | translate }}
+      </button>
+    </form>
+  </section>
+</main>

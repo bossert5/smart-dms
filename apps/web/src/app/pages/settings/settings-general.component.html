@@ -1,0 +1,92 @@
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+}
+
+<section class="settings-card-wrap" [attr.aria-label]="'settings.general.title' | translate">
+  <nz-card class="settings-card">
+    <form nz-form nzLayout="vertical" [formGroup]="settingsForm" class="settings-form">
+      <div class="setting-row">
+        <div>
+          <label for="general-language-selector">
+            {{ 'settings.general.language.label' | translate }}
+          </label>
+          <p>
+            {{ 'settings.general.language.help' | translate }}
+          </p>
+        </div>
+        <app-language-selector selectId="general-language-selector"></app-language-selector>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <label for="ai-metadata-language">
+            {{ 'settings.general.aiMetadataLanguage.label' | translate }}
+          </label>
+          <p>
+            {{ 'settings.general.aiMetadataLanguage.help' | translate }}
+          </p>
+        </div>
+        <nz-select
+          id="ai-metadata-language"
+          formControlName="aiMetadataLanguage"
+          [nzDisabled]="isLoading() || isSaving()"
+        >
+          @for (option of aiMetadataLanguageOptions; track option.value) {
+            <nz-option
+              [nzValue]="option.value"
+              [nzLabel]="option.labelKey | translate"
+            ></nz-option>
+          }
+        </nz-select>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <label for="ocr-reprocess-existing-text-layer">
+            {{ 'settings.general.ocrReprocess.label' | translate }}
+          </label>
+          <p>
+            {{ 'settings.general.ocrReprocess.help' | translate }}
+          </p>
+        </div>
+        <nz-switch
+          id="ocr-reprocess-existing-text-layer"
+          formControlName="ocrReprocessExistingTextLayer"
+          [nzDisabled]="isLoading() || isSaving()"
+        ></nz-switch>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <label for="pdf-remove-blank-pages">
+            {{ 'settings.general.pdfRemoveBlankPages.label' | translate }}
+          </label>
+          <p>
+            {{ 'settings.general.pdfRemoveBlankPages.help' | translate }}
+          </p>
+        </div>
+        <nz-switch
+          id="pdf-remove-blank-pages"
+          formControlName="pdfRemoveBlankPages"
+          [nzDisabled]="isLoading() || isSaving()"
+        ></nz-switch>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <label for="documents-require-ai-metadata-before-acceptance">
+            {{ 'settings.general.documentsRequireAiBeforeAcceptance.label' | translate }}
+          </label>
+          <p>
+            {{ 'settings.general.documentsRequireAiBeforeAcceptance.help' | translate }}
+          </p>
+        </div>
+        <nz-switch
+          id="documents-require-ai-metadata-before-acceptance"
+          formControlName="documentsRequireAiMetadataBeforeAcceptance"
+          [nzDisabled]="isLoading() || isSaving()"
+        ></nz-switch>
+      </div>
+    </form>
+  </nz-card>
+</section>

@@ -1,0 +1,92 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+:host-context(.app-header) .ant-btn-text {
+  color: var(--app-toolbar-text);
+}
+
+:host-context(.app-header) .ant-btn-text:not(:disabled):hover,
+:host-context(.app-header) .ant-btn-text:not(:disabled):focus-visible {
+  color: var(--app-toolbar-text);
+  background: rgb(255 255 255 / 14%);
+}
+
+.notifications-panel {
+  width: min(360px, calc(100vw - 32px));
+}
+
+.notifications-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.notifications-panel header > div,
+.notifications-panel label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notifications-panel header span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.notifications-panel header span.connected {
+  color: #52c41a;
+}
+
+.notification-list {
+  max-height: min(640px, calc(100vh - 160px));
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.notification-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+
+.notification-item.clickable {
+  cursor: pointer;
+}
+
+.notification-item:disabled {
+  cursor: default;
+}
+
+.notification-main {
+  min-width: 0;
+}
+
+.notification-main strong,
+.notification-main small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.notification-main small,
+.notification-meta time {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.notification-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}

@@ -1,0 +1,712 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.task-action-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  width: 100%;
+  gap: 10px;
+}
+
+.task-action-row--separated {
+  --task-control-height: 32px;
+  padding-top: 10px;
+  border-top: 1px solid var(--app-border);
+}
+
+.task-action-row__assignee {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-action-row__status {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.task-action-row__status .ant-btn {
+  max-width: 100%;
+}
+
+.assignee-select {
+  width: 100%;
+  text-align: left;
+}
+
+.timeline-done-button span[nz-icon] {
+  margin-right: 6px;
+}
+
+.task-action-row--separated .ant-btn,
+.task-action-row--separated .assignee-select {
+  height: var(--task-control-height);
+}
+
+:host ::ng-deep .task-action-row--separated .assignee-select .ant-select-selector {
+  min-height: var(--task-control-height);
+  height: var(--task-control-height);
+  align-items: center;
+}
+
+.page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.page-header__main {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.navigation-button.ant-btn {
+  justify-self: start;
+  width: auto;
+  min-width: 0;
+  padding-inline: 10px;
+}
+
+.navigation-button.ant-btn-link {
+  height: auto;
+  padding: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.action-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.danger-menu-item .action-menu-item {
+  color: #ff4d4f;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  flex: 1 1 auto;
+  gap: 18px;
+  min-height: 0;
+}
+
+.side-pane,
+.pdf-pane {
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+}
+
+.side-pane {
+  display: block;
+  overflow: hidden;
+}
+
+.pdf-pane {
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+}
+
+:host ::ng-deep .document-info-card .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 10px 16px 16px;
+}
+
+.pdf-pane app-pdf-document-viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.pdf-placeholder {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  color: var(--app-text-muted);
+  background: var(--app-surface-muted);
+}
+
+:host ::ng-deep nz-spin,
+:host ::ng-deep .ant-spin-nested-loading,
+:host ::ng-deep .ant-spin-container {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+:host ::ng-deep .detail-tabs,
+:host ::ng-deep .detail-tabs .ant-tabs-nav,
+:host ::ng-deep .detail-tabs .ant-tabs-content-holder,
+:host ::ng-deep .detail-tabs .ant-tabs-content,
+:host ::ng-deep .detail-tabs .ant-tabs-tabpane {
+  max-width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep .detail-tabs .ant-tabs-nav-wrap {
+  overflow-x: auto;
+}
+
+:host ::ng-deep .detail-tabs .ant-tabs-nav {
+  flex: 0 0 auto;
+  margin: 0 0 12px;
+}
+
+.detail-tab-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:host ::ng-deep .detail-tabs {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+:host ::ng-deep .detail-tabs .ant-tabs-content-holder {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+:host ::ng-deep .detail-tabs .ant-tabs-content,
+:host ::ng-deep .detail-tabs .ant-tabs-tabpane {
+  height: 100%;
+  min-height: 0;
+}
+
+:host ::ng-deep .document-info-card nz-alert {
+  flex: 0 0 auto;
+  margin-top: 12px;
+}
+
+.metadata-form {
+  display: grid;
+  gap: 18px;
+}
+
+.metadata-form--document {
+  gap: 14px;
+  min-height: 0;
+}
+
+.metadata-section {
+  display: grid;
+  gap: 12px;
+}
+
+.metadata-section:not(:first-child) {
+  padding-top: 16px;
+  border-top: 1px solid var(--app-border);
+}
+
+.metadata-section header,
+.form-section header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.metadata-section h2,
+.form-section h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 14px;
+}
+
+.metadata-section--summary,
+.metadata-grid--summary {
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.metadata-grid nz-form-item {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.metadata-grid .full-row {
+  grid-column: 1 / -1;
+}
+
+.metadata-title-field {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+:host ::ng-deep .metadata-summary-field.ant-form-item {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+:host ::ng-deep .metadata-summary-field .ant-form-item-control,
+:host ::ng-deep .metadata-summary-field .ant-form-item-control-input,
+:host ::ng-deep .metadata-summary-field .ant-form-item-control-input-content {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+}
+
+.metadata-summary-field textarea {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  resize: none;
+}
+
+.metadata-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.readonly-grid {
+  margin: 0;
+}
+
+.readonly-grid--document-data {
+  gap: 14px 16px;
+}
+
+.readonly-grid--single {
+  display: grid;
+  gap: 12px;
+}
+
+.readonly-field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.readonly-field dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.readonly-field dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--app-text);
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.readonly-field--primary dd {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.readonly-field--summary {
+  gap: 10px;
+  padding: 12px 14px 12px 16px;
+  background: rgba(24, 144, 255, 0.08);
+  border-left: 4px solid var(--app-primary);
+  border-radius: 0 8px 8px 0;
+}
+
+.readonly-field--summary dt {
+  color: var(--app-primary);
+}
+
+.readonly-field--summary dd {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.readonly-repeat-row {
+  align-items: start;
+}
+
+.readonly-repeat-row .readonly-grid {
+  width: 100%;
+}
+
+.payment-readonly-card {
+  padding: 14px;
+}
+
+.payment-readonly-grid {
+  align-items: start;
+  gap: 14px 18px;
+}
+
+.calendar-readonly-card {
+  gap: 14px;
+  padding: 14px;
+}
+
+.calendar-readonly-card__event {
+  min-width: 0;
+}
+
+@media (min-width: 721px) {
+  .payment-readonly-recipient {
+    grid-column: 1;
+  }
+}
+
+.readonly-copy-value {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: start;
+  gap: 6px;
+}
+
+.readonly-copy-value > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.readonly-copy-value .ant-btn {
+  justify-self: end;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+}
+
+.tag-panel,
+.calendar-events {
+  display: grid;
+  gap: 12px;
+}
+
+.is-changed-field {
+  background: color-mix(in srgb, #faad14 18%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #d48806;
+}
+
+:host-context(html[data-theme='dark']) .is-changed-field {
+  background: color-mix(in srgb, #faad14 24%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #ffc53d;
+}
+
+.metadata-grid nz-form-item.is-changed-field,
+.form-section nz-form-item.is-changed-field,
+.repeat-field.is-changed-field,
+.tag-panel.is-changed-field {
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.form-section {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--app-border);
+}
+
+.form-section--plain {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.repeat-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.repeat-row__full {
+  grid-column: 1 / -1;
+}
+
+.calendar-edit-row {
+  grid-template-columns: minmax(140px, 0.8fr) minmax(180px, 1.2fr) minmax(130px, 0.8fr) minmax(
+      110px,
+      0.7fr
+    ) auto;
+}
+
+.repeat-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+}
+
+.repeat-field span {
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.repeat-row button {
+  align-self: end;
+}
+
+.tag-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tag-chip.ant-tag {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 4px 2px 10px;
+  overflow-wrap: anywhere;
+}
+
+.tag-chip span:first-child {
+  min-width: 0;
+}
+
+.tag-chip__remove.ant-btn {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+}
+
+.tag-chip-list--readonly .tag-chip.ant-tag {
+  padding-right: 10px;
+}
+
+.tag-input-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tag-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.history-panel {
+  display: grid;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.ai-skeleton-panel {
+  display: grid;
+  gap: 18px;
+  padding-top: 4px;
+}
+
+.history-event {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.history-event header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-event small,
+.history-event time {
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.history-event dl {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+}
+
+.history-event dl > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.history-event dt {
+  color: var(--app-text-muted);
+  font-weight: 600;
+}
+
+.history-event dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1200px) {
+  :host {
+    height: auto;
+    min-height: 0;
+  }
+
+  .page-header {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .action-row {
+    justify-content: flex-start;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .side-pane {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+
+  :host ::ng-deep .document-info-card .ant-card-body,
+  :host ::ng-deep .detail-tabs,
+  :host ::ng-deep .detail-tabs .ant-tabs-content,
+  :host ::ng-deep .detail-tabs .ant-tabs-tabpane,
+  .metadata-form--document {
+    height: auto;
+  }
+
+  :host ::ng-deep .detail-tabs .ant-tabs-content-holder {
+    overflow: visible;
+  }
+
+  .metadata-section--summary,
+  .metadata-grid--summary {
+    grid-template-rows: auto;
+  }
+
+  .metadata-summary-field textarea {
+    min-height: 160px;
+  }
+
+  .history-event header,
+  .history-event dl > div {
+    grid-template-columns: 1fr;
+  }
+
+  .task-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .task-action-row--separated {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .task-action-row__status {
+    justify-content: flex-start;
+  }
+
+  .history-event header,
+  .metadata-section header,
+  .form-section header {
+    display: grid;
+  }
+}
+
+@media (max-width: 720px) {
+  .metadata-grid,
+  .repeat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tag-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .metadata-actions,
+  .repeat-row button {
+    justify-content: flex-start;
+    justify-self: flex-start;
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "smart-dms",
+  "version": "1.0.0",
+  "description": "Local AI-powered document management system with OCR, search, metadata extraction, and review workflows.",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "author": "Pascal Bossert",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bossert5/smart-dms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bossert5/smart-dms/issues"
+  },
+  "homepage": "https://github.com/bossert5/smart-dms#readme",
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "dev:setup": "node ./scripts/dev-env.mjs",
+    "dev:clean": "node ./scripts/dev-env-clean.mjs",
+    "dev:api": "pnpm --filter backend start:dev",
+    "dev:processor": "pnpm --filter backend start:processor:dev",
+    "dev:web": "pnpm --filter web start",
+    "build": "pnpm run build:shared && pnpm run build:api && pnpm run build:web",
+    "build:shared": "pnpm --filter @smart-dms/shared-dto build",
+    "build:api": "pnpm --filter backend build",
+    "build:web": "pnpm --filter web build",
+    "test": "pnpm run test:shared && pnpm run test:api && pnpm run test:web",
+    "test:shared": "pnpm --filter @smart-dms/shared-dto test",
+    "test:api": "pnpm --filter backend test",
+    "test:web": "pnpm --filter web test",
+    "test:cov": "pnpm --filter @smart-dms/shared-dto test -- --coverage && pnpm --filter backend test:cov && pnpm --filter web test:cov",
+    "test:e2e": "pnpm --filter backend test:e2e && pnpm --filter web test:e2e",
+    "lint": "pnpm --filter backend lint",
+    "lint:fix": "pnpm --filter backend lint:fix"
+  },
+  "devDependencies": {
+    "@angular/compiler": "^21.2.15",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.7"
+  }
+}

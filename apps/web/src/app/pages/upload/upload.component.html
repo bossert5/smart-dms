@@ -1,0 +1,48 @@
+<section class="upload-panel">
+  @if (config(); as cfg) {
+    <p>
+      {{ 'upload.maxSize' | translate }}: {{ formatBytes(cfg.maxUploadSizeBytes) }} ·
+      {{ 'upload.fileTypes' | translate }}:
+      {{ cfg.allowedMimeTypes.join(', ') }}
+    </p>
+  }
+
+  <input #fileInput type="file" [accept]="acceptList()" (change)="selectFile($event)" />
+
+  @if (tenantContext.hasMultipleActiveTenants()) {
+    <nz-select
+      [ngModel]="selectedTenantId()"
+      (ngModelChange)="selectedTenantId.set($event)"
+      [attr.aria-label]="'tenants.fields.tenant' | translate"
+    >
+      @for (tenant of tenantContext.uploadTenantOptions(); track tenant.id) {
+        <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+      }
+    </nz-select>
+  }
+
+  @if (selectedFile()) {
+    <div class="selected-file">
+      <span nz-icon nzType="file-text"></span>
+      {{ selectedFile()!.name }} · {{ formatBytes(selectedFile()!.size) }}
+    </div>
+  }
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  <button
+    nz-button
+    nzType="primary"
+    [disabled]="!selectedFile() || isUploading()"
+    (click)="upload()"
+  >
+    <span nz-icon nzType="cloud-upload"></span>
+    {{ 'upload.actions.upload' | translate }}
+  </button>
+
+  @if (isUploading()) {
+    <nz-progress [nzPercent]="progress()"></nz-progress>
+  }
+</section>

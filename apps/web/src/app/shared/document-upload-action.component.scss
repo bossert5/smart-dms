@@ -1,0 +1,96 @@
+:host {
+  display: inline-flex;
+  min-width: 0;
+}
+
+.document-upload-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.document-upload-action__input {
+  display: none;
+}
+
+.document-upload-action__dropzone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 4px 12px;
+  color: var(--app-toolbar-text);
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: rgb(255 255 255 / 8%);
+  border: 1px dashed rgb(255 255 255 / 38%);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.document-upload-action__dropzone:is(:hover, :focus-visible),
+.document-upload-action__dropzone--active {
+  background: rgb(255 255 255 / 14%);
+  border-color: rgb(255 255 255 / 72%);
+  outline: none;
+}
+
+.document-upload-action__dropzone--uploading {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.document-upload-action__icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+
+.document-upload-action__title {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
+.document-upload-action__progress {
+  position: absolute;
+  right: 0;
+  bottom: -8px;
+  left: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.document-upload-action__progress ::ng-deep .ant-progress-outer {
+  padding: 0;
+}
+
+.document-upload-action__progress ::ng-deep .ant-progress-inner {
+  background: rgb(255 255 255 / 18%);
+}
+
+.document-upload-action__alert {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: min(360px, 80vw);
+  box-shadow: 0 10px 24px rgb(15 23 42 / 18%);
+}
+
+.document-upload-action__tenant-select {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .document-upload-action__title {
+    display: none;
+  }
+
+  .document-upload-action__dropzone {
+    width: 34px;
+    padding: 0;
+  }
+}

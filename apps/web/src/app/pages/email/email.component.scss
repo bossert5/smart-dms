@@ -1,0 +1,76 @@
+.email-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: calc(100vh - 60px - var(--app-content-padding) - var(--app-content-padding));
+  min-height: 0;
+  overflow: hidden;
+}
+
+.email-table {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  background: var(--app-bg);
+}
+
+.page-empty-state {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  place-items: center;
+}
+
+.email-table th,
+.email-table td {
+  vertical-align: top;
+}
+
+.attachment-list,
+.attachment-status-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.attachment-status-list {
+  margin-top: 4px;
+}
+
+.status-reason,
+.attachment-status-list small,
+.row-empty {
+  color: var(--app-text-muted);
+}
+
+.status-reason {
+  display: block;
+  margin-top: 4px;
+}
+
+.col-attachments {
+  min-width: 0;
+}
+
+.col-processing-status {
+  width: 130px;
+}
+
+.col-processing-status .ant-tag {
+  margin: 0;
+}
+
+.attachment-list .ant-tag {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachment-list a {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}

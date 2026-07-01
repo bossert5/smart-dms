@@ -1,0 +1,1153 @@
+{
+  "common": {
+    "activate": "Aktivieren",
+    "active": "Aktiv",
+    "ai": "KI",
+    "appName": "Smart DMS",
+    "productName": "SmartDMS",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "cpu": "CPU",
+    "deactivate": "Deaktivieren",
+    "delete": "Löschen",
+    "done": "Erledigt",
+    "edit": "Bearbeiten",
+    "empty": "leer",
+    "emptyValue": "—",
+    "gpu": "GPU",
+    "inactive": "Inaktiv",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Mehr wird geladen...",
+    "logout": "Abmelden",
+    "no": "Nein",
+    "ocr": "OCR",
+    "open": "Öffnen",
+    "refresh": "Aktualisieren",
+    "remove": "Entfernen",
+    "save": "Speichern",
+    "search": "Suchen",
+    "system": "System",
+    "unsavedChangesConfirm": "Du hast ungespeicherte Änderungen. Diese Seite verlassen und Änderungen verwerfen?",
+    "unknown": "Unbekannt",
+    "upload": "Upload",
+    "yes": "Ja"
+  },
+  "language": {
+    "label": "Sprache",
+    "options": {
+      "de": "Deutsch",
+      "en": "English"
+    }
+  },
+  "app": {
+    "breadcrumb": {
+      "administration": "Administration"
+    },
+    "shell": {
+      "collapseMenu": "Menü einklappen",
+      "currentPage": "Aktuelle Seite",
+      "expandMenu": "Menü ausklappen",
+      "hideAdministration": "Administration ausblenden",
+      "noTenantAssigned": "Dem Benutzer ist kein Mandant zugewiesen. Ein Mandant ist erforderlich.",
+      "showAdministration": "Administration anzeigen"
+    },
+    "nav": {
+      "administration": "ADMINISTRATION",
+      "ai": "KI",
+      "calendar": "Kalender",
+      "dashboard": "Dashboard",
+      "documents": "Dokumente",
+      "email": "E-Mail",
+      "general": "Allgemein",
+      "inbox": "Inbox",
+      "settings": "Einstellungen",
+      "tenants": "Mandanten",
+      "upload": "Upload",
+      "users": "Benutzer"
+    },
+    "userMenu": {
+      "logout": "Abmelden",
+      "settings": "Einstellungen"
+    }
+  },
+  "accountSettings": {
+    "language": {
+      "help": "Bestimmt Sprache, Datumsformate und NG-ZORRO-Texte.",
+      "label": "Sprache"
+    },
+    "notifications": {
+      "markSeen": "Als gelesen markieren",
+      "muted": {
+        "help": "Neue Einträge bleiben im Benachrichtigungscenter, Toasts werden unterdrückt.",
+        "label": "Benachrichtigungen stummschalten"
+      },
+      "unread": {
+        "label": "Ungelesene Benachrichtigungen",
+        "value": "{{count}} ungelesen"
+      }
+    },
+    "password": {
+      "change": "Passwort ändern",
+      "help": "Öffnet den geschützten Passwortwechsel für dein Konto.",
+      "label": "Passwort",
+      "success": "Passwort wurde geändert."
+    },
+    "startPage": {
+      "help": "Diese Seite wird nach der Anmeldung geöffnet.",
+      "label": "Standard-Startseite",
+      "options": {
+        "calendar": "Kalender",
+        "dashboard": "Dashboard",
+        "documents": "Dokumente",
+        "email": "E-Mail",
+        "inbox": "Inbox"
+      }
+    },
+    "subtitle": "Persönliche Darstellung, Arbeitskontext und Sicherheit.",
+    "tabs": {
+      "appearance": "Darstellung",
+      "securityNotifications": "Sicherheit & Benachrichtigungen",
+      "workspace": "Arbeitskontext"
+    },
+    "tenant": {
+      "help": "Legt den vorausgewählten Mandantenbereich für die Arbeit mit Dokumenten fest.",
+      "label": "Standard-Mandant"
+    },
+    "theme": {
+      "dark": "Dunkel",
+      "help": "Schaltet zwischen hellem und dunklem Erscheinungsbild um.",
+      "label": "Theme",
+      "light": "Hell"
+    },
+    "title": "Einstellungen"
+  },
+  "theme": {
+    "activateDark": "Dunkelmodus aktivieren",
+    "activateLight": "Hellmodus aktivieren"
+  },
+  "auth": {
+    "login": {
+      "error": "Anmeldung fehlgeschlagen.",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "username": "Benutzername"
+    },
+    "passwordChange": {
+      "confirmPassword": "Neues Passwort bestätigen",
+      "currentPassword": "Aktuelles Passwort",
+      "error": "Passwort konnte nicht geändert werden.",
+      "newPassword": "Neues Passwort",
+      "submit": "Passwort speichern",
+      "title": "Passwort ändern"
+    }
+  },
+  "validation": {
+    "met": "Erfüllt",
+    "password": {
+      "confirmation": "Passwörter stimmen überein",
+      "minLength": "Mindestens 8 Zeichen",
+      "number": "Mindestens 1 Zahl",
+      "requirements": "Passwortanforderungen",
+      "special": "Mindestens 1 Sonderzeichen"
+    },
+    "unmet": "Nicht erfüllt"
+  },
+  "notifications": {
+    "aria": "Benachrichtigungen",
+    "empty": "Keine Benachrichtigungen",
+    "muted": "Stummgeschaltet",
+    "mutedAria": "Benachrichtigungen stummgeschaltet",
+    "status": {
+      "live": "Live",
+      "offline": "Offline"
+    },
+    "title": "Benachrichtigungen"
+  },
+  "documents": {
+    "actions": {
+      "openDocument": "{{title}} öffnen",
+      "resetList": "Filter zurücksetzen"
+    },
+    "bulk": {
+      "actions": {
+        "archive": "Ausgewählte archivieren",
+        "archiveWithCount": "{{count}} Dokumente archivieren",
+        "download": "Herunterladen",
+        "downloadWithCount": "{{count}} Dokumente herunterladen",
+        "move": "Verschieben",
+        "moveWithCount": "{{count}} Dokumente verschieben",
+        "open": "Anpinnen",
+        "openWithCount": "{{count}} Dokumente anpinnen",
+        "reprocess": "Ausgewählte erneut verarbeiten",
+        "startAi": "KI für ausgewählte starten"
+      },
+      "errors": {
+        "aiFailed": "KI-Verarbeitung konnte für einige ausgewählte Dokumente nicht gestartet werden.",
+        "archiveFailed": "Einige ausgewählte Dokumente konnten nicht archiviert werden.",
+        "deleteFailed": "Einige ausgewählte Dokumente konnten nicht gelöscht werden.",
+        "downloadFailed": "Einige ausgewählte Dokumente konnten nicht heruntergeladen werden.",
+        "moveToInboxFailed": "Einige ausgewählte Dokumente konnten nicht in die Inbox verschoben werden.",
+        "reprocessFailed": "Einige ausgewählte Dokumente konnten nicht erneut verarbeitet werden."
+      },
+      "moveTargets": {
+        "archive": "Archiv",
+        "inbox": "Inbox",
+        "trash": "Papierkorb"
+      },
+      "success": {
+        "aiStarted": "KI-Verarbeitung wurde für ausgewählte Dokumente gestartet.",
+        "archived": "Ausgewählte Dokumente wurden archiviert.",
+        "deleted": "Ausgewählte Dokumente wurden endgültig gelöscht.",
+        "downloadStarted": "Downloads wurden für ausgewählte Dokumente gestartet.",
+        "movedToInbox": "Ausgewählte Dokumente wurden in die Inbox verschoben.",
+        "reprocessStarted": "Erneute Verarbeitung wurde für ausgewählte Dokumente gestartet."
+      },
+      "moveConfirm": {
+        "archive": {
+          "confirm": "Dokumente archivieren",
+          "message": "{{count}} ausgewählte Dokumente ins Archiv verschieben?",
+          "title": "Dokumente archivieren"
+        },
+        "inbox": {
+          "confirm": "In die Inbox verschieben",
+          "message": "{{count}} ausgewählte Dokumente zurück in die Inbox verschieben?",
+          "title": "Dokumente in die Inbox verschieben"
+        },
+        "trash": {
+          "confirm": "Endgültig löschen",
+          "message": "{{count}} ausgewählte Dokumente endgültig löschen? Das kann nicht rückgängig gemacht werden.",
+          "title": "Dokumente löschen"
+        }
+      },
+      "trashConfirm": {
+        "confirm": "Endgültig löschen",
+        "message": "{{count}} ausgewählte Dokumente endgültig löschen? Das kann nicht rückgängig gemacht werden.",
+        "title": "Dokumente löschen"
+      }
+    },
+    "ai": {
+      "PROCESSED": "KI verarbeitet",
+      "IN_PROGRESS": "KI-Verarbeitung läuft",
+      "QUEUED": "Für KI eingereiht",
+      "NOT_PROCESSED": "Noch nicht verarbeitet",
+      "NONE": ""
+    },
+    "aiProcessed": "KI verarbeitet",
+    "contextMenu": {
+      "archive": "Archivieren",
+      "download": "Herunterladen",
+      "rename": "Umbenennen",
+      "viewAndOpen": "Anpinnen und öffnen"
+    },
+    "empty": "Keine Dokumente gefunden",
+    "loadingMore": "Weitere Dokumente werden geladen...",
+    "filters": {
+      "archive": "Archiv",
+      "date": {
+        "label": "Datum",
+        "last3Months": "Letzte 3 Monate",
+        "last6Months": "Letzte 6 Monate",
+        "lastMonth": "Letzter Monat",
+        "lastWeek": "Letzte Woche",
+        "lastYear": "Letztes Jahr",
+        "none": "Beliebiges Datum"
+      },
+      "documentType": "Dokumenttyp",
+      "sender": "Absender",
+      "source": "Quelle",
+      "status": "Status",
+      "tags": "Tags"
+    },
+    "open": {
+      "close": "Pin entfernen",
+      "closeAll": "Alle Pins entfernen",
+      "closeAria": "Pin für {{title}} entfernen",
+      "collapsedAria": "Angepinnte Dokumente ({{count}})",
+      "menuAria": "Angepinnte Dokumente",
+      "title": "Angepinnte Dokumente"
+    },
+    "upload": {
+      "errors": {
+        "configFailed": "Upload-Konfiguration konnte nicht geladen werden.",
+        "missingTenant": "Wähle einen Mandanten für diesen Upload aus.",
+        "sizeExceeded": "PDF überschreitet das konfigurierte Upload-Limit.",
+        "unsupportedType": "Hier können nur PDF-Dateien hochgeladen werden.",
+        "uploadFailed": "PDF-Upload fehlgeschlagen."
+      },
+      "hint": "PDF hier ablegen oder zum Auswählen klicken.",
+      "maxSize": "PDF bis {{size}}",
+      "pdfOnly": "Nur PDF-Dateien",
+      "selectTenantTitle": "Mandant auswählen",
+      "start": "Hochladen",
+      "title": "Upload-Bereich",
+      "uploading": "{{fileName}} wird hochgeladen"
+    },
+    "search": {
+      "fields": {
+        "all": "Titel + Inhalt",
+        "content": "Inhalt",
+        "title": "Titel"
+      },
+      "noResults": "Keine Ergebnisse gefunden",
+      "placeholder": "Titel oder Inhalt suchen"
+    },
+    "sort": {
+      "createdAt": "Erstellt",
+      "documentDate": "Dokumentdatum",
+      "documentType": "Dokumenttyp",
+      "relevance": "Relevanz",
+      "sender": "Absender",
+      "status": "Status",
+      "title": "Dokumentname",
+      "updatedAt": "Aktualisiert"
+    },
+    "subtitle": "Suche, Verarbeitung und Metadatenstatus des Bestands.",
+    "table": {
+      "date": "Datum",
+      "sender": "Absender",
+      "status": "Status",
+      "tags": "Tags",
+      "title": "Dokumentname",
+      "type": "Typ"
+    },
+    "title": "Dokumente",
+    "view": {
+      "grid": "Rasteransicht",
+      "label": "Ansichtsmodus",
+      "list": "Listenansicht"
+    }
+  },
+  "dashboard": {
+    "actions": {
+      "assignCombinedAria": "Eintrag {{title}} zuweisen",
+      "assignDateAria": "Datumseintrag {{title}} zuweisen",
+      "assignPaymentAria": "Zahlung {{title}} zuweisen",
+      "empty": "Keine offenen Aufgaben",
+      "markCombinedDoneAria": "Eintrag {{title}} als erledigt markieren",
+      "markDateDoneAria": "Datumseintrag {{title}} als erledigt markieren",
+      "markDone": "Als erledigt markieren",
+      "markPaymentDoneAria": "Zahlung {{title}} als erledigt markieren",
+      "mixedAssignees": "Gemischt",
+      "unassigned": "Nicht zugewiesen",
+      "types": {
+        "INBOX_READY": "Inbox bereit",
+        "MISSING_METADATA": "Metadaten fehlen",
+        "OPEN_PAYMENT": "Zahlung offen",
+        "PROCESSING_FAILED": "Verarbeitung fehlgeschlagen"
+      }
+    },
+    "empty": "Alles sieht gut aus.",
+    "errors": {
+      "loadFailed": "Dashboard konnte nicht geladen werden.",
+      "updateFailed": "Aufgabe konnte nicht aktualisiert werden."
+    },
+    "buckets": {
+      "next14Days": "Nächste 14 Tage",
+      "overdue": "Überfällig"
+    },
+    "dateEntries": {
+      "emptyOverdue": "Keine überfälligen Datumseinträge.",
+      "emptyUpcoming": "Keine Datumseinträge in den nächsten 14 Tagen."
+    },
+    "health": {
+      "activeJobs": "Aktive Jobs",
+      "aiProviders": "KI-Anbieter",
+      "emailErrors": "E-Mail-Sync",
+      "failedJobs": "Fehlgeschlagen",
+      "tenantBreakdown": "Mandanten",
+      "waitingJobs": "Wartend"
+    },
+    "kpis": {
+      "dueThisWeek": "Fristen diese Woche",
+      "failedOcr": "{{count}} OCR",
+      "failedProcessing": "Fehlgeschlagen",
+      "inbox": "Unverarbeitete Inbox",
+      "inboxReady": "{{count}} bereit zur Übernahme",
+      "missingMetadata": "Metadaten fehlen",
+      "openPayments": "Offene Zahlungen",
+      "overdue": "Überfällig",
+      "title": "Kennzahlen"
+    },
+    "recent": {
+      "empty": "Keine neuen Dokumente"
+    },
+    "recentCompleted": {
+      "empty": "Keine kürzlich erledigten Einträge.",
+      "types": {
+        "deadline": "Frist",
+        "payment": "Zahlung"
+      }
+    },
+    "paymentTag": "Zahlung",
+    "payments": {
+      "emptyOverdue": "Keine überfälligen Zahlungen.",
+      "emptyUpcoming": "Keine Zahlungen in den nächsten 14 Tagen."
+    },
+    "sections": {
+      "actionItems": "Aufgaben",
+      "dateEntries": "Datumseinträge",
+      "dateEntriesCount": "{{count}} Einträge",
+      "payments": "Zahlungen",
+      "paymentsCount": "{{count}} Zahlungen",
+      "recentCompleted": "Kürzlich erledigt",
+      "recentDocuments": "Neue Dokumente",
+      "systemHealth": "Systemstatus",
+      "timeline": "Chronologie",
+      "timelineCount": "{{count}} Einträge",
+      "upcoming": "Heute und diese Woche"
+    },
+    "subtitle": "Arbeitsvorrat, Fristen und Verarbeitung auf einen Blick.",
+    "timeline": {
+      "columns": {
+        "actions": "Aktionen",
+        "date": "Datum",
+        "details": "Details",
+        "document": "Dokument",
+        "type": "Typ"
+      },
+      "empty": "Keine offenen Datums- oder Zahlungseinträge in diesem Zeitraum.",
+      "relative": {
+        "completedJustNow": "gerade erledigt",
+        "completedManyMinutesAgo": "erledigt vor {{count}} Minuten",
+        "completedOneMinuteAgo": "erledigt vor 1 Minute",
+        "dueMany": "in {{count}} Tagen",
+        "dueOne": "in 1 Tag",
+        "overdueMany": "seit {{count}} Tagen überfällig",
+        "overdueOne": "seit 1 Tag überfällig",
+        "today": "heute"
+      },
+      "types": {
+        "dateEntry": "Datum",
+        "payment": "Zahlung"
+      }
+    },
+    "title": "Dashboard",
+    "upcoming": {
+      "empty": "Keine Fristen diese Woche"
+    },
+    "widgets": {
+      "aiWorkers": "KI-Worker",
+      "aiWorkersDetail": "Verbundene Worker",
+      "documents": "Dokumente",
+      "documentsDetail": "Aktive Dokumente",
+      "emails": "E-Mails",
+      "emailsDetail": "{{processed}} verarbeitet · {{open}} offen",
+      "inbox": "Inbox",
+      "inboxDetail": "{{ready}} bereit · {{open}} offen",
+      "openDateEntries": "Datumseinträge",
+      "openDateEntriesDetail": "Offene Einträge",
+      "openPayments": "Zahlungen",
+      "openPaymentsDetail": "Offene Zahlungen",
+      "title": "Dashboard-Übersicht",
+      "users": "Benutzer",
+      "usersDetail": "Aktive Benutzer"
+    }
+  },
+  "inbox": {
+    "actions": {
+      "accept": "Übernehmen",
+      "acceptAllLoaded": "Alle geladenen übernehmen",
+      "acceptAllDocuments": "Alle Dokumente übernehmen",
+      "acceptDisabled": "Erst möglich, wenn die Verarbeitung abgeschlossen ist",
+      "acceptSelected": "Ausgewählte übernehmen",
+      "acceptSelectedWithCount": "{{count}} Dokumente übernehmen",
+      "cancelEdit": "Bearbeitung abbrechen",
+      "deleteConfirm": "{{title}} endgültig löschen?",
+      "deleteDocument": "{{title}} löschen",
+      "edit": "Bearbeiten",
+      "openDocument": "{{title}} öffnen",
+      "reprocess": "Erneut verarbeiten",
+      "reprocessDocument": "{{title}} erneut verarbeiten",
+      "reprocessSelected": "Ausgewählte erneut verarbeiten",
+      "resetField": "Feld zurücksetzen",
+      "revertChanges": "Änderungen verwerfen",
+      "saveChanges": "Änderungen speichern"
+    },
+    "edit": {
+      "offline": "Für den Bearbeitungsmodus ist eine Echtzeitverbindung erforderlich."
+    },
+    "empty": "Keine ausstehenden Dokumente",
+    "errors": {
+      "acceptFailed": "Dokumente konnten nicht übernommen werden.",
+      "editLockFailed": "Bearbeitungsmodus konnte nicht gestartet werden, weil die Inbox gesperrt ist oder KI-Verarbeitung aktiv ist.",
+      "editLockLost": "Bearbeitungsmodus wurde beendet, weil die Server-Sperre freigegeben wurde.",
+      "deleteFailed": "Dokument konnte nicht gelöscht werden.",
+      "loadFailed": "Inbox konnte nicht geladen werden.",
+      "reprocessFailed": "Dokumente konnten nicht erneut verarbeitet werden.",
+      "saveMetadataFailed": "Inbox-Metadaten konnten nicht gespeichert werden."
+    },
+    "subtitle": "Neue Dokumente prüfen und nach der Verarbeitung übernehmen.",
+    "success": {
+      "acceptedMany": "Dokumente wurden übernommen.",
+      "acceptedOne": "Dokument wurde übernommen.",
+      "reprocessStartedMany": "Erneute Verarbeitung wurde gestartet.",
+      "reprocessStartedOne": "Erneute Verarbeitung wurde gestartet."
+    },
+    "search": {
+      "noResults": "Keine Ergebnisse gefunden",
+      "placeholder": "Inbox durchsuchen"
+    },
+    "table": {
+      "actions": "Aktionen"
+    },
+    "title": "Inbox"
+  },
+  "email": {
+    "actions": {
+      "loadFolders": "Ordner laden",
+      "newMailbox": "Neue Konfiguration",
+      "sync": "Synchronisieren",
+      "test": "Verbindung testen"
+    },
+    "configDialog": {
+      "createTitle": "Neue E-Mail-Konfiguration",
+      "editTitle": "E-Mail-Konfiguration bearbeiten"
+    },
+    "deleteConfirm": "Postfach {{name}} entfernen?",
+    "emptyMailboxes": "Noch keine IMAP-Postfächer verbunden.",
+    "emptyMessages": "Keine E-Mails gefunden.",
+    "errors": {
+      "deleteFailed": "Postfach konnte nicht entfernt werden.",
+      "foldersFailed": "Ordner konnten nicht geladen werden.",
+      "loadFailed": "Postfächer konnten nicht geladen werden.",
+      "messagesFailed": "E-Mails konnten nicht geladen werden.",
+      "passwordRequired": "Für ein neues Postfach ist ein Passwort erforderlich.",
+      "saveFailed": "Postfach konnte nicht gespeichert werden.",
+      "syncFailed": "Synchronisierung fehlgeschlagen.",
+      "testFailed": "IMAP-Verbindung konnte nicht hergestellt werden."
+    },
+    "fields": {
+      "active": "Aktiv",
+      "disabled": "Deaktiviert",
+      "host": "Host",
+      "importMode": "Automatisierung",
+      "name": "Name",
+      "password": "Passwort",
+      "port": "Port",
+      "senderRules": "Erlaubte Absender",
+      "tls": "TLS",
+      "username": "Benutzername"
+    },
+    "folders": {
+      "createHint": "Ordner laden, um auszuwählen, was synchronisiert werden soll.",
+      "empty": "Noch keine Ordner geladen oder ausgewählt.",
+      "title": "Ordner"
+    },
+    "importModes": {
+      "DISABLED": "Nur anzeigen",
+      "OCR_AND_AI": "OCR + KI",
+      "OCR_ONLY": "Nur OCR"
+    },
+    "messages": {
+      "attachments": "Anhänge",
+      "folder": "Ordner",
+      "mailbox": "Postfach",
+      "from": "Von",
+      "openDocument": "Dokument {{fileName}} öffnen",
+      "processingStatus": "Dokumentstatus",
+      "receivedAt": "Empfangen",
+      "subject": "Betreff",
+      "title": "E-Mails"
+    },
+    "preview": {
+      "emptyPdf": "Keine PDF-Vorschau verfügbar.",
+      "emptyText": "Kein E-Mail-Text verfügbar.",
+      "pdf": "PDF",
+      "text": "Text"
+    },
+    "processing": {
+      "FAILED": "Fehlgeschlagen",
+      "PROCESSING": "In Verarbeitung",
+      "PROCESSED": "Verarbeitet",
+      "SKIPPED": "Nicht importiert"
+    },
+    "subtitle": "Eingehende E-Mails und Dokumentverarbeitung aus verbundenen Postfächern.",
+    "success": {
+      "deleted": "Postfach wurde entfernt.",
+      "saved": "Postfach wurde gespeichert.",
+      "synced": "Postfach wurde synchronisiert.",
+      "tested": "IMAP-Verbindung erfolgreich."
+    },
+    "table": {
+      "actions": "Aktionen",
+      "folders": "Ordner",
+      "hostPort": "Host/Port",
+      "lastSync": "Letzte Synchronisierung"
+    },
+    "title": "E-Mail-Postfächer"
+  },
+  "documentDetail": {
+    "actions": {
+      "archive": "Archivieren",
+      "accept": "Übernehmen",
+      "cancelEdit": "Bearbeitung abbrechen",
+      "copyValue": "{{label}} kopieren",
+      "downloadPdf": "PDF herunterladen",
+      "downloadPdfAria": "PDF {{title}} herunterladen",
+      "edit": "Bearbeiten",
+      "menu": "Aktionen",
+      "move": "Verschieben",
+      "moveTenant": "Mandant wechseln",
+      "pdf": "PDF",
+      "pin": "Anpinnen",
+      "reprocess": "Erneut verarbeiten",
+      "revertChanges": "Änderungen verwerfen",
+      "saveChanges": "Änderungen speichern",
+      "startAi": "KI starten",
+      "unpin": "Pin entfernen"
+    },
+    "ai": {
+      "notProcessed": "Nicht verarbeitet",
+      "processed": "Verarbeitet",
+      "running": "KI-Verarbeitung läuft"
+    },
+    "aiScopes": {
+      "regenerateAdditionalFields": "Zusätzliche Felder mit KI neu generieren",
+      "regenerateCalendarEvents": "Kalendereinträge mit KI neu generieren",
+      "regenerateDocumentDate": "Dokumentdatum mit KI neu generieren",
+      "regenerateDocumentType": "Dokumenttyp mit KI neu generieren",
+      "regenerateParties": "Parteien mit KI neu generieren",
+      "regeneratePayments": "Zahlungen mit KI neu generieren",
+      "regenerateReferences": "Referenzen mit KI neu generieren",
+      "regenerateSummary": "Zusammenfassung mit KI neu generieren",
+      "regenerateTags": "Tags mit KI neu generieren",
+      "regenerateTitle": "Titel mit KI neu generieren"
+    },
+    "backToList": "Zurück zur Liste",
+    "calendar": {
+      "add": "Kalendereintrag",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "empty": "Keine Kalendereinträge.",
+      "emptyEditable": "Keine frei bearbeitbaren Kalendereinträge.",
+      "endDate": "Enddatum",
+      "endTime": "Endzeit",
+      "kind": "Art",
+      "linkedPaymentHint": "Diese Einträge gehören zu Zahlungsfälligkeiten und werden über die Zahlungsdaten bearbeitet.",
+      "linkedPaymentTitle": "Zahlungsfälligkeiten",
+      "removeAria": "Kalendereintrag {{index}} entfernen",
+      "sourceText": "Quelltext",
+      "time": "Uhrzeit",
+      "title": "Titel"
+    },
+    "closeDocument": "Pin entfernen",
+    "errors": {
+      "acceptFailed": "Dokument konnte nicht übernommen werden.",
+      "aiFailed": "KI-Verarbeitung konnte nicht gestartet werden.",
+      "archiveFailed": "Dokument konnte nicht archiviert werden.",
+      "deleteFailed": "Dokument konnte nicht gelöscht werden.",
+      "editLockFailed": "Bearbeitungsmodus konnte nicht gestartet werden, weil dieses Dokument gesperrt ist.",
+      "editLockLost": "Bearbeitungsmodus wurde beendet, weil die Server-Sperre freigegeben wurde.",
+      "loadFailed": "Dokument konnte nicht geladen werden.",
+      "missingId": "Dokument-ID fehlt.",
+      "moveToInboxFailed": "Dokument konnte nicht in die Inbox verschoben werden.",
+      "moveToTenantFailed": "Dokument konnte nicht in den anderen Mandanten verschoben werden.",
+      "pdfFailed": "PDF konnte nicht geladen werden.",
+      "reprocessFailed": "Erneute Verarbeitung konnte nicht gestartet werden.",
+      "requiredCoreMetadata": "Dokumentname, Absender, Dokumenttyp und Datum sind außerhalb der Inbox erforderlich.",
+      "saveChangesFailed": "Änderungen konnten nicht gespeichert werden.",
+      "saveMetadataFailed": "Metadaten konnten nicht gespeichert werden.",
+      "saveTagsFailed": "Tags konnten nicht gespeichert werden."
+    },
+    "extraFields": {
+      "title": "Zusätzliche Felder"
+    },
+    "fallbackTitle": "Dokument",
+    "fields": {
+      "documentDate": "Dokumentdatum",
+      "documentType": "Dokumenttyp",
+      "noDocumentType": "Kein Dokumenttyp",
+      "recipient": "Empfänger",
+      "summary": "Zusammenfassung"
+    },
+    "history": {
+      "context": {
+        "calendarEvents": "Kalendereinträge",
+        "job": "Job",
+        "status": "Status",
+        "type": "Typ"
+      },
+      "empty": "Noch keine Historie",
+      "errors": {
+        "loadFailed": "Historie konnte nicht geladen werden."
+      },
+      "title": "Dokumenthistorie"
+    },
+    "moveTenant": {
+      "confirm": "Verschieben",
+      "targetTenant": "Zielmandant",
+      "title": "Dokument in anderen Mandanten verschieben"
+    },
+    "ocr": {
+      "empty": "Kein OCR-Text verfügbar."
+    },
+    "pageCount": {
+      "many": "{{count}} Seiten",
+      "one": "1 Seite"
+    },
+    "payments": {
+      "add": "Zahlung",
+      "amount": "Betrag",
+      "currency": "Währung",
+      "dueDate": "Fälligkeitsdatum",
+      "empty": "Keine Zahlungsdaten.",
+      "iban": "IBAN",
+      "purpose": "Verwendungszweck",
+      "removeAria": "Zahlung {{index}} entfernen",
+      "title": "Zahlungsdaten"
+    },
+    "pdf": {
+      "loading": "PDF wird geladen",
+      "notAvailable": "PDF noch nicht verfügbar",
+      "pageStatus": "Seite {{page}} / {{pageCount}}",
+      "previewTitle": "PDF-Vorschau",
+      "resetZoom": "Zoom zurücksetzen",
+      "toolbarAria": "PDF-Werkzeuge",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "statusPrefix": "Status:"
+    },
+    "processingFailed": "Verarbeitung fehlgeschlagen",
+    "references": {
+      "add": "Referenz",
+      "empty": "Keine Referenzen.",
+      "number": "Referenznummer",
+      "removeAria": "Referenz {{index}} entfernen",
+      "title": "Referenzen",
+      "type": "Referenztyp"
+    },
+    "sections": {
+      "content": "Inhalt und Parteien",
+      "documentData": "Dokumentdaten"
+    },
+    "summary": {
+      "pageCount": "Seitenanzahl",
+      "size": "Größe"
+    },
+    "tabs": {
+      "calendar": "Kalender",
+      "history": "Historie",
+      "metadata": "Dokument",
+      "payments": "Zahlungen",
+      "references": "Referenzen",
+      "tags": "Tags"
+    },
+    "tasks": {
+      "assignedTo": "Zugewiesen an",
+      "markNotDone": "Als nicht erledigt markieren",
+      "noAssignee": "Niemand"
+    },
+    "tags": {
+      "add": "Hinzufügen",
+      "empty": "Keine Tags.",
+      "inputLabel": "Neuer Tag",
+      "listAria": "Dokument-Tags",
+      "removeAria": "Tag {{tag}} entfernen",
+      "save": "Tags speichern"
+    },
+    "trashConfirm": {
+      "confirm": "Endgültig löschen",
+      "message": "{{title}} endgültig löschen? Das kann nicht rückgängig gemacht werden.",
+      "title": "Dokument löschen"
+    }
+  },
+  "upload": {
+    "actions": {
+      "upload": "Hochladen"
+    },
+    "errors": {
+      "configFailed": "Upload-Konfiguration konnte nicht geladen werden.",
+      "missingTenant": "Wähle einen Mandanten für diesen Upload aus.",
+      "sizeExceeded": "Datei überschreitet das konfigurierte Upload-Limit.",
+      "unsupportedType": "Dateityp wird nicht unterstützt.",
+      "uploadFailed": "Upload fehlgeschlagen."
+    },
+    "fileTypes": "Dateitypen",
+    "maxSize": "Maximale Größe",
+    "subtitle": "PDF-, TIFF-, JPEG- oder PNG-Dateien zur Dokumentpipeline hinzufügen.",
+    "title": "Upload"
+  },
+  "calendar": {
+    "allDay": "ganztägig",
+    "emptyDay": "Keine Ereignisse an diesem Tag.",
+    "emptyMonth": "Keine Ereignisse in diesem Monat.",
+    "filters": {
+      "type": "Typ",
+      "types": "Typen"
+    },
+    "modes": {
+      "month": "Monat",
+      "year": "Jahr"
+    },
+    "months": {
+      "april": "April",
+      "august": "August",
+      "december": "Dezember",
+      "february": "Februar",
+      "january": "Januar",
+      "july": "Juli",
+      "june": "Juni",
+      "march": "März",
+      "may": "Mai",
+      "november": "November",
+      "october": "Oktober",
+      "september": "September"
+    },
+    "moreEvents": "{{count}} weitere Ereignisse",
+    "navigation": {
+      "monthSelect": "Monat auswählen",
+      "nextMonth": "Nächster Monat",
+      "nextYear": "Nächstes Jahr",
+      "previousMonth": "Vorheriger Monat",
+      "previousYear": "Vorheriges Jahr",
+      "yearSelect": "Jahr auswählen"
+    },
+    "subtitle": "Fälligkeiten, Fristen und Termine aus Dokumenten.",
+    "title": "Kalender"
+  },
+  "users": {
+    "actions": {
+      "createUser": "Benutzer erstellen",
+      "revertChanges": "Änderungen verwerfen",
+      "saveChanges": "Änderungen speichern"
+    },
+    "create": {
+      "title": "Benutzer erstellen"
+    },
+    "errors": {
+      "activeAdminRequired": "Es muss immer mindestens einen aktiven Admin geben.",
+      "createFailed": "Benutzer konnte nicht erstellt werden.",
+      "deleteFailed": "Benutzer konnte nicht gelöscht werden.",
+      "loadFailed": "Benutzer konnten nicht geladen werden.",
+      "saveFailed": "Benutzer konnte nicht gespeichert werden."
+    },
+    "fields": {
+      "active": "Aktiv",
+      "confirmInitialPassword": "Initiales Passwort bestätigen",
+      "disabled": "Deaktiviert",
+      "initialPassword": "Initiales Passwort",
+      "name": "Name",
+      "role": "Rolle",
+      "tenants": "Mandanten",
+      "username": "Benutzername"
+    },
+    "deleteConfirm": "Benutzer {{name}} löschen?",
+    "subtitle": "Rollen und aktive Konten verwalten.",
+    "title": "Benutzer",
+    "validation": {
+      "nameMaxLength": "Name darf höchstens 200 Zeichen lang sein.",
+      "nameRequired": "Gib einen Namen ein.",
+      "roleRequired": "Wähle eine Rolle aus.",
+      "usernameMaxLength": "Benutzername darf höchstens 100 Zeichen lang sein.",
+      "usernameRequired": "Gib einen Benutzernamen ein."
+    }
+  },
+  "tenants": {
+    "actions": {
+      "new": "Neuer Mandant",
+      "revertChanges": "Änderungen verwerfen",
+      "saveChanges": "Änderungen speichern"
+    },
+    "create": {
+      "title": "Mandant erstellen"
+    },
+    "delete": {
+      "confirm": "Mandant löschen",
+      "confirmationLabel": "{{name}} zur Bestätigung eingeben",
+      "documentActionLabel": "Dokumente in diesem Mandanten",
+      "documentActions": {
+        "delete": "Dokumente löschen",
+        "move": "Dokumente in einen anderen Mandanten verschieben"
+      },
+      "targetTenantLabel": "Zielmandant",
+      "title": "Mandant löschen",
+      "userAssignments": "Benutzerzuweisungen zu diesem Mandanten werden entfernt.",
+      "warning": "Mandant {{name}} hat {{users}} Benutzer und {{documents}} Dokumente."
+    },
+    "empty": "Keine Mandanten konfiguriert.",
+    "errors": {
+      "createFailed": "Mandant konnte nicht erstellt werden. Prüfe, ob Schlüssel und Scanner-Importpfad eindeutig sind.",
+      "deleteFailed": "Mandant konnte nicht gelöscht werden.",
+      "loadFailed": "Mandanten konnten nicht geladen werden.",
+      "saveFailed": "Mandant konnte nicht gespeichert werden. Prüfe, ob Schlüssel und Scanner-Importpfad eindeutig sind."
+    },
+    "fields": {
+      "actions": "Aktionen",
+      "active": "Aktiv",
+      "disabled": "Deaktiviert",
+      "documents": "Dokumente",
+      "key": "Schlüssel",
+      "name": "Name",
+      "scannerImportPath": "Scanner-Importpfad",
+      "tenant": "Mandant",
+      "users": "Benutzer"
+    },
+    "selector": {
+      "all": "Alle Mandanten",
+      "label": "Mandantenbereich"
+    },
+    "success": {
+      "deleted": "Mandant wurde gelöscht.",
+      "saved": "Mandant wurde gespeichert."
+    },
+    "title": "Mandanten"
+  },
+  "settings": {
+    "ai": {
+      "errors": {
+        "loadFailed": "KI-Einstellungen konnten nicht geladen werden.",
+        "modelPreviewEmpty": "Es wurden keine Modelle gefunden.",
+        "modelPreviewFailed": "Modelle konnten nicht geladen werden.",
+        "modelRefreshFailed": "Modelle konnten nicht aktualisiert werden.",
+        "providerCreateFailed": "KI-Anbieter konnte nicht erstellt werden.",
+        "providerRemoveFailed": "KI-Anbieter konnte nicht entfernt werden.",
+        "providerUpdateFailed": "KI-Anbieter konnte nicht gespeichert werden.",
+        "providersLoadFailed": "KI-Anbieter konnten nicht geladen werden.",
+        "promptUpdateFailed": "KI-Prompt konnte nicht gespeichert werden."
+      },
+      "modelName": "Modell",
+      "overview": {
+        "liveConnected": "Verbunden",
+        "liveConnectedHint": "Echtzeit-Updates für KI-Anbieter sind aktiv.",
+        "liveConnection": "Live-Verbindung",
+        "liveDisconnected": "Getrennt",
+        "liveDisconnectedHint": "Anbieterstatus wird nach dem erneuten Verbinden aktualisiert.",
+        "providerConnection": "KI-Anbieter-Verbindung",
+        "providerIssueHint": "{{count}} Anbieter benötigt Aufmerksamkeit.",
+        "providerReadyHint": "KI-Anbieter-Routing ist bereit.",
+        "providersReady": "{{ready}}/{{total}} bereit",
+        "selectedModels": "Ausgewählte Modelle",
+        "selectedModelsCount": "{{count}} ausgewählt",
+        "selectedModelsEmpty": "Kein Modell ausgewählt",
+        "selectedModelsMore": "und {{count}} weitere",
+        "title": "KI-Statusübersicht"
+      },
+      "prompts": {
+        "reset": "Zurücksetzen",
+        "resetConfirm": "Diesen Prompt auf den Standardtext zurücksetzen?",
+        "title": "Prompts für Metadatenextraktion"
+      },
+      "providerStatus": {
+        "AVAILABLE": "Verfügbar",
+        "UNAVAILABLE": "Nicht verfügbar",
+        "UNKNOWN": "Unbekannt"
+      },
+      "providers": {
+        "actions": "Aktionen",
+        "active": "Aktiv",
+        "disabled": "Deaktiviert",
+        "add": "Anbieter hinzufügen",
+        "addTitle": "KI-Anbieter hinzufügen",
+        "createTitle": "KI-Anbieter hinzufügen",
+        "apiKey": "API-Schlüssel",
+        "apiKeyConfigured": "API-Schlüssel konfiguriert",
+        "apiKeyPlaceholder": "Leer lassen, um den aktuellen Schlüssel zu behalten",
+        "baseUrl": "OpenAI-API-Basis-URL",
+        "clearApiKey": "API-Schlüssel löschen",
+        "deleteConfirm": "KI-Anbieter {{name}} löschen?",
+        "draft": "Entwurf",
+        "dragHandle": "Anbieter verschieben",
+        "loadModels": "Modelle laden",
+        "model": "Modell",
+        "modelPlaceholder": "Modell auswählen",
+        "name": "Name",
+        "refreshModels": "Modelle aktualisieren",
+        "revertChanges": "Änderungen verwerfen",
+        "saveChanges": "Änderungen speichern",
+        "selected": "ausgewählt",
+        "selectedModel": "Ausgewähltes Modell",
+        "selectedMetadataModel": "Metadatenmodell",
+        "status": "Status"
+      },
+      "subtitle": "OpenAI-kompatible Anbieter, Modelle und KI-Prompts verwalten.",
+      "success": {
+        "promptSaved": "KI-Prompt wurde gespeichert."
+      },
+      "tabs": {
+        "prompts": "Prompts",
+        "providers": "Anbieter",
+        "status": "Status"
+      },
+      "title": "KI"
+    },
+    "documents": {
+      "actions": {
+        "revertChanges": "Änderungen verwerfen",
+        "saveChanges": "Änderungen speichern"
+      },
+      "allDocumentTypes": "Alle Dokumenttypen",
+      "documentTypes": {
+        "create": "Dokumenttyp erstellen",
+        "createTitle": "Dokumenttyp erstellen",
+        "deleteConfirm": "Dokumenttyp {{name}} löschen?",
+        "dragHandle": "Dokumenttyp verschieben",
+        "save": "Dokumenttyp speichern",
+        "system": "Systemkategorie",
+        "systemRemoveDisabled": "Systemkategorien können nicht entfernt werden. Deaktiviere die Kategorie stattdessen.",
+        "title": "Dokumenttypen"
+      },
+      "systemDocumentTypes": {
+        "bank_document": "Bankdokument",
+        "certificate": "Zertifikat",
+        "contract": "Vertrag",
+        "correspondence": "Korrespondenz",
+        "credit_note": "Gutschrift",
+        "delivery_note": "Lieferschein",
+        "education_document": "Bildungsdokument",
+        "employment_document": "Beschäftigungsdokument",
+        "form": "Formular",
+        "government_notice": "Behördenbescheid",
+        "identity_document": "Ausweisdokument",
+        "insurance_document": "Versicherungsdokument",
+        "invoice": "Rechnung",
+        "legal_document": "Rechtsdokument",
+        "medical_document": "Medizinisches Dokument",
+        "minutes": "Protokoll",
+        "other": "Sonstiges",
+        "payment_reminder": "Zahlungserinnerung",
+        "payroll": "Gehaltsabrechnung",
+        "property_document": "Immobiliendokument",
+        "purchase_order": "Bestellung",
+        "quote": "Angebot",
+        "receipt": "Beleg",
+        "report": "Bericht",
+        "tax_document": "Steuerdokument",
+        "technical_document": "Technisches Dokument",
+        "vehicle_document": "Fahrzeugdokument",
+        "warranty_document": "Garantiedokument"
+      },
+      "errors": {
+        "documentTypeCreateFailed": "Dokumenttyp konnte nicht erstellt werden.",
+        "documentTypeRemoveFailed": "Dokumenttyp konnte nicht entfernt werden.",
+        "documentTypeReorderFailed": "Dokumenttyp-Reihenfolge konnte nicht gespeichert werden.",
+        "documentTypeSaveFailed": "Dokumenttyp konnte nicht gespeichert werden.",
+        "documentTypeUpdateFailed": "Dokumenttyp konnte nicht aktualisiert werden.",
+        "fieldCreateFailed": "Zusätzliches Feld konnte nicht erstellt werden.",
+        "fieldRemoveFailed": "Zusätzliches Feld konnte nicht entfernt werden.",
+        "fieldSaveFailed": "Zusätzliches Feld konnte nicht gespeichert werden.",
+        "fieldUpdateFailed": "Zusätzliches Feld konnte nicht aktualisiert werden.",
+        "loadFailed": "Dokumenteinstellungen konnten nicht geladen werden."
+      },
+      "fieldDefinitions": {
+        "create": "Zusätzliches Feld erstellen",
+        "createTitle": "Zusätzliches Feld erstellen",
+        "deleteConfirm": "Zusätzliches Feld {{label}} löschen?",
+        "dragHandle": "Zusätzliches Feld verschieben",
+        "save": "Zusätzliches Feld speichern",
+        "title": "Zusätzliche Felder"
+      },
+      "fieldOptions": "Feldoptionen",
+      "fields": {
+        "actions": "Aktionen",
+        "active": "Aktiv",
+        "disabled": "Deaktiviert",
+        "aiWorker": "KI",
+        "allDocumentTypes": "Alle Dokumenttypen",
+        "displayOrder": "Anzeigereihenfolge",
+        "fts": "FTS",
+        "key": "Schlüssel",
+        "label": "Label",
+        "name": "Name",
+        "required": "Pflichtfeld",
+        "systemCategory": "Systemkategorie",
+        "type": "Typ"
+      },
+      "flags": {
+        "required": "Erforderlich"
+      },
+      "subtitle": "Dokumenttypen und zusätzliche Felder verwalten.",
+      "success": {
+        "documentTypesSaved": "Dokumenttyp-Änderungen wurden gespeichert.",
+        "documentTypeRemoved": "Dokumenttyp wurde entfernt.",
+        "documentTypeSaved": "Dokumenttyp wurde gespeichert.",
+        "fieldDefinitionsSaved": "Änderungen an zusätzlichen Feldern wurden gespeichert.",
+        "fieldSaved": "Zusätzliches Feld wurde gespeichert."
+      },
+      "title": "Dokumente"
+    },
+    "email": {
+      "mailboxes": "Postfächer",
+      "subtitle": "IMAP-Postfächer, Ordnerauswahl und PDF-Import in die Dokumentpipeline.",
+      "title": "E-Mail-Postfächer"
+    },
+    "general": {
+      "errors": {
+        "loadFailed": "Systemeinstellungen konnten nicht geladen werden.",
+        "saveFailed": "Systemeinstellungen konnten nicht gespeichert werden."
+      },
+      "language": {
+        "help": "Steuert die Sprache der Benutzeroberfläche auf diesem Gerät.",
+        "label": "Sprache"
+      },
+      "aiMetadataLanguage": {
+        "help": "Legt fest, in welcher Sprache KI-generierte Metadatenwerte erzeugt werden.",
+        "label": "KI-Metadatensprache",
+        "options": {
+          "documentLanguage": "Dokumentensprache",
+          "deu": "Deutsch",
+          "eng": "Englisch",
+          "fra": "Französisch",
+          "spa": "Spanisch",
+          "por": "Portugiesisch",
+          "chiSim": "Vereinfachtes Chinesisch"
+        }
+      },
+      "ocrReprocess": {
+        "help": "Wenn deaktiviert, bleibt eine vorhandene OCR-Schicht erhalten und wird für die Suche verwendet.",
+        "label": "OCR erneut ausführen, wenn bereits eine Textebene existiert"
+      },
+      "pdfRemoveBlankPages": {
+        "help": "Entfernt leere Seiten nach OCR. Vollständig leere Dokumente bleiben als fehlgeschlagene Verarbeitung sichtbar.",
+        "label": "Leere Seiten automatisch entfernen"
+      },
+      "documentsRequireAiBeforeAcceptance": {
+        "help": "Wenn aktiviert, können Inbox-Dokumente erst nach abgeschlossener KI-Metadatenextraktion übernommen werden.",
+        "label": "Dokumente erst nach KI-Metadatenextraktion übernehmen"
+      },
+      "subtitle": "Systemweite Verarbeitungseinstellungen verwalten.",
+      "success": {
+        "saved": "Systemeinstellungen wurden gespeichert."
+      },
+      "title": "Allgemein"
+    }
+  },
+  "enums": {
+    "calendarEventKind": {
+      "APPOINTMENT": "Termin",
+      "DEADLINE": "Frist",
+      "DUE_DATE": "Fälligkeit"
+    },
+    "documentAttributeValueType": {
+      "BOOLEAN": "Boolean",
+      "DATE": "Datum",
+      "NUMBER": "Zahl",
+      "TEXT": "Text"
+    },
+    "documentSource": {
+      "SCANNER": "Scanner",
+      "UPLOAD": "Upload",
+      "EMAIL": "E-Mail"
+    },
+    "documentStatus": {
+      "AI_PENDING": "KI ausstehend",
+      "AI_RUNNING": "KI läuft",
+      "ARCHIVED": "Archiviert",
+      "FAILED": "Fehlgeschlagen",
+      "INGESTING": "Wird aufgenommen",
+      "NEW": "Neu",
+      "OCR_PENDING": "OCR ausstehend",
+      "OCR_RUNNING": "OCR läuft",
+      "READY": "Bereit"
+    },
+    "notificationSeverity": {
+      "error": "Fehler",
+      "info": "Info",
+      "success": "Erledigt",
+      "warning": "Hinweis"
+    },
+    "userRole": {
+      "Admin": "Admin",
+      "User": "Benutzer"
+    }
+  }
+}

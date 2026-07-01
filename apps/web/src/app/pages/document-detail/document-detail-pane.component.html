@@ -1,0 +1,1513 @@
+<section class="page-header">
+  @if (isEditing()) {
+    <div class="page-header__main">
+      <h1 class="visually-hidden">{{ 'documentDetail.fallbackTitle' | translate }}</h1>
+    </div>
+    <div class="action-row">
+      @if (hasPendingChanges()) {
+        <button
+          nz-button
+          type="button"
+          data-testid="document-revert-button"
+          [disabled]="isSaving()"
+          (click)="revertChanges()"
+        >
+          <span nz-icon nzType="undo"></span>
+          {{ 'documentDetail.actions.revertChanges' | translate }}
+        </button>
+      } @else {
+        <button
+          nz-button
+          type="button"
+          data-testid="document-cancel-edit-button"
+          [disabled]="isSaving()"
+          (click)="cancelEditing()"
+        >
+          <span nz-icon nzType="close"></span>
+          {{ 'documentDetail.actions.cancelEdit' | translate }}
+        </button>
+      }
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        data-testid="document-save-button"
+        [disabled]="!canSaveChanges()"
+        [nzLoading]="isSaving()"
+        (click)="saveChanges()"
+      >
+        <span nz-icon nzType="save"></span>
+        {{ 'documentDetail.actions.saveChanges' | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="page-header__main">
+      @if (!isOpenDocument()) {
+        <a
+          nz-button
+          nzType="link"
+          [routerLink]="backLink()"
+          class="navigation-button"
+          data-testid="document-back-link"
+        >
+          <span nz-icon nzType="left"></span>
+          {{ 'documentDetail.backToList' | translate }}
+        </a>
+      }
+
+      <h1 class="visually-hidden">{{ 'documentDetail.fallbackTitle' | translate }}</h1>
+    </div>
+    <div class="action-row">
+      @if (document() && !isCurrentInboxDocument()) {
+        <button
+          nz-button
+          type="button"
+          data-testid="document-pin-button"
+          (click)="togglePinDocument()"
+        >
+          <span nz-icon nzType="pushpin"></span>
+          {{
+            (isOpenDocument() ? 'documentDetail.actions.unpin' : 'documentDetail.actions.pin')
+              | translate
+          }}
+        </button>
+      }
+      @if (canShowMoveTenantAction()) {
+        <button
+          nz-button
+          type="button"
+          data-testid="document-move-tenant-button"
+          [disabled]="!canMoveCurrentDocumentToTenant()"
+          (click)="openMoveToTenantDialog()"
+        >
+          <span nz-icon nzType="team"></span>
+          {{ 'documentDetail.actions.moveTenant' | translate }}
+        </button>
+      }
+      @if (auth.canEditDocuments()) {
+        <button
+          nz-button
+          type="button"
+          data-testid="document-edit-button"
+          [disabled]="!canEditDocument()"
+          [nzLoading]="isStartingEdit()"
+          (click)="enableEditing()"
+        >
+          <span nz-icon nzType="edit"></span>
+          {{ 'documentDetail.actions.edit' | translate }}
+        </button>
+      }
+      @if (document(); as doc) {
+        @if (pdfUrl(); as pdfSource) {
+          <a
+            nz-button
+            data-testid="document-download-pdf-link"
+            [href]="pdfSource"
+            [download]="downloadFileName(doc)"
+            [attr.aria-label]="
+              'documentDetail.actions.downloadPdfAria'
+                | translate: { title: doc.displayTitle || doc.title || doc.originalFileName }
+            "
+          >
+            <span nz-icon nzType="download"></span>
+            {{ 'documentDetail.actions.pdf' | translate }}
+          </a>
+        }
+      }
+      @if (document()) {
+        @if (isCurrentInboxDocument()) {
+          @if (auth.canEditDocuments()) {
+            <button
+              nz-button
+              nzType="primary"
+              type="button"
+              data-testid="document-actions-accept"
+              [disabled]="!canAcceptCurrentDocument()"
+              [nzLoading]="isDocumentActionRunning()"
+              (click)="acceptInboxDocument()"
+            >
+              <span nz-icon nzType="check-square"></span>
+              {{ 'documentDetail.actions.accept' | translate }}
+            </button>
+          }
+        } @else if (auth.canEditDocuments()) {
+          <button
+            nz-button
+            nz-dropdown
+            type="button"
+            class="action-menu-trigger"
+            data-testid="document-actions-move-trigger"
+            [nzTrigger]="'click'"
+            [nzDropdownMenu]="documentMoveMenu"
+            [disabled]="!canMoveCurrentDocument()"
+            aria-haspopup="menu"
+          >
+            <span nz-icon nzType="folder-open"></span>
+            {{ 'documentDetail.actions.move' | translate }}
+            <span nz-icon nzType="down"></span>
+          </button>
+        }
+      }
+    </div>
+  }
+</section>
+
+<nz-dropdown-menu #documentMoveMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li
+      nz-menu-item
+      data-testid="document-actions-move-inbox"
+      [nzDisabled]="!canMoveCurrentDocument()"
+      (click)="moveToInbox()"
+    >
+      <span class="action-menu-item">
+        <span nz-icon nzType="inbox"></span>
+        {{ 'documents.bulk.moveTargets.inbox' | translate }}
+      </span>
+    </li>
+    <li
+      nz-menu-item
+      data-testid="document-actions-archive"
+      [nzDisabled]="!canMoveCurrentDocument()"
+      (click)="archive()"
+    >
+      <span class="action-menu-item">
+        <span nz-icon nzType="folder"></span>
+        {{ 'documents.bulk.moveTargets.archive' | translate }}
+      </span>
+    </li>
+    <li
+      nz-menu-item
+      class="danger-menu-item"
+      data-testid="document-actions-trash"
+      [nzDisabled]="!canMoveCurrentDocument()"
+      (click)="requestTrash()"
+    >
+      <span class="action-menu-item">
+        <span nz-icon nzType="delete"></span>
+        {{ 'documents.bulk.moveTargets.trash' | translate }}
+      </span>
+    </li>
+  </ul>
+</nz-dropdown-menu>
+
+<nz-modal
+  [nzVisible]="isMoveTenantDialogVisible()"
+  [nzTitle]="'documentDetail.moveTenant.title' | translate"
+  [nzFooter]="moveTenantFooter"
+  [nzWidth]="520"
+  (nzOnCancel)="cancelMoveToTenant()"
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label nzFor="documentMoveTenantTarget">{{
+        'documentDetail.moveTenant.targetTenant' | translate
+      }}</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          id="documentMoveTenantTarget"
+          data-testid="document-move-tenant-select"
+          [ngModel]="selectedMoveTenantId()"
+          [nzDisabled]="isDocumentActionRunning()"
+          nzShowSearch
+          (ngModelChange)="selectedMoveTenantId.set($event)"
+        >
+          @for (tenant of moveTenantTargetOptions(); track tenant.id) {
+            <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+</nz-modal>
+
+<ng-template #moveTenantFooter>
+  <button
+    nz-button
+    type="button"
+    [disabled]="isDocumentActionRunning()"
+    (click)="cancelMoveToTenant()"
+  >
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button
+    nz-button
+    nzType="primary"
+    type="button"
+    data-testid="document-move-tenant-confirm"
+    [disabled]="!selectedMoveTenantId() || !canMoveCurrentDocumentToTenant()"
+    [nzLoading]="isDocumentActionRunning()"
+    (click)="confirmMoveToTenant()"
+  >
+    <span nz-icon nzType="team"></span>
+    {{ 'documentDetail.moveTenant.confirm' | translate }}
+  </button>
+</ng-template>
+
+<nz-modal
+  [nzVisible]="trashDocument() !== null"
+  [nzTitle]="'documentDetail.trashConfirm.title' | translate"
+  [nzFooter]="trashConfirmFooter"
+  [nzWidth]="520"
+  (nzOnCancel)="cancelTrash()"
+>
+  <ng-container *nzModalContent>
+    @if (trashDocument(); as doc) {
+      <p>{{ 'documentDetail.trashConfirm.message' | translate: { title: doc.title } }}</p>
+    }
+  </ng-container>
+</nz-modal>
+
+<ng-template #trashConfirmFooter>
+  <button nz-button type="button" [disabled]="isDocumentActionRunning()" (click)="cancelTrash()">
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button
+    nz-button
+    nzDanger
+    nzType="primary"
+    type="button"
+    [nzLoading]="isDocumentActionRunning()"
+    (click)="confirmTrash()"
+  >
+    <span nz-icon nzType="delete"></span>
+    {{ 'documentDetail.trashConfirm.confirm' | translate }}
+  </button>
+</ng-template>
+
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+}
+
+<nz-spin [nzSpinning]="isLoading()">
+  @if (document(); as doc) {
+    <section class="detail-grid">
+      <nz-card class="side-pane document-info-card" [nzBordered]="false">
+        <nz-tabs class="detail-tabs">
+          <ng-template #paymentsTabTitle>
+            <span class="detail-tab-title">
+              <span class="detail-tab-title__text">{{
+                'documentDetail.tabs.payments' | translate
+              }}</span>
+              <nz-badge
+                [nzCount]="payments().length"
+                [nzShowZero]="true"
+                [nzStandalone]="true"
+              ></nz-badge>
+            </span>
+          </ng-template>
+          <ng-template #calendarTabTitle>
+            <span class="detail-tab-title">
+              <span class="detail-tab-title__text">{{
+                'documentDetail.tabs.calendar' | translate
+              }}</span>
+              <nz-badge
+                [nzCount]="doc.calendarEvents.length"
+                [nzShowZero]="true"
+                [nzStandalone]="true"
+              ></nz-badge>
+            </span>
+          </ng-template>
+          <ng-template #historyTabTitle>
+            <span class="detail-tab-title">
+              <span class="detail-tab-title__text">{{
+                'documentDetail.tabs.history' | translate
+              }}</span>
+              <nz-badge
+                [nzCount]="historyTotalItems()"
+                [nzShowZero]="true"
+                [nzStandalone]="true"
+              ></nz-badge>
+            </span>
+          </ng-template>
+          <nz-tab [nzTitle]="'documentDetail.tabs.metadata' | translate">
+            @if (isAiLocked()) {
+              <section
+                class="ai-skeleton-panel"
+                [attr.aria-label]="'documentDetail.ai.running' | translate"
+              >
+                <nz-skeleton
+                  [nzActive]="true"
+                  [nzTitle]="false"
+                  [nzParagraph]="{ rows: 10 }"
+                ></nz-skeleton>
+                <nz-skeleton
+                  [nzActive]="true"
+                  [nzTitle]="false"
+                  [nzParagraph]="{ rows: 5 }"
+                ></nz-skeleton>
+              </section>
+            } @else if (isEditing()) {
+              <form
+                class="metadata-form metadata-form--document"
+                nz-form
+                nzLayout="vertical"
+                [formGroup]="metadataForm"
+              >
+                <section
+                  class="metadata-section"
+                  [attr.aria-label]="'documentDetail.sections.documentData' | translate"
+                >
+                  <div class="metadata-grid">
+                    <nz-form-item
+                      class="full-row metadata-title-field"
+                      [class.is-changed-field]="isDocumentFieldChanged('title')"
+                    >
+                      <nz-form-label nzFor="title">{{
+                        'documents.table.title' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <input nz-input id="title" formControlName="title" />
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item [class.is-changed-field]="isDocumentFieldChanged('sender')">
+                      <nz-form-label nzFor="sender">{{
+                        'documents.table.sender' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <input nz-input id="sender" formControlName="sender" />
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item [class.is-changed-field]="isDocumentFieldChanged('recipient')">
+                      <nz-form-label nzFor="recipient">{{
+                        'documentDetail.fields.recipient' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <input nz-input id="recipient" formControlName="recipient" />
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item
+                      [class.is-changed-field]="isDocumentFieldChanged('documentTypeId')"
+                    >
+                      <nz-form-label nzFor="documentTypeId">{{
+                        'documentDetail.fields.documentType' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <nz-select id="documentTypeId" formControlName="documentTypeId">
+                          <nz-option
+                            nzValue=""
+                            [nzLabel]="'documentDetail.fields.noDocumentType' | translate"
+                          ></nz-option>
+                          @for (documentType of doc.documentTypes; track documentType.id) {
+                            <nz-option
+                              [nzValue]="documentType.id"
+                              [nzLabel]="documentTypeDisplayName(documentType)"
+                            ></nz-option>
+                          }
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item [class.is-changed-field]="isDocumentFieldChanged('documentDate')">
+                      <nz-form-label nzFor="documentDate">{{
+                        'documentDetail.fields.documentDate' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <input
+                          nz-input
+                          id="documentDate"
+                          type="date"
+                          formControlName="documentDate"
+                        />
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </section>
+
+                <section class="metadata-section" aria-labelledby="references-heading">
+                  <header>
+                    <h2 id="references-heading">
+                      {{ 'documentDetail.references.title' | translate }}
+                    </h2>
+                    <button
+                      nz-button
+                      type="button"
+                      [disabled]="isAiLocked()"
+                      (click)="addReference()"
+                    >
+                      <span nz-icon nzType="plus"></span>
+                      {{ 'documentDetail.references.add' | translate }}
+                    </button>
+                  </header>
+                  @if (references().length === 0) {
+                    <p>{{ 'documentDetail.references.empty' | translate }}</p>
+                  }
+                  @for (reference of references().controls; track $index) {
+                    <div class="repeat-row reference-row" [formGroup]="reference">
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="
+                          isReferenceFieldChanged($index, 'referenceNumber')
+                        "
+                      >
+                        <span>{{ 'documentDetail.references.number' | translate }}</span>
+                        <input nz-input formControlName="referenceNumber" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isReferenceFieldChanged($index, 'referenceType')"
+                      >
+                        <span>{{ 'documentDetail.references.type' | translate }}</span>
+                        <input nz-input formControlName="referenceType" />
+                      </label>
+                      <button
+                        nz-button
+                        type="button"
+                        [attr.aria-label]="
+                          'documentDetail.references.removeAria' | translate: { index: $index + 1 }
+                        "
+                        [disabled]="isAiLocked()"
+                        (click)="removeReference($index)"
+                      >
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  }
+                </section>
+
+                @if (attributes().length > 0) {
+                  <section class="form-section" aria-labelledby="extra-fields-heading">
+                    <header>
+                      <h2 id="extra-fields-heading">
+                        {{ 'documentDetail.extraFields.title' | translate }}
+                      </h2>
+                    </header>
+                    @for (attribute of attributes().controls; track attribute.controls.key.value) {
+                      <nz-form-item
+                        [formGroup]="attribute"
+                        [class.is-changed-field]="isAttributeFieldChanged(attribute, 'value')"
+                      >
+                        <nz-form-label [nzFor]="'attribute-' + attribute.controls.key.value">
+                          {{ doc.fieldDefinitions[$index].label }}
+                        </nz-form-label>
+                        <nz-form-control>
+                          @switch (attribute.controls.valueType.value) {
+                            @case ('NUMBER') {
+                              <input
+                                nz-input
+                                [id]="'attribute-' + attribute.controls.key.value"
+                                type="number"
+                                formControlName="value"
+                              />
+                            }
+                            @case ('DATE') {
+                              <input
+                                nz-input
+                                [id]="'attribute-' + attribute.controls.key.value"
+                                type="date"
+                                formControlName="value"
+                              />
+                            }
+                            @case ('BOOLEAN') {
+                              <nz-select
+                                [id]="'attribute-' + attribute.controls.key.value"
+                                formControlName="value"
+                              >
+                                <nz-option
+                                  nzValue=""
+                                  [nzLabel]="'common.empty' | translate"
+                                ></nz-option>
+                                <nz-option
+                                  nzValue="true"
+                                  [nzLabel]="'common.yes' | translate"
+                                ></nz-option>
+                                <nz-option
+                                  nzValue="false"
+                                  [nzLabel]="'common.no' | translate"
+                                ></nz-option>
+                              </nz-select>
+                            }
+                            @default {
+                              <input
+                                nz-input
+                                [id]="'attribute-' + attribute.controls.key.value"
+                                formControlName="value"
+                              />
+                            }
+                          }
+                        </nz-form-control>
+                      </nz-form-item>
+                    }
+                  </section>
+                }
+
+                <section
+                  class="metadata-section metadata-section--summary"
+                  [attr.aria-label]="'documentDetail.fields.summary' | translate"
+                >
+                  <div class="metadata-grid metadata-grid--summary">
+                    <nz-form-item
+                      class="full-row metadata-summary-field"
+                      [class.is-changed-field]="isDocumentFieldChanged('summary')"
+                    >
+                      <nz-form-label nzFor="summary">{{
+                        'documentDetail.fields.summary' | translate
+                      }}</nz-form-label>
+                      <nz-form-control>
+                        <textarea
+                          nz-input
+                          id="summary"
+                          rows="4"
+                          formControlName="summary"
+                        ></textarea>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </section>
+
+                <section
+                  class="metadata-section"
+                  [attr.aria-label]="'documentDetail.tags.listAria' | translate"
+                >
+                  <div
+                    class="tag-panel"
+                    [class.is-changed-field]="hasTagChanges()"
+                    [formGroup]="tagForm"
+                  >
+                    <div
+                      class="tag-chip-list"
+                      [attr.aria-label]="'documentDetail.tags.listAria' | translate"
+                    >
+                      @if (tagNames().length === 0) {
+                        <p>{{ 'documentDetail.tags.empty' | translate }}</p>
+                      }
+                      @for (tagName of tagNames(); track tagName) {
+                        <nz-tag class="tag-chip" data-testid="document-tag-chip">
+                          <span>{{ tagName }}</span>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            class="tag-chip__remove"
+                            [attr.aria-label]="
+                              'documentDetail.tags.removeAria' | translate: { tag: tagName }
+                            "
+                            [disabled]="!auth.canEditDocuments() || isAiLocked()"
+                            (click)="removeTag(tagName)"
+                          >
+                            <span nz-icon nzType="close"></span>
+                          </button>
+                        </nz-tag>
+                      }
+                    </div>
+                    <div class="tag-input-field">
+                      <label for="tagText">{{
+                        'documentDetail.tags.inputLabel' | translate
+                      }}</label>
+                      <div class="tag-input-row">
+                        <input
+                          nz-input
+                          id="tagText"
+                          formControlName="tagText"
+                          (keydown.enter)="addTag(); $event.preventDefault()"
+                        />
+                        <button
+                          nz-button
+                          type="button"
+                          [disabled]="!canAddTag()"
+                          (click)="addTag()"
+                        >
+                          <span nz-icon nzType="plus"></span>
+                          {{ 'documentDetail.tags.add' | translate }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </form>
+            } @else {
+              <div class="metadata-form metadata-form--document readonly-document">
+                <section
+                  class="metadata-section"
+                  [attr.aria-label]="'documentDetail.sections.documentData' | translate"
+                >
+                  <dl class="metadata-grid readonly-grid readonly-grid--document-data">
+                    <div
+                      class="readonly-field readonly-field--primary full-row metadata-title-field"
+                    >
+                      <dt>
+                        {{ 'documents.table.title' | translate }}
+                      </dt>
+                      <dd>{{ displayText(metadataForm.controls.title.value) }}</dd>
+                    </div>
+                    <div class="readonly-field">
+                      <dt>
+                        {{ 'documents.table.sender' | translate }}
+                      </dt>
+                      <dd>{{ displayText(metadataForm.controls.sender.value) }}</dd>
+                    </div>
+                    <div class="readonly-field">
+                      <dt>
+                        {{ 'documentDetail.fields.recipient' | translate }}
+                      </dt>
+                      <dd>{{ displayText(metadataForm.controls.recipient.value) }}</dd>
+                    </div>
+                    <div class="readonly-field">
+                      <dt>
+                        {{ 'documentDetail.fields.documentType' | translate }}
+                      </dt>
+                      <dd>{{ displayDocumentType(doc) }}</dd>
+                    </div>
+                    <div class="readonly-field">
+                      <dt>
+                        {{ 'documentDetail.fields.documentDate' | translate }}
+                      </dt>
+                      <dd>{{ displayDate(metadataForm.controls.documentDate.value) }}</dd>
+                    </div>
+                    @for (reference of references().controls; track $index) {
+                      <div class="readonly-field">
+                        <dt>
+                          {{ displayText(reference.controls.referenceType.value) }}
+                        </dt>
+                        <dd>
+                          {{ displayText(reference.controls.referenceNumber.value) }}
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            [cdkCopyToClipboard]="reference.controls.referenceNumber.value"
+                            [disabled]="!reference.controls.referenceNumber.value.trim()"
+                            [attr.aria-label]="copyAria('documentDetail.references.number')"
+                          >
+                            <span nz-icon nzType="copy"></span>
+                          </button>
+                        </dd>
+                      </div>
+                    }
+                  </dl>
+                </section>
+
+                @if (attributes().length > 0) {
+                  <section class="form-section" aria-labelledby="extra-fields-heading-read">
+                    <header>
+                      <h2 id="extra-fields-heading-read">
+                        {{ 'documentDetail.extraFields.title' | translate }}
+                      </h2>
+                    </header>
+                    <dl class="readonly-grid readonly-grid--single">
+                      @for (
+                        attribute of attributes().controls;
+                        track attribute.controls.key.value
+                      ) {
+                        <div class="readonly-field">
+                          <dt>
+                            {{ doc.fieldDefinitions[$index].label }}
+                          </dt>
+                          <dd>{{ displayAttributeValue(attribute) }}</dd>
+                        </div>
+                      }
+                    </dl>
+                  </section>
+                }
+
+                <section
+                  class="metadata-section"
+                  [attr.aria-label]="'documentDetail.fields.summary' | translate"
+                >
+                  <dl class="readonly-grid">
+                    <div class="readonly-field readonly-field--summary full-row">
+                      <dt>
+                        <span nz-icon nzType="file-text" aria-hidden="true"></span>
+                        <span>{{ 'documentDetail.fields.summary' | translate }}</span>
+                      </dt>
+                      <dd>{{ displayText(metadataForm.controls.summary.value) }}</dd>
+                    </div>
+                  </dl>
+                </section>
+
+                <section
+                  class="metadata-section"
+                  [attr.aria-label]="'documentDetail.tags.listAria' | translate"
+                >
+                  <header class="readonly-section-header">
+                    <h2>{{ 'documentDetail.tabs.tags' | translate }}</h2>
+                  </header>
+                  <div
+                    class="tag-chip-list tag-chip-list--readonly"
+                    [attr.aria-label]="'documentDetail.tags.listAria' | translate"
+                  >
+                    @if (tagNames().length === 0) {
+                      <p>{{ 'documentDetail.tags.empty' | translate }}</p>
+                    }
+                    @for (tagName of tagNames(); track tagName) {
+                      <nz-tag class="tag-chip" data-testid="document-tag-chip">
+                        <span>{{ tagName }}</span>
+                      </nz-tag>
+                    }
+                  </div>
+                </section>
+              </div>
+            }
+          </nz-tab>
+          <nz-tab [nzTitle]="paymentsTabTitle">
+            @if (isAiLocked()) {
+              <section
+                class="ai-skeleton-panel"
+                [attr.aria-label]="'documentDetail.ai.running' | translate"
+              >
+                <nz-skeleton
+                  [nzActive]="true"
+                  [nzTitle]="false"
+                  [nzParagraph]="{ rows: 6 }"
+                ></nz-skeleton>
+              </section>
+            } @else if (isEditing()) {
+              <form class="metadata-form" nz-form nzLayout="vertical" [formGroup]="metadataForm">
+                <section
+                  class="form-section form-section--plain"
+                  [attr.aria-label]="'documentDetail.tabs.payments' | translate"
+                >
+                  <header>
+                    <button
+                      nz-button
+                      type="button"
+                      [disabled]="isAiLocked()"
+                      (click)="addPayment()"
+                    >
+                      <span nz-icon nzType="plus"></span>
+                      {{ 'documentDetail.payments.add' | translate }}
+                    </button>
+                  </header>
+                  @if (payments().length === 0) {
+                    <p>{{ 'documentDetail.payments.empty' | translate }}</p>
+                  }
+                  @for (payment of payments().controls; track $index) {
+                    <div class="repeat-row payment-row" [formGroup]="payment">
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'iban')"
+                      >
+                        <span>{{ 'documentDetail.payments.iban' | translate }}</span>
+                        <input nz-input formControlName="iban" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'recipient')"
+                      >
+                        <span>{{ 'documentDetail.fields.recipient' | translate }}</span>
+                        <input nz-input formControlName="recipient" />
+                      </label>
+                      <label
+                        class="repeat-field purpose-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'purpose')"
+                      >
+                        <span>{{ 'documentDetail.payments.purpose' | translate }}</span>
+                        <input nz-input formControlName="purpose" />
+                      </label>
+                      <label
+                        class="repeat-field amount-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'amount')"
+                      >
+                        <span>{{ 'documentDetail.payments.amount' | translate }}</span>
+                        <input nz-input type="number" step="0.01" formControlName="amount" />
+                      </label>
+                      <label
+                        class="repeat-field currency-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'currency')"
+                      >
+                        <span>{{ 'documentDetail.payments.currency' | translate }}</span>
+                        <input nz-input formControlName="currency" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isPaymentFieldChanged($index, 'dueDate')"
+                      >
+                        <span>{{ 'documentDetail.payments.dueDate' | translate }}</span>
+                        <input nz-input type="date" formControlName="dueDate" />
+                      </label>
+                      <div class="task-action-row task-action-row--separated repeat-row__full">
+                        <nz-select
+                          class="assignee-select"
+                          nzSize="small"
+                          [ngModel]="payment.controls.assignedToId.value || null"
+                          [ngModelOptions]="{ standalone: true }"
+                          [nzDisabled]="
+                            isSaving() ||
+                            isAiLocked() ||
+                            !auth.canEditDocuments() ||
+                            !payment.controls.id.value
+                          "
+                          [nzLoading]="isSaving()"
+                          [attr.aria-label]="
+                            'dashboard.actions.assignPaymentAria'
+                              | translate: { title: payment.controls.recipient.value }
+                          "
+                          (ngModelChange)="updatePaymentAssignee($index, $event)"
+                        >
+                          <nz-option
+                            [nzValue]="null"
+                            [nzLabel]="'dashboard.actions.unassigned' | translate"
+                          ></nz-option>
+                          @for (assignee of assignees(); track assignee.id) {
+                            <nz-option
+                              [nzValue]="assignee.id"
+                              [nzLabel]="assignee.displayName"
+                            ></nz-option>
+                          }
+                        </nz-select>
+                        <div class="task-action-row__status">
+                          @if (payment.controls.status.value === 'PAID') {
+                            <button
+                              nz-button
+                              type="button"
+                              data-testid="document-payment-edit-mark-not-done"
+                              [disabled]="
+                                isSaving() ||
+                                isAiLocked() ||
+                                !auth.canEditDocuments() ||
+                                !payment.controls.id.value
+                              "
+                              (click)="markPaymentNotCompleted($index)"
+                            >
+                              <span nz-icon nzType="undo"></span>
+                              {{ 'documentDetail.tasks.markNotDone' | translate }}
+                            </button>
+                          } @else {
+                            <button
+                              class="timeline-done-button"
+                              nz-button
+                              nzType="default"
+                              type="button"
+                              [disabled]="
+                                isSaving() ||
+                                isAiLocked() ||
+                                !auth.canEditDocuments() ||
+                                !payment.controls.id.value
+                              "
+                              (click)="markPaymentCompleted($index)"
+                            >
+                              <span nz-icon nzType="check-circle"></span>
+                              <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                            </button>
+                          }
+                        </div>
+                      </div>
+                      <button
+                        nz-button
+                        type="button"
+                        [attr.aria-label]="
+                          'documentDetail.payments.removeAria' | translate: { index: $index + 1 }
+                        "
+                        [disabled]="isAiLocked()"
+                        (click)="removePayment($index)"
+                      >
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  }
+                </section>
+              </form>
+            } @else {
+              <section
+                class="form-section form-section--plain"
+                [attr.aria-label]="'documentDetail.tabs.payments' | translate"
+              >
+                @if (payments().length === 0) {
+                  <p>{{ 'documentDetail.payments.empty' | translate }}</p>
+                }
+                @for (payment of payments().controls; track $index) {
+                  <article class="repeat-row readonly-repeat-row payment-readonly-card">
+                    <dl class="metadata-grid readonly-grid payment-readonly-grid">
+                      <div class="readonly-field">
+                        <dt>{{ 'documentDetail.payments.dueDate' | translate }}</dt>
+                        <dd>{{ displayDate(payment.controls.dueDate.value) }}</dd>
+                      </div>
+                      <div class="readonly-field payment-readonly-recipient">
+                        <dt>{{ 'documentDetail.fields.recipient' | translate }}</dt>
+                        <dd class="readonly-copy-value">
+                          <span>{{ displayText(payment.controls.recipient.value) }}</span>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            [cdkCopyToClipboard]="payment.controls.recipient.value"
+                            [disabled]="!payment.controls.recipient.value.trim()"
+                            [attr.aria-label]="copyAria('documentDetail.fields.recipient')"
+                          >
+                            <span nz-icon nzType="copy"></span>
+                          </button>
+                        </dd>
+                      </div>
+                      <div class="readonly-field">
+                        <dt>{{ 'documentDetail.payments.purpose' | translate }}</dt>
+                        <dd class="readonly-copy-value">
+                          <span>{{ displayText(payment.controls.purpose.value) }}</span>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            [cdkCopyToClipboard]="payment.controls.purpose.value"
+                            [disabled]="!payment.controls.purpose.value.trim()"
+                            [attr.aria-label]="copyAria('documentDetail.payments.purpose')"
+                          >
+                            <span nz-icon nzType="copy"></span>
+                          </button>
+                        </dd>
+                      </div>
+                      <div class="readonly-field">
+                        <dt>{{ 'documentDetail.payments.iban' | translate }}</dt>
+                        <dd class="readonly-copy-value">
+                          <span>{{ displayText(payment.controls.iban.value) }}</span>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            [cdkCopyToClipboard]="payment.controls.iban.value"
+                            [disabled]="!payment.controls.iban.value.trim()"
+                            [attr.aria-label]="copyAria('documentDetail.payments.iban')"
+                          >
+                            <span nz-icon nzType="copy"></span>
+                          </button>
+                        </dd>
+                      </div>
+                      <div class="readonly-field">
+                        <dt>{{ 'documentDetail.payments.amount' | translate }}</dt>
+                        <dd class="readonly-copy-value">
+                          <span>
+                            {{
+                              displayPaymentAmount(
+                                payment.controls.amount.value,
+                                payment.controls.currency.value
+                              )
+                            }}
+                          </span>
+                          <button
+                            nz-button
+                            nzType="text"
+                            nzShape="circle"
+                            nzSize="small"
+                            type="button"
+                            [cdkCopyToClipboard]="copyPaymentAmount(payment.controls.amount.value)"
+                            [disabled]="payment.controls.amount.value === null"
+                            [attr.aria-label]="copyAria('documentDetail.payments.amount')"
+                          >
+                            <span nz-icon nzType="copy"></span>
+                          </button>
+                        </dd>
+                      </div>
+                      <div class="readonly-field readonly-field--task-row full-row">
+                        <dt class="visually-hidden">
+                          {{ 'documentDetail.tasks.assignedTo' | translate }}
+                        </dt>
+                        <dd class="task-action-row task-action-row--separated">
+                          <nz-select
+                            class="assignee-select"
+                            nzSize="small"
+                            [ngModel]="payment.controls.assignedToId.value || null"
+                            [ngModelOptions]="{ standalone: true }"
+                            [nzDisabled]="
+                              isSaving() ||
+                              isAiLocked() ||
+                              !auth.canEditDocuments() ||
+                              !payment.controls.id.value
+                            "
+                            [nzLoading]="isSaving()"
+                            [attr.aria-label]="
+                              'dashboard.actions.assignPaymentAria'
+                                | translate: { title: payment.controls.recipient.value }
+                            "
+                            (ngModelChange)="updatePaymentAssignee($index, $event)"
+                          >
+                            <nz-option
+                              [nzValue]="null"
+                              [nzLabel]="'dashboard.actions.unassigned' | translate"
+                            ></nz-option>
+                            @for (assignee of assignees(); track assignee.id) {
+                              <nz-option
+                                [nzValue]="assignee.id"
+                                [nzLabel]="assignee.displayName"
+                              ></nz-option>
+                            }
+                          </nz-select>
+                          <div class="task-action-row__status">
+                            @if (payment.controls.status.value === 'PAID') {
+                              <button
+                                nz-button
+                                type="button"
+                                data-testid="document-payment-mark-not-done"
+                                [disabled]="
+                                  isSaving() ||
+                                  isAiLocked() ||
+                                  !auth.canEditDocuments() ||
+                                  !payment.controls.id.value
+                                "
+                                (click)="markPaymentNotCompleted($index)"
+                              >
+                                <span nz-icon nzType="undo"></span>
+                                {{ 'documentDetail.tasks.markNotDone' | translate }}
+                              </button>
+                            } @else {
+                              <button
+                                class="timeline-done-button"
+                                nz-button
+                                nzType="default"
+                                type="button"
+                                [disabled]="
+                                  isSaving() ||
+                                  isAiLocked() ||
+                                  !auth.canEditDocuments() ||
+                                  !payment.controls.id.value
+                                "
+                                (click)="markPaymentCompleted($index)"
+                              >
+                                <span nz-icon nzType="check-circle"></span>
+                                <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                              </button>
+                            }
+                          </div>
+                        </dd>
+                      </div>
+                    </dl>
+                  </article>
+                }
+              </section>
+            }
+          </nz-tab>
+          <nz-tab [nzTitle]="calendarTabTitle">
+            @if (isAiLocked()) {
+              <section
+                class="ai-skeleton-panel"
+                [attr.aria-label]="'documentDetail.ai.running' | translate"
+              >
+                <nz-skeleton
+                  [nzActive]="true"
+                  [nzTitle]="false"
+                  [nzParagraph]="{ rows: 4 }"
+                ></nz-skeleton>
+              </section>
+            } @else if (isEditing()) {
+              <form class="metadata-form" nz-form nzLayout="vertical" [formGroup]="metadataForm">
+                <section
+                  class="form-section form-section--plain"
+                  [attr.aria-label]="'documentDetail.tabs.calendar' | translate"
+                >
+                  <header>
+                    <button
+                      nz-button
+                      type="button"
+                      data-testid="document-calendar-event-add"
+                      [disabled]="isAiLocked()"
+                      (click)="addCalendarEvent()"
+                    >
+                      <span nz-icon nzType="plus"></span>
+                      {{ 'documentDetail.calendar.add' | translate }}
+                    </button>
+                  </header>
+                  @if (calendarEvents().length === 0) {
+                    <p>{{ 'documentDetail.calendar.emptyEditable' | translate }}</p>
+                  }
+                  @for (event of calendarEvents().controls; track $index) {
+                    <div
+                      class="repeat-row calendar-edit-row"
+                      data-testid="document-calendar-event-edit-row"
+                      [formGroup]="event"
+                    >
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'kind')"
+                      >
+                        <span>{{ 'documentDetail.calendar.kind' | translate }}</span>
+                        <nz-select formControlName="kind">
+                          @for (kind of calendarEventKinds; track kind) {
+                            <nz-option
+                              [nzValue]="kind"
+                              [nzLabel]="calendarEventKindLabelKey(kind) | translate"
+                            ></nz-option>
+                          }
+                        </nz-select>
+                      </label>
+                      <label
+                        class="repeat-field purpose-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'title')"
+                      >
+                        <span>{{ 'documentDetail.calendar.title' | translate }}</span>
+                        <input nz-input formControlName="title" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'date')"
+                      >
+                        <span>{{ 'documentDetail.calendar.date' | translate }}</span>
+                        <input nz-input type="date" formControlName="date" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'time')"
+                      >
+                        <span>{{ 'documentDetail.calendar.time' | translate }}</span>
+                        <input nz-input type="time" formControlName="time" />
+                      </label>
+                      <label
+                        class="repeat-field repeat-row__full"
+                        [class.is-changed-field]="
+                          isCalendarEventFieldChanged($index, 'description')
+                        "
+                      >
+                        <span>{{ 'documentDetail.calendar.description' | translate }}</span>
+                        <textarea nz-input rows="2" formControlName="description"></textarea>
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'endDate')"
+                      >
+                        <span>{{ 'documentDetail.calendar.endDate' | translate }}</span>
+                        <input nz-input type="date" formControlName="endDate" />
+                      </label>
+                      <label
+                        class="repeat-field"
+                        [class.is-changed-field]="isCalendarEventFieldChanged($index, 'endTime')"
+                      >
+                        <span>{{ 'documentDetail.calendar.endTime' | translate }}</span>
+                        <input nz-input type="time" formControlName="endTime" />
+                      </label>
+                      <label
+                        class="repeat-field repeat-row__full"
+                        [class.is-changed-field]="
+                          isCalendarEventFieldChanged($index, 'sourceText')
+                        "
+                      >
+                        <span>{{ 'documentDetail.calendar.sourceText' | translate }}</span>
+                        <input nz-input formControlName="sourceText" />
+                      </label>
+                      <div class="task-action-row task-action-row--separated repeat-row__full">
+                        <nz-select
+                          class="assignee-select"
+                          nzSize="small"
+                          [ngModel]="event.controls.assignedToId.value || null"
+                          [ngModelOptions]="{ standalone: true }"
+                          [nzDisabled]="
+                            isSaving() ||
+                            isAiLocked() ||
+                            !auth.canEditDocuments() ||
+                            !event.controls.id.value
+                          "
+                          [nzLoading]="isSaving()"
+                          [attr.aria-label]="
+                            'dashboard.actions.assignDateAria'
+                              | translate: { title: event.controls.title.value }
+                          "
+                          (ngModelChange)="updateEditableCalendarEventAssignee($index, $event)"
+                        >
+                          <nz-option
+                            [nzValue]="null"
+                            [nzLabel]="'dashboard.actions.unassigned' | translate"
+                          ></nz-option>
+                          @for (assignee of assignees(); track assignee.id) {
+                            <nz-option
+                              [nzValue]="assignee.id"
+                              [nzLabel]="assignee.displayName"
+                            ></nz-option>
+                          }
+                        </nz-select>
+                        <div class="task-action-row__status">
+                          @if (event.controls.kind.value !== 'APPOINTMENT') {
+                            @if (event.controls.completedAt.value) {
+                              <button
+                                nz-button
+                                type="button"
+                                data-testid="document-calendar-event-edit-mark-not-done"
+                                [disabled]="
+                                  isSaving() ||
+                                  isAiLocked() ||
+                                  !auth.canEditDocuments() ||
+                                  !event.controls.id.value
+                                "
+                                (click)="markEditableCalendarEventNotCompleted($index)"
+                              >
+                                <span nz-icon nzType="undo"></span>
+                                {{ 'documentDetail.tasks.markNotDone' | translate }}
+                              </button>
+                            } @else {
+                              <button
+                                class="timeline-done-button"
+                                nz-button
+                                nzType="default"
+                                type="button"
+                                [disabled]="
+                                  isSaving() ||
+                                  isAiLocked() ||
+                                  !auth.canEditDocuments() ||
+                                  !event.controls.id.value
+                                "
+                                (click)="markEditableCalendarEventCompleted($index)"
+                              >
+                                <span nz-icon nzType="check-circle"></span>
+                                <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                              </button>
+                            }
+                          }
+                        </div>
+                      </div>
+                      <button
+                        nz-button
+                        type="button"
+                        data-testid="document-calendar-event-remove"
+                        [attr.aria-label]="
+                          'documentDetail.calendar.removeAria' | translate: { index: $index + 1 }
+                        "
+                        [disabled]="isAiLocked()"
+                        (click)="removeCalendarEvent($index)"
+                      >
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  }
+                </section>
+                @if (linkedCalendarEvents().length > 0) {
+                  <section class="form-section form-section--plain">
+                    <header class="readonly-section-header">
+                      <h2>{{ 'documentDetail.calendar.linkedPaymentTitle' | translate }}</h2>
+                    </header>
+                    <p>{{ 'documentDetail.calendar.linkedPaymentHint' | translate }}</p>
+                    <div class="calendar-events">
+                      @for (event of linkedCalendarEvents(); track event.id) {
+                        <article class="repeat-row readonly-repeat-row calendar-readonly-card">
+                          <app-calendar-event-card
+                            class="calendar-readonly-card__event"
+                            data-testid="document-calendar-event-linked"
+                            [event]="event"
+                            appearance="plain"
+                          ></app-calendar-event-card>
+                          <div class="task-action-row task-action-row--separated">
+                            <nz-select
+                              class="assignee-select"
+                              nzSize="small"
+                              [ngModel]="event.assignedToId ?? null"
+                              [ngModelOptions]="{ standalone: true }"
+                              [nzDisabled]="isSaving() || isAiLocked() || !auth.canEditDocuments()"
+                              [nzLoading]="isSaving()"
+                              [attr.aria-label]="
+                                'dashboard.actions.assignDateAria'
+                                  | translate: { title: event.title }
+                              "
+                              (ngModelChange)="updateCalendarEventAssignee(event, $event)"
+                            >
+                              <nz-option
+                                [nzValue]="null"
+                                [nzLabel]="'dashboard.actions.unassigned' | translate"
+                              ></nz-option>
+                              @for (assignee of assignees(); track assignee.id) {
+                                <nz-option
+                                  [nzValue]="assignee.id"
+                                  [nzLabel]="assignee.displayName"
+                                ></nz-option>
+                              }
+                            </nz-select>
+                            <div class="task-action-row__status">
+                              @if (event.kind !== 'APPOINTMENT') {
+                                @if (event.completedAt) {
+                                  <button
+                                    nz-button
+                                    type="button"
+                                    data-testid="document-calendar-event-linked-mark-not-done"
+                                    [disabled]="
+                                      isSaving() || isAiLocked() || !auth.canEditDocuments()
+                                    "
+                                    (click)="markCalendarEventNotCompleted(event)"
+                                  >
+                                    <span nz-icon nzType="undo"></span>
+                                    {{ 'documentDetail.tasks.markNotDone' | translate }}
+                                  </button>
+                                } @else {
+                                  <button
+                                    class="timeline-done-button"
+                                    nz-button
+                                    nzType="default"
+                                    type="button"
+                                    [disabled]="
+                                      isSaving() || isAiLocked() || !auth.canEditDocuments()
+                                    "
+                                    [attr.aria-label]="
+                                      'dashboard.actions.markDateDoneAria'
+                                        | translate: { title: event.title }
+                                    "
+                                    (click)="markCalendarEventCompleted(event)"
+                                  >
+                                    <span nz-icon nzType="check-circle"></span>
+                                    <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                                  </button>
+                                }
+                              }
+                            </div>
+                          </div>
+                        </article>
+                      }
+                    </div>
+                  </section>
+                }
+              </form>
+            } @else {
+              @if (doc.calendarEvents.length === 0) {
+                <p>{{ 'documentDetail.calendar.empty' | translate }}</p>
+              } @else {
+                <div class="calendar-events">
+                  @for (event of doc.calendarEvents; track event.id) {
+                    <article class="repeat-row readonly-repeat-row calendar-readonly-card">
+                      <app-calendar-event-card
+                        class="calendar-readonly-card__event"
+                        data-testid="document-calendar-event"
+                        [event]="event"
+                        appearance="plain"
+                      ></app-calendar-event-card>
+                      <div class="task-action-row task-action-row--separated">
+                        <nz-select
+                          class="assignee-select"
+                          nzSize="small"
+                          [ngModel]="event.assignedToId ?? null"
+                          [ngModelOptions]="{ standalone: true }"
+                          [nzDisabled]="isSaving() || isAiLocked() || !auth.canEditDocuments()"
+                          [nzLoading]="isSaving()"
+                          [attr.aria-label]="
+                            'dashboard.actions.assignDateAria' | translate: { title: event.title }
+                          "
+                          (ngModelChange)="updateCalendarEventAssignee(event, $event)"
+                        >
+                          <nz-option
+                            [nzValue]="null"
+                            [nzLabel]="'dashboard.actions.unassigned' | translate"
+                          ></nz-option>
+                          @for (assignee of assignees(); track assignee.id) {
+                            <nz-option
+                              [nzValue]="assignee.id"
+                              [nzLabel]="assignee.displayName"
+                            ></nz-option>
+                          }
+                        </nz-select>
+                        <div class="task-action-row__status">
+                          @if (event.kind !== 'APPOINTMENT') {
+                            @if (event.completedAt) {
+                              <button
+                                nz-button
+                                type="button"
+                                data-testid="document-calendar-event-mark-not-done"
+                                [disabled]="isSaving() || isAiLocked() || !auth.canEditDocuments()"
+                                (click)="markCalendarEventNotCompleted(event)"
+                              >
+                                <span nz-icon nzType="undo"></span>
+                                {{ 'documentDetail.tasks.markNotDone' | translate }}
+                              </button>
+                            } @else {
+                              <button
+                                class="timeline-done-button"
+                                nz-button
+                                nzType="default"
+                                type="button"
+                                [disabled]="isSaving() || isAiLocked() || !auth.canEditDocuments()"
+                                [attr.aria-label]="
+                                  'dashboard.actions.markDateDoneAria'
+                                    | translate: { title: event.title }
+                                "
+                                (click)="markCalendarEventCompleted(event)"
+                              >
+                                <span nz-icon nzType="check-circle"></span>
+                                <span>{{ 'dashboard.actions.markDone' | translate }}</span>
+                              </button>
+                            }
+                          }
+                        </div>
+                      </div>
+                    </article>
+                  }
+                </div>
+              }
+            }
+          </nz-tab>
+          <nz-tab [nzTitle]="historyTabTitle">
+            <section
+              class="history-panel"
+              [attr.aria-label]="'documentDetail.history.title' | translate"
+            >
+              @if (historyError()) {
+                <nz-alert nzType="error" [nzMessage]="historyError()! | translate"></nz-alert>
+              }
+
+              @if (isHistoryLoading() && historyItems().length === 0) {
+                <nz-spin nzSimple></nz-spin>
+              } @else if (historyItems().length === 0) {
+                <nz-empty
+                  [nzNotFoundContent]="'documentDetail.history.empty' | translate"
+                ></nz-empty>
+              } @else {
+                <nz-timeline>
+                  @for (event of historyItems(); track event.id) {
+                    <nz-timeline-item [nzColor]="historyColor(event.type)">
+                      <article class="history-event">
+                        <header>
+                          <strong>{{ event.summary }}</strong>
+                          <time>{{ dateTime(event.createdAt) }}</time>
+                        </header>
+                        <small>{{ historyActor(event) }}</small>
+                        @if (historyContext(event); as context) {
+                          <small>{{ context }}</small>
+                        }
+                        @if (event.changes.length > 0) {
+                          <dl>
+                            @for (change of event.changes; track change.field) {
+                              <div>
+                                <dt>{{ change.label }}</dt>
+                                <dd>
+                                  <span>{{ changeValue(change.oldValue) }}</span>
+                                  <span aria-hidden="true">&rarr;</span>
+                                  <span>{{ changeValue(change.newValue) }}</span>
+                                </dd>
+                              </div>
+                            }
+                          </dl>
+                        }
+                      </article>
+                    </nz-timeline-item>
+                  }
+                </nz-timeline>
+                @if (hasMoreHistory()) {
+                  <button
+                    nz-button
+                    type="button"
+                    [disabled]="isHistoryLoading()"
+                    (click)="loadMoreHistory()"
+                  >
+                    {{ 'common.loadMore' | translate }}
+                  </button>
+                }
+              }
+            </section>
+          </nz-tab>
+        </nz-tabs>
+
+        @if (doc.failedReason && auth.isAdmin()) {
+          <nz-alert
+            nzType="error"
+            [nzMessage]="'documentDetail.processingFailed' | translate"
+            [nzDescription]="doc.failedReason"
+          ></nz-alert>
+        }
+      </nz-card>
+
+      <div class="pdf-pane">
+        @if (pdfUrl(); as pdfSource) {
+          <app-pdf-document-viewer
+            [src]="pdfSource"
+            [title]="'documentDetail.pdf.previewTitle' | translate"
+          ></app-pdf-document-viewer>
+        } @else {
+          <div class="pdf-placeholder">
+            <span nz-icon nzType="file-text"></span>
+            <strong>{{ 'documentDetail.pdf.notAvailable' | translate }}</strong>
+            <span>
+              {{ 'documentDetail.pdf.statusPrefix' | translate }}
+              {{ documentStatusLabelKey(doc.status) | translate }}
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</nz-spin>

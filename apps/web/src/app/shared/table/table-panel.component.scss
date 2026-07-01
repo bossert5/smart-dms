@@ -1,0 +1,86 @@
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+}
+
+.app-table-panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
+}
+
+.app-table-panel__actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 53px;
+  padding: 10px 12px;
+  background: var(--app-surface-muted);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.app-table-panel__actions--start {
+  justify-content: flex-start;
+}
+
+.app-table-panel__actions--split {
+  justify-content: space-between;
+}
+
+.app-table-panel__actions-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.app-table-panel__actions-group--right {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.app-table-panel__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-table-panel__content ::ng-deep > nz-table {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 980px) {
+  .app-table-panel__actions,
+  .app-table-panel__actions-group--right {
+    justify-content: flex-start;
+  }
+
+  .app-table-panel__actions-group--right {
+    margin-left: 0;
+  }
+}

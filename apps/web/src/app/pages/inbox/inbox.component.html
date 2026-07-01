@@ -1,0 +1,538 @@
+<section class="inbox-page" [appUnsavedChangesWarning]="hasPendingChanges()">
+  <ng-template #inboxToolbar>
+    <section class="toolbar">
+      <div class="toolbar__row">
+        <div class="toolbar__search-group">
+          <nz-input-group class="toolbar__search-input" [nzSuffix]="searchSuffix">
+            <input
+              nz-input
+              [placeholder]="'inbox.search.placeholder' | translate"
+              [formControl]="searchControl"
+              (keydown.enter)="submitSearch()"
+            />
+          </nz-input-group>
+        </div>
+        <ng-template #searchSuffix>
+          <button
+            nz-button
+            nzType="text"
+            nzSize="small"
+            type="button"
+            class="toolbar__search-submit"
+            [attr.aria-label]="'common.search' | translate"
+            (click)="submitSearch()"
+          >
+            <span nz-icon nzType="search"></span>
+          </button>
+        </ng-template>
+      </div>
+    </section>
+  </ng-template>
+
+  <ng-template #inboxReprocessActions>
+    @if (canReprocessDocuments()) {
+      <button
+        nz-button
+        nz-dropdown
+        type="button"
+        [nzDropdownMenu]="inboxReprocessMenu"
+        [disabled]="
+          isReprocessing() ||
+          isLoading() ||
+          (!hasSelectedReprocessableDocuments() &&
+            !hasSelectedRotateReprocessableDocuments() &&
+            !hasSelectedAiReprocessableDocuments())
+        "
+      >
+        <span nz-icon nzType="sync"></span>
+        {{ 'inbox.actions.reprocess' | translate }}
+        <span nz-icon nzType="down"></span>
+      </button>
+      <nz-dropdown-menu #inboxReprocessMenu="nzDropdownMenu">
+        <ul nz-menu>
+          <li
+            nz-menu-item
+            [nzDisabled]="!hasSelectedReprocessableDocuments() || isLoading() || isReprocessing()"
+            (click)="reprocessSelected()"
+          >
+            <span class="action-menu-item">
+              <span nz-icon nzType="scan"></span>
+              {{ 'common.ocr' | translate }}
+            </span>
+          </li>
+          <li
+            nz-menu-item
+            [nzDisabled]="
+              !hasSelectedRotateReprocessableDocuments() || isLoading() || isReprocessing()
+            "
+            (click)="reprocessSelectedRotated()"
+          >
+            <span nz-icon nzType="rotate-right"></span>
+            180°
+          </li>
+          <li
+            nz-menu-item
+            [nzDisabled]="!hasSelectedAiReprocessableDocuments() || isLoading() || isReprocessing()"
+            (click)="reprocessSelectedAi()"
+          >
+            <span class="action-menu-item">
+              <app-ai-logo></app-ai-logo>
+              {{ 'common.ai' | translate }}
+            </span>
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    }
+  </ng-template>
+
+  <ng-template #inboxLeftActions>
+    <button
+      nz-button
+      type="button"
+      (click)="startEdit()"
+      [disabled]="!canStartEdit()"
+      [nzLoading]="isStartingEdit()"
+      [nz-tooltip]="!isRealtimeConnected() ? ('inbox.edit.offline' | translate) : null"
+    >
+      <span nz-icon nzType="edit"></span>
+      {{ 'inbox.actions.edit' | translate }}
+    </button>
+    @if (!hasInboxChanges() && hasSelectedDocuments() && canReprocessDocuments()) {
+      <ng-container [ngTemplateOutlet]="inboxReprocessActions"></ng-container>
+    }
+  </ng-template>
+
+  <ng-template #inboxActions>
+    @if (hasSelectedDocuments()) {
+      <button
+        nz-button
+        nzType="default"
+        type="button"
+        (click)="acceptSelected()"
+        [disabled]="!hasSelectedEligibleDocuments() || isLoading() || isReprocessing()"
+      >
+        <span nz-icon nzType="check-square"></span>
+        {{
+          'inbox.actions.acceptSelectedWithCount'
+            | translate: { count: eligibleSelectedDocumentIds().length }
+        }}
+      </button>
+    }
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      (click)="acceptAllLoaded()"
+      [disabled]="eligibleDocuments().length === 0 || isLoading()"
+    >
+      <span nz-icon nzType="check-circle"></span>
+      {{ 'inbox.actions.acceptAllDocuments' | translate }}
+    </button>
+  </ng-template>
+
+  <ng-template #inboxEditActions>
+    <button
+      nz-button
+      type="button"
+      [disabled]="isSavingMetadata() || !hasInboxChanges()"
+      (click)="revertChanges()"
+    >
+      <span nz-icon nzType="undo"></span>
+      {{ 'inbox.actions.revertChanges' | translate }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [nzLoading]="isSavingMetadata()"
+      [disabled]="isSavingMetadata() || !hasInboxChanges() || hasInvalidInboxChanges()"
+      (click)="saveChanges()"
+    >
+      <span nz-icon nzType="save"></span>
+      {{ 'inbox.actions.saveChanges' | translate }}
+    </button>
+  </ng-template>
+
+  <ng-template #inboxEditLeftActions>
+    <button nz-button type="button" [disabled]="isSavingMetadata()" (click)="cancelEdit()">
+      <span nz-icon nzType="close"></span>
+      {{ 'inbox.actions.cancelEdit' | translate }}
+    </button>
+  </ng-template>
+
+  <section class="inbox-controls">
+    <ng-container [ngTemplateOutlet]="inboxToolbar"></ng-container>
+  </section>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  @if (!isLoading() && documents().length === 0 && !hasActiveSearch()) {
+    <nz-empty class="page-empty-state" [nzNotFoundContent]="'inbox.empty' | translate"></nz-empty>
+  } @else {
+    <app-table-panel
+      [leftActions]="isEditMode() ? inboxEditLeftActions : inboxLeftActions"
+      [actions]="isEditMode() ? inboxEditActions : inboxActions"
+    >
+      <nz-table
+        #inboxTableScroller="appInfiniteTable"
+        appInfiniteTable
+        class="inbox-table"
+        [nzData]="rows()"
+        [nzLoading]="isLoading()"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzPageIndex]="page()"
+        [nzPageSize]="pageSize()"
+        [nzNoResult]="'inbox.search.noResults' | translate"
+        [nzScroll]="inboxTableScroller.scroll()"
+        [appInfiniteTableHasMore]="hasMoreDocuments()"
+        [appInfiniteTableLoading]="isLoading()"
+        [appInfiniteTableLoadingMore]="isLoadingMore()"
+        [appInfiniteTableRenderKey]="rows().length"
+        (appInfiniteTableNearEnd)="loadNextPage()"
+        nzTableLayout="auto"
+        nzSize="small"
+      >
+        <thead>
+          <tr>
+            <th class="col-select" nzWidth="56px">
+              <label
+                nz-checkbox
+                [nzChecked]="allEligibleSelected()"
+                [nzIndeterminate]="someEligibleSelected()"
+                [nzDisabled]="!hasSelectableDocuments()"
+                (nzCheckedChange)="toggleAllEligible($event)"
+              ></label>
+            </th>
+            <th class="col-title">{{ 'documents.table.title' | translate }}</th>
+            <th class="col-sender" nzWidth="220px">{{ 'documents.table.sender' | translate }}</th>
+            <th class="col-document-type" nzWidth="200px">
+              {{ 'documents.table.type' | translate }}
+            </th>
+            <th class="col-date" nzWidth="184px" aria-sort="descending">
+              {{ 'documents.table.date' | translate }}
+            </th>
+            <th
+              class="col-actions"
+              nzWidth="96px"
+              [attr.aria-label]="'inbox.table.actions' | translate"
+            ></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id) {
+            @let document = row.document;
+            <tr [formGroup]="row.form">
+              <td class="col-select">
+                <label
+                  nz-checkbox
+                  [nzChecked]="isSelected(document)"
+                  [nzDisabled]="!canSelect(document)"
+                  (nzCheckedChange)="toggleDocument(document, $event)"
+                ></label>
+              </td>
+              <td
+                class="col-title"
+                [class.is-changed-field]="isInboxFieldChanged(row, 'title')"
+                [class.is-missing-required-field]="isMissingRequiredField(row, 'title')"
+              >
+                <div class="row-title">
+                  @if (thumbnailUrl(document); as thumbnail) {
+                    <a
+                      class="row-preview-link"
+                      nz-popover
+                      nzPopoverPlacement="right"
+                      nzPopoverOverlayClassName="inbox-thumbnail-popover"
+                      [nzPopoverContent]="thumbnailPopover"
+                      [nzPopoverMouseEnterDelay]="thumbnailPopoverDelaySeconds"
+                      [routerLink]="['/inbox', document.id]"
+                      [attr.aria-label]="
+                        'inbox.actions.openDocument'
+                          | translate: { title: documentDisplayTitle(document) }
+                      "
+                    >
+                      <span nz-icon nzType="eye"></span>
+                    </a>
+                    <ng-template #thumbnailPopover>
+                      <div class="thumbnail-popover">
+                        <img [src]="thumbnail" [alt]="documentDisplayTitle(document)" />
+                      </div>
+                    </ng-template>
+                  } @else {
+                    <a
+                      class="row-preview-link"
+                      [routerLink]="['/inbox', document.id]"
+                      [attr.aria-label]="
+                        'inbox.actions.openDocument'
+                          | translate: { title: documentDisplayTitle(document) }
+                      "
+                    >
+                      <span nz-icon nzType="eye"></span>
+                    </a>
+                  }
+                  @if (isEditMode()) {
+                    <div class="metadata-edit">
+                      <input
+                        nz-input
+                        class="metadata-input"
+                        formControlName="title"
+                        maxlength="500"
+                        [attr.aria-label]="'documents.table.title' | translate"
+                      />
+                      @if (isInboxFieldChanged(row, 'title')) {
+                        <button
+                          nz-button
+                          nzType="text"
+                          type="button"
+                          class="field-reset"
+                          [attr.aria-label]="'inbox.actions.resetField' | translate"
+                          [nz-tooltip]="'inbox.actions.resetField' | translate"
+                          (click)="resetField(row, 'title')"
+                        >
+                          <span nz-icon nzType="undo"></span>
+                        </button>
+                      }
+                    </div>
+                  } @else {
+                    <a
+                      class="metadata-text metadata-link"
+                      [routerLink]="['/inbox', document.id]"
+                      [attr.title]="document.summary || documentDisplayTitle(document)"
+                    >
+                      {{ documentDisplayTitle(document) }}
+                    </a>
+                  }
+                  @if (showTenantNameChip()) {
+                    <nz-tag class="row-tenant" [attr.title]="document.tenant.name">
+                      <span class="row-tenant__label">{{ document.tenant.name }}</span>
+                    </nz-tag>
+                  }
+                  @if (document.status !== 'READY') {
+                    <nz-tag class="row-status" [nzColor]="statusColor(document.status)">
+                      <span nz-icon [nzType]="statusIcon(document.status)"></span>
+                      <span class="row-status__label">
+                        {{ documentStatusLabelKey(document.status) | translate }}
+                      </span>
+                    </nz-tag>
+                  }
+                </div>
+              </td>
+              <td
+                class="col-sender"
+                [class.is-changed-field]="isInboxFieldChanged(row, 'sender')"
+                [class.is-missing-required-field]="isMissingRequiredField(row, 'sender')"
+              >
+                @if (isEditMode()) {
+                  <div class="metadata-edit">
+                    <input
+                      nz-input
+                      class="metadata-input"
+                      formControlName="sender"
+                      maxlength="300"
+                      [attr.aria-label]="'documents.table.sender' | translate"
+                    />
+                    @if (isInboxFieldChanged(row, 'sender')) {
+                      <button
+                        nz-button
+                        nzType="text"
+                        type="button"
+                        class="field-reset"
+                        [attr.aria-label]="'inbox.actions.resetField' | translate"
+                        [nz-tooltip]="'inbox.actions.resetField' | translate"
+                        (click)="resetField(row, 'sender')"
+                      >
+                        <span nz-icon nzType="undo"></span>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <span class="metadata-text">{{
+                    document.sender || ('common.emptyValue' | translate)
+                  }}</span>
+                }
+              </td>
+              <td
+                class="col-document-type"
+                [class.is-changed-field]="isInboxFieldChanged(row, 'documentTypeId')"
+                [class.is-missing-required-field]="isMissingRequiredField(row, 'documentTypeId')"
+              >
+                @if (isEditMode()) {
+                  <div class="metadata-edit">
+                    <nz-select
+                      class="metadata-select"
+                      formControlName="documentTypeId"
+                      nzAllowClear
+                      nzShowSearch
+                      [nzPlaceHolder]="'documentDetail.fields.noDocumentType' | translate"
+                      [attr.aria-label]="'documentDetail.fields.documentType' | translate"
+                    >
+                      @for (documentType of activeDocumentTypes(); track documentType.id) {
+                        <nz-option
+                          [nzValue]="documentType.id"
+                          [nzLabel]="documentTypeDisplayName(documentType)"
+                        ></nz-option>
+                      }
+                    </nz-select>
+                    @if (isInboxFieldChanged(row, 'documentTypeId')) {
+                      <button
+                        nz-button
+                        nzType="text"
+                        type="button"
+                        class="field-reset"
+                        [attr.aria-label]="'inbox.actions.resetField' | translate"
+                        [nz-tooltip]="'inbox.actions.resetField' | translate"
+                        (click)="resetField(row, 'documentTypeId')"
+                      >
+                        <span nz-icon nzType="undo"></span>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <span class="metadata-text">{{ documentTypeName(document) }}</span>
+                }
+              </td>
+              <td
+                class="col-date"
+                [class.is-changed-field]="isInboxFieldChanged(row, 'documentDate')"
+                [class.is-missing-required-field]="isMissingRequiredField(row, 'documentDate')"
+              >
+                @if (isEditMode()) {
+                  <div class="metadata-edit">
+                    <input
+                      nz-input
+                      class="metadata-input"
+                      type="date"
+                      formControlName="documentDate"
+                      [attr.aria-label]="'documents.table.date' | translate"
+                    />
+                    @if (isInboxFieldChanged(row, 'documentDate')) {
+                      <button
+                        nz-button
+                        nzType="text"
+                        type="button"
+                        class="field-reset"
+                        [attr.aria-label]="'inbox.actions.resetField' | translate"
+                        [nz-tooltip]="'inbox.actions.resetField' | translate"
+                        (click)="resetField(row, 'documentDate')"
+                      >
+                        <span nz-icon nzType="undo"></span>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <span class="metadata-text">
+                    {{ shortDate(document.documentDate) || ('common.emptyValue' | translate) }}
+                  </span>
+                }
+              </td>
+              <td class="col-actions">
+                <div class="row-actions">
+                  @if (canReprocessDocuments()) {
+                    <button
+                      nz-button
+                      nz-dropdown
+                      type="button"
+                      [nzDropdownMenu]="rowReprocessMenu"
+                      [disabled]="
+                        !canReprocessDocumentRow(document) &&
+                        !canRotateReprocessDocumentRow(document) &&
+                        !canReprocessAiDocumentRow(document)
+                      "
+                      [attr.aria-label]="
+                        'inbox.actions.reprocessDocument'
+                          | translate: { title: documentDisplayTitle(document) }
+                      "
+                      nz-tooltip
+                      [nzTooltipTitle]="'inbox.actions.reprocess' | translate"
+                    >
+                      <span nz-icon nzType="sync"></span>
+                    </button>
+                    <nz-dropdown-menu #rowReprocessMenu="nzDropdownMenu">
+                      <ul nz-menu>
+                        <li
+                          nz-menu-item
+                          [nzDisabled]="!canReprocessDocumentRow(document)"
+                          (click)="reprocessDocument(document)"
+                        >
+                          <span class="action-menu-item">
+                            <span nz-icon nzType="scan"></span>
+                            {{ 'common.ocr' | translate }}
+                          </span>
+                        </li>
+                        <li
+                          nz-menu-item
+                          [nzDisabled]="!canRotateReprocessDocumentRow(document)"
+                          (click)="reprocessDocumentRotated(document)"
+                        >
+                          <span class="action-menu-item">
+                            <span nz-icon nzType="rotate-right"></span>
+                            180°
+                          </span>
+                        </li>
+                        <li
+                          nz-menu-item
+                          [nzDisabled]="!canReprocessAiDocumentRow(document)"
+                          (click)="reprocessDocumentAi(document)"
+                        >
+                          <span class="action-menu-item">
+                            <app-ai-logo></app-ai-logo>
+                            {{ 'common.ai' | translate }}
+                          </span>
+                        </li>
+                      </ul>
+                    </nz-dropdown-menu>
+                  }
+                  @if (canEdit()) {
+                    <button
+                      nz-button
+                      nzDanger
+                      type="button"
+                      [disabled]="!canDeleteDocumentRow(document)"
+                      nz-popconfirm
+                      [nzPopconfirmTitle]="
+                        'inbox.actions.deleteConfirm'
+                          | translate: { title: documentDisplayTitle(document) }
+                      "
+                      [attr.aria-label]="
+                        'inbox.actions.deleteDocument'
+                          | translate: { title: documentDisplayTitle(document) }
+                      "
+                      nz-tooltip
+                      [nzTooltipTitle]="'common.delete' | translate"
+                      (nzOnConfirm)="deleteDocument(document)"
+                    >
+                      <span nz-icon nzType="delete"></span>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+
+      @if (documents().length > 0) {
+        <div
+          class="app-infinite-loader"
+          role="status"
+          aria-live="polite"
+          [attr.aria-busy]="isLoadingMore()"
+        >
+          @if (isLoadingMore()) {
+            <span nz-icon nzType="sync"></span>
+            <span class="app-infinite-loader__text">
+              {{ 'common.loadingMore' | translate }}
+            </span>
+          } @else if (hasMoreDocuments()) {
+            <button nz-button type="button" (click)="loadNextPage()">
+              <span nz-icon nzType="down"></span>
+              {{ 'common.loadMore' | translate }}
+            </button>
+          }
+        </div>
+      }
+    </app-table-panel>
+  }
+</section>

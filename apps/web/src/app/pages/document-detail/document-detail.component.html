@@ -1,0 +1,25 @@
+@if (activeDocumentId(); as activeId) {
+  <section class="document-detail-workspace">
+    @for (document of openDocuments.items(); track document.id) {
+      <app-document-detail-pane
+        class="document-detail-workspace__pane"
+        [class.document-detail-workspace__pane--active]="isActive(document.id)"
+        [class.document-detail-workspace__pane--inactive]="!isActive(document.id)"
+        [documentId]="document.id"
+        [isActive]="isActive(document.id)"
+        [backLink]="backLink()"
+        [attr.aria-hidden]="isActive(document.id) ? null : 'true'"
+        [attr.inert]="isActive(document.id) ? null : ''"
+      ></app-document-detail-pane>
+    }
+
+    @if (directDocumentId(); as documentId) {
+      <app-document-detail-pane
+        class="document-detail-workspace__pane document-detail-workspace__pane--active"
+        [documentId]="documentId"
+        [isActive]="true"
+        [backLink]="backLink()"
+      ></app-document-detail-pane>
+    }
+  </section>
+}

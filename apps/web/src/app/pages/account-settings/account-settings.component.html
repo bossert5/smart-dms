@@ -1,0 +1,252 @@
+<section class="account-settings-page" [attr.aria-label]="'accountSettings.title' | translate">
+  <form nz-form nzLayout="vertical" [formGroup]="settingsForm">
+    <nz-tabs>
+      <nz-tab [nzTitle]="'accountSettings.tabs.appearance' | translate">
+        <nz-card>
+          <div class="setting-row">
+            <div>
+              <label for="account-language">
+                {{ 'accountSettings.language.label' | translate }}
+              </label>
+              <p>{{ 'accountSettings.language.help' | translate }}</p>
+            </div>
+            <nz-select id="account-language" formControlName="language">
+              @for (option of language.options; track option.code) {
+                <nz-option
+                  [nzValue]="option.code"
+                  [nzLabel]="option.labelKey | translate"
+                ></nz-option>
+              }
+            </nz-select>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <label for="account-theme">
+                {{ 'accountSettings.theme.label' | translate }}
+              </label>
+              <p>{{ 'accountSettings.theme.help' | translate }}</p>
+            </div>
+            <nz-switch
+              id="account-theme"
+              formControlName="isDarkTheme"
+              [nzCheckedChildren]="'accountSettings.theme.dark' | translate"
+              [nzUnCheckedChildren]="'accountSettings.theme.light' | translate"
+            ></nz-switch>
+          </div>
+        </nz-card>
+      </nz-tab>
+
+      <nz-tab [nzTitle]="'accountSettings.tabs.workspace' | translate">
+        <nz-card>
+          <div class="setting-row">
+            <div>
+              <label for="account-tenant-scope">
+                {{ 'accountSettings.tenant.label' | translate }}
+              </label>
+              <p>{{ 'accountSettings.tenant.help' | translate }}</p>
+            </div>
+            <nz-select
+              id="account-tenant-scope"
+              formControlName="tenantScope"
+              [nzDisabled]="!hasTenantChoices()"
+            >
+              @for (option of tenantOptions(); track option.value) {
+                @if (option.labelKey) {
+                  <nz-option
+                    [nzValue]="option.value"
+                    [nzLabel]="option.labelKey | translate"
+                  ></nz-option>
+                } @else {
+                  <nz-option [nzValue]="option.value" [nzLabel]="option.label ?? ''"></nz-option>
+                }
+              }
+            </nz-select>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <label for="account-start-route">
+                {{ 'accountSettings.startPage.label' | translate }}
+              </label>
+              <p>{{ 'accountSettings.startPage.help' | translate }}</p>
+            </div>
+            <nz-select id="account-start-route" formControlName="startRoute">
+              @for (option of preferences.startRouteOptions; track option.route) {
+                <nz-option
+                  [nzValue]="option.route"
+                  [nzLabel]="option.labelKey | translate"
+                ></nz-option>
+              }
+            </nz-select>
+          </div>
+        </nz-card>
+      </nz-tab>
+
+      <nz-tab [nzTitle]="'accountSettings.tabs.securityNotifications' | translate">
+        <nz-card>
+          <div class="setting-row">
+            <div>
+              <label for="account-notifications-muted">
+                {{ 'accountSettings.notifications.muted.label' | translate }}
+              </label>
+              <p>{{ 'accountSettings.notifications.muted.help' | translate }}</p>
+            </div>
+            <nz-switch
+              id="account-notifications-muted"
+              formControlName="notificationsMuted"
+            ></nz-switch>
+          </div>
+
+          <div class="setting-row">
+            <div>
+              <strong>{{ 'accountSettings.notifications.unread.label' | translate }}</strong>
+              <p>
+                {{
+                  'accountSettings.notifications.unread.value'
+                    | translate: { count: notifications.unreadCount() }
+                }}
+              </p>
+            </div>
+            <button nz-button type="button" (click)="notifications.markSeen()">
+              <span nz-icon nzType="check-circle"></span>
+              <span>{{ 'accountSettings.notifications.markSeen' | translate }}</span>
+            </button>
+          </div>
+
+          @if (passwordSuccess(); as successKey) {
+            <nz-alert nzType="success" [nzMessage]="successKey | translate"></nz-alert>
+          }
+
+          <div class="setting-row">
+            <div>
+              <strong>{{ 'accountSettings.password.label' | translate }}</strong>
+              <p>{{ 'accountSettings.password.help' | translate }}</p>
+            </div>
+            <button nz-button type="button" (click)="openPasswordDialog()">
+              <span nz-icon nzType="setting"></span>
+              <span>{{ 'accountSettings.password.change' | translate }}</span>
+            </button>
+          </div>
+        </nz-card>
+      </nz-tab>
+    </nz-tabs>
+  </form>
+
+  <nz-modal
+    [nzVisible]="isPasswordDialogOpen()"
+    [nzTitle]="'auth.passwordChange.title' | translate"
+    [nzFooter]="passwordDialogFooter"
+    [nzMaskClosable]="!isChangingPassword()"
+    [nzKeyboard]="!isChangingPassword()"
+    [nzClosable]="!isChangingPassword()"
+    (nzOnCancel)="closePasswordDialog()"
+  >
+    <ng-container *nzModalContent>
+      <form
+        nz-form
+        nzLayout="vertical"
+        [formGroup]="passwordForm"
+        (ngSubmit)="submitPasswordChange()"
+      >
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="account-current-password">
+            {{ 'auth.passwordChange.currentPassword' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-input-password>
+              <input
+                nz-input
+                id="account-current-password"
+                formControlName="currentPassword"
+                autocomplete="current-password"
+                maxlength="256"
+              />
+            </nz-input-password>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="account-new-password">
+            {{ 'auth.passwordChange.newPassword' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-input-password>
+              <input
+                nz-input
+                id="account-new-password"
+                formControlName="newPassword"
+                autocomplete="new-password"
+                maxlength="256"
+              />
+            </nz-input-password>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="account-confirm-password">
+            {{ 'auth.passwordChange.confirmPassword' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-input-password>
+              <input
+                nz-input
+                id="account-confirm-password"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+                maxlength="256"
+              />
+            </nz-input-password>
+          </nz-form-control>
+        </nz-form-item>
+
+        <ul
+          class="password-requirements"
+          [attr.aria-label]="'validation.password.requirements' | translate"
+        >
+          @for (requirement of passwordRequirements(); track requirement.id) {
+            <li
+              class="password-requirement"
+              [class.is-met]="requirement.isMet"
+              [class.is-unmet]="!requirement.isMet"
+            >
+              <span
+                nz-icon
+                [nzType]="requirement.isMet ? 'check-circle' : 'close-circle'"
+                [attr.aria-label]="
+                  (requirement.isMet ? 'validation.met' : 'validation.unmet') | translate
+                "
+              ></span>
+              <span>{{ requirement.labelKey | translate }}</span>
+            </li>
+          }
+        </ul>
+
+        @if (passwordDialogError(); as errorKey) {
+          <nz-alert nzType="error" [nzMessage]="errorKey | translate"></nz-alert>
+        }
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #passwordDialogFooter>
+    <button
+      nz-button
+      type="button"
+      [disabled]="isChangingPassword()"
+      (click)="closePasswordDialog()"
+    >
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [nzLoading]="isChangingPassword()"
+      [disabled]="!canSubmitPasswordChange()"
+      (click)="submitPasswordChange()"
+    >
+      {{ 'auth.passwordChange.submit' | translate }}
+    </button>
+  </ng-template>
+</section>

@@ -1,0 +1,137 @@
+<section class="email-page">
+  <ng-template #emailActions>
+    <button
+      nz-button
+      type="button"
+      [disabled]="isLoading()"
+      [attr.aria-label]="'common.refresh' | translate"
+      (click)="reload()"
+    >
+      <span nz-icon nzType="reload"></span>
+      {{ 'common.refresh' | translate }}
+    </button>
+  </ng-template>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  @if (!isLoading() && messages().length === 0 && !error()) {
+    <nz-empty
+      class="page-empty-state"
+      [nzNotFoundContent]="'email.emptyMessages' | translate"
+    ></nz-empty>
+  } @else {
+    <app-table-panel [actions]="emailActions">
+      <nz-table
+        #messageTable
+        #messageTableScroller="appInfiniteTable"
+        appInfiniteTable
+        class="email-table"
+        [nzData]="messages()"
+        [nzLoading]="isLoading()"
+        [nzFrontPagination]="false"
+        [nzShowPagination]="false"
+        [nzPageIndex]="currentPage()"
+        [nzPageSize]="pageSize()"
+        [nzScroll]="messageTableScroller.scroll()"
+        [appInfiniteTableX]="'max-content'"
+        [appInfiniteTableHasMore]="hasMoreMessages()"
+        [appInfiniteTableLoading]="isLoading()"
+        [appInfiniteTableLoadingMore]="isLoadingMore()"
+        [appInfiniteTableRenderKey]="messages().length"
+        (appInfiniteTableNearEnd)="loadNextPage()"
+        nzSize="small"
+      >
+        <thead>
+          <tr>
+            <th>{{ 'email.messages.receivedAt' | translate }}</th>
+            <th>{{ 'email.messages.from' | translate }}</th>
+            <th>{{ 'email.messages.subject' | translate }}</th>
+            <th>{{ 'email.messages.mailbox' | translate }}</th>
+            <th>{{ 'email.messages.folder' | translate }}</th>
+            <th class="col-attachments">{{ 'email.messages.attachments' | translate }}</th>
+            <th
+              class="col-processing-status"
+              [attr.aria-label]="'email.messages.processingStatus' | translate"
+            ></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (message of messageTable.data; track trackMessage($index, message)) {
+            <tr>
+              <td>{{ shortDateTime(message.receivedAt || message.createdAt) }}</td>
+              <td>
+                @if (senderLabel(message)) {
+                  <span [attr.title]="message.fromAddress">
+                    {{ senderLabel(message) }}
+                  </span>
+                } @else {
+                  <span class="row-empty">{{ 'common.unknown' | translate }}</span>
+                }
+              </td>
+              <td>{{ message.subject || ('common.emptyValue' | translate) }}</td>
+              <td>{{ message.mailboxName }}</td>
+              <td>{{ message.folderPath }}</td>
+              <td class="col-attachments">
+                <div class="attachment-list">
+                  @for (
+                    attachment of message.attachments;
+                    track trackAttachment($index, attachment)
+                  ) {
+                    @if (attachment.documentId) {
+                      <nz-tag>
+                        <a
+                          [routerLink]="['/documents', attachment.documentId]"
+                          [attr.aria-label]="
+                            'email.messages.openDocument'
+                              | translate: { fileName: attachment.fileName }
+                          "
+                        >
+                          {{ attachment.fileName }}
+                        </a>
+                      </nz-tag>
+                    } @else {
+                      <nz-tag>
+                        {{ attachment.fileName }}
+                      </nz-tag>
+                    }
+                  } @empty {
+                    <span class="row-empty">{{ 'common.emptyValue' | translate }}</span>
+                  }
+                </div>
+              </td>
+              <td class="col-processing-status">
+                @let state = messageProcessingState(message);
+                <nz-tag [nzColor]="processingStateColor(state)">
+                  {{ processingStateLabelKey(state) | translate }}
+                </nz-tag>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+
+      @if (messages().length > 0) {
+        <div
+          class="app-infinite-loader"
+          role="status"
+          aria-live="polite"
+          [attr.aria-busy]="isLoadingMore()"
+        >
+          @if (isLoadingMore()) {
+            <span nz-icon nzType="sync"></span>
+            <span class="app-infinite-loader__text">
+              {{ 'common.loadingMore' | translate }}
+            </span>
+          } @else if (hasMoreMessages()) {
+            <button nz-button type="button" (click)="loadNextPage()">
+              <span nz-icon nzType="down"></span>
+              {{ 'common.loadMore' | translate }}
+            </button>
+          }
+        </div>
+      }
+    </app-table-panel>
+  }
+</section>

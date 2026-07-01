@@ -1,0 +1,71 @@
+<nz-badge [nzCount]="center.unreadCount()" [nzOverflowCount]="99">
+  <button
+    data-testid="notifications-toggle"
+    nz-button
+    nzType="text"
+    nzShape="circle"
+    nz-popover
+    nzPopoverPlacement="bottomRight"
+    nzPopoverTrigger="click"
+    [nzPopoverContent]="notificationsPanel"
+    [attr.aria-label]="
+      (center.isMuted() ? 'notifications.mutedAria' : 'notifications.aria') | translate
+    "
+    (nzPopoverVisibleChange)="popoverVisibleChanged($event)"
+  >
+    <span nz-icon [nzType]="center.isMuted() ? 'muted' : 'bell'"></span>
+  </button>
+</nz-badge>
+
+<ng-template #notificationsPanel>
+  <section class="notifications-panel">
+    <header>
+      <div>
+        <strong>{{ 'notifications.title' | translate }}</strong>
+        <span [class.connected]="center.isConnected()">
+          {{
+            (center.isConnected() ? 'notifications.status.live' : 'notifications.status.offline')
+              | translate
+          }}
+        </span>
+      </div>
+      <label>
+        <span>{{ 'notifications.muted' | translate }}</span>
+        <nz-switch
+          nzSize="small"
+          [ngModel]="center.isMuted()"
+          (ngModelChange)="mutedChanged($event)"
+        ></nz-switch>
+      </label>
+    </header>
+
+    @if (center.notifications().length === 0) {
+      <nz-empty [nzNotFoundContent]="'notifications.empty' | translate"></nz-empty>
+    } @else {
+      <nz-list nzSize="small" class="notification-list">
+        @for (notification of center.notifications(); track notification.id) {
+          <nz-list-item>
+            <button
+              type="button"
+              class="notification-item"
+              [class.clickable]="canOpen(notification)"
+              [disabled]="!canOpen(notification)"
+              (click)="openNotification(notification)"
+            >
+              <div class="notification-main">
+                <strong>{{ notification.title }}</strong>
+                <small>{{ notification.message }}</small>
+              </div>
+              <div class="notification-meta">
+                <nz-tag [nzColor]="severityColor(notification.severity)">
+                  {{ severityLabelKey(notification.severity) | translate }}
+                </nz-tag>
+                <time>{{ time(notification.createdAt) }}</time>
+              </div>
+            </button>
+          </nz-list-item>
+        }
+      </nz-list>
+    }
+  </section>
+</ng-template>

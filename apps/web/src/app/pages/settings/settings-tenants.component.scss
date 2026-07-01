@@ -1,0 +1,119 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 60px - var(--app-content-padding) - var(--app-content-padding));
+  min-width: 0;
+  min-height: 0;
+}
+
+.tenants-settings-page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tenants-settings-page > nz-alert {
+  flex: 0 0 auto;
+  margin-bottom: 18px;
+}
+
+.tenants-table {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tenants-table input[nz-input],
+.tenants-table nz-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.tenants-table .ant-checkbox-wrapper {
+  justify-content: center;
+}
+
+.checkbox-column,
+.checkbox-cell {
+  min-width: 72px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.disabled-column,
+.disabled-cell {
+  width: 112px;
+  min-width: 112px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tenants-table tr.is-draft td {
+  background: color-mix(in srgb, var(--app-surface-muted) 52%, transparent);
+}
+
+.tenants-table td.is-changed-field,
+.tenants-table tr:hover > td.is-changed-field,
+.tenants-table td.is-changed-field.ant-table-cell-row-hover {
+  background: color-mix(in srgb, #faad14 18%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #d48806;
+}
+
+:host-context(html[data-theme='dark']) .tenants-table td.is-changed-field,
+:host-context(html[data-theme='dark']) .tenants-table tr:hover > td.is-changed-field,
+:host-context(html[data-theme='dark']) .tenants-table td.is-changed-field.ant-table-cell-row-hover {
+  background: color-mix(in srgb, #faad14 24%, var(--app-bg));
+  box-shadow: inset 3px 0 0 #ffc53d;
+}
+
+.count-column,
+.count-cell {
+  width: 96px;
+  text-align: center;
+}
+
+.actions-column,
+.actions-cell {
+  width: 96px;
+  min-width: 96px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-cell button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.actions-cell button + button {
+  margin-left: 6px;
+}
+
+.delete-tenant-form {
+  display: grid;
+  gap: 4px;
+}
+
+.delete-warning,
+.delete-user-note {
+  margin: 0 0 12px;
+  color: var(--app-text);
+  line-height: 1.5;
+}
+
+.delete-user-note {
+  color: var(--app-text-muted);
+}
+
+.document-action-group {
+  display: grid;
+  gap: 8px;
+}

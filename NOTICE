@@ -1,0 +1,15 @@
+Smart DMS
+Copyright (C) 2026 Pascal Bossert
+
+Smart DMS source code is licensed under the GNU Affero General Public License
+v3.0 only. See LICENSE for the complete license text.
+
+Smart DMS processes user-provided documents, OCR output, AI provider responses,
+email content, metadata and configuration values. OCR results and AI-extracted
+metadata can be incomplete or incorrect. Users are responsible for validating
+important data, protecting secrets, keeping backups and testing restore
+procedures before relying on Smart DMS for important documents.
+
+Third-party components, base images, models and language data remain governed
+by their own licenses and notice requirements. See THIRD_PARTY_NOTICES.md for
+the public third-party notice starting point.

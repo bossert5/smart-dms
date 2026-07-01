@@ -1,0 +1,352 @@
+<section class="users-page" [appUnsavedChangesWarning]="hasPendingChanges()">
+  <ng-template #usersActions>
+    <app-table-actions
+      createIcon="user-add"
+      [revertLabel]="'users.actions.revertChanges' | translate"
+      [saveLabel]="'users.actions.saveChanges' | translate"
+      [createLabel]="'users.actions.createUser' | translate"
+      (create)="openCreateDialog()"
+    ></app-table-actions>
+  </ng-template>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  <nz-modal
+    [nzVisible]="isCreateDialogOpen()"
+    [nzTitle]="'users.create.title' | translate"
+    [nzFooter]="createDialogFooter"
+    (nzOnCancel)="closeCreateDialog()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical" [formGroup]="createUserForm" (ngSubmit)="create()">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-username">{{
+            'users.fields.username' | translate
+          }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="usernameErrorTip">
+            <input
+              nz-input
+              id="create-username"
+              formControlName="username"
+              autocomplete="username"
+              maxlength="100"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-display-name">{{
+            'users.fields.name' | translate
+          }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="displayNameErrorTip">
+            <input
+              nz-input
+              id="create-display-name"
+              formControlName="displayName"
+              autocomplete="name"
+              maxlength="200"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-password">{{
+            'users.fields.initialPassword' | translate
+          }}</nz-form-label>
+          <nz-form-control>
+            <nz-input-password>
+              <input
+                nz-input
+                id="create-password"
+                formControlName="password"
+                autocomplete="new-password"
+                maxlength="256"
+              />
+            </nz-input-password>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-confirm-password">
+            {{ 'users.fields.confirmInitialPassword' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-input-password>
+              <input
+                nz-input
+                id="create-confirm-password"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+                maxlength="256"
+              />
+            </nz-input-password>
+          </nz-form-control>
+        </nz-form-item>
+        <ul
+          class="password-requirements"
+          [attr.aria-label]="'validation.password.requirements' | translate"
+        >
+          @for (requirement of createPasswordRequirements(); track requirement.id) {
+            <li
+              class="password-requirement"
+              [class.is-met]="requirement.isMet"
+              [class.is-unmet]="!requirement.isMet"
+            >
+              <span
+                nz-icon
+                [nzType]="requirement.isMet ? 'check-circle' : 'close-circle'"
+                [attr.aria-label]="
+                  (requirement.isMet ? 'validation.met' : 'validation.unmet') | translate
+                "
+              ></span>
+              <span>{{ requirement.labelKey | translate }}</span>
+            </li>
+          }
+        </ul>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-role">{{
+            'users.fields.role' | translate
+          }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="'users.validation.roleRequired' | translate">
+            <nz-select id="create-role" formControlName="role">
+              @for (entry of roles; track entry) {
+                <nz-option
+                  [nzValue]="entry"
+                  [nzLabel]="userRoleLabelKey(entry) | translate"
+                ></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-tenants">{{
+            'users.fields.tenants' | translate
+          }}</nz-form-label>
+          <nz-form-control>
+            <nz-select id="create-tenants" formControlName="tenantIds" nzMode="multiple">
+              @for (tenant of tenants(); track tenant.id) {
+                <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #usernameErrorTip>
+    @if (createUserForm.controls.username.hasError('required')) {
+      {{ 'users.validation.usernameRequired' | translate }}
+    } @else if (createUserForm.controls.username.hasError('maxlength')) {
+      {{ 'users.validation.usernameMaxLength' | translate }}
+    }
+  </ng-template>
+
+  <ng-template #displayNameErrorTip>
+    @if (createUserForm.controls.displayName.hasError('required')) {
+      {{ 'users.validation.nameRequired' | translate }}
+    } @else if (createUserForm.controls.displayName.hasError('maxlength')) {
+      {{ 'users.validation.nameMaxLength' | translate }}
+    }
+  </ng-template>
+
+  <ng-template #editDisplayNameErrorTip>
+    @if (editUserForm.controls.displayName.hasError('required')) {
+      {{ 'users.validation.nameRequired' | translate }}
+    } @else if (editUserForm.controls.displayName.hasError('maxlength')) {
+      {{ 'users.validation.nameMaxLength' | translate }}
+    }
+  </ng-template>
+
+  <ng-template #createDialogFooter>
+    <button nz-button type="button" [disabled]="isCreating()" (click)="closeCreateDialog()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [nzLoading]="isCreating()"
+      [disabled]="!canCreateUser()"
+      (click)="create()"
+    >
+      {{ 'common.create' | translate }}
+    </button>
+  </ng-template>
+
+  <nz-modal
+    [nzVisible]="isEditDialogOpen()"
+    [nzTitle]="'common.edit' | translate"
+    [nzFooter]="editDialogFooter"
+    (nzOnCancel)="closeEditDialog()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical" [formGroup]="editUserForm" (ngSubmit)="saveEditDialog()">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="edit-display-name">{{
+            'users.fields.name' | translate
+          }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="editDisplayNameErrorTip">
+            <input
+              nz-input
+              id="edit-display-name"
+              formControlName="displayName"
+              autocomplete="name"
+              maxlength="200"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="edit-role">{{
+            'users.fields.role' | translate
+          }}</nz-form-label>
+          <nz-form-control [nzErrorTip]="'users.validation.roleRequired' | translate">
+            <nz-select
+              id="edit-role"
+              formControlName="role"
+              [nzDisabled]="editingUser() ? isLastActiveAdminSelf(editingUser()!) : false"
+            >
+              @for (entry of roles; track entry) {
+                <nz-option
+                  [nzValue]="entry"
+                  [nzLabel]="userRoleLabelKey(entry) | translate"
+                ></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="edit-tenants">{{
+            'users.fields.tenants' | translate
+          }}</nz-form-label>
+          <nz-form-control>
+            <nz-select id="edit-tenants" formControlName="tenantIds" nzMode="multiple">
+              @for (tenant of tenants(); track tenant.id) {
+                <nz-option [nzValue]="tenant.id" [nzLabel]="tenant.name"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <label
+          nz-checkbox
+          formControlName="isDisabled"
+          [nzDisabled]="editingUser() ? isLastActiveAdminSelf(editingUser()!) : false"
+        >
+          {{ 'users.fields.disabled' | translate }}
+        </label>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #editDialogFooter>
+    <button nz-button type="button" [disabled]="isSaving()" (click)="closeEditDialog()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [nzLoading]="isSaving()"
+      [disabled]="editUserForm.invalid"
+      (click)="saveEditDialog()"
+    >
+      <span nz-icon nzType="save"></span>
+      {{ 'common.save' | translate }}
+    </button>
+  </ng-template>
+
+  <app-table-panel [actions]="usersActions">
+    <nz-table
+      #usersTableScroller="appInfiniteTable"
+      appInfiniteTable
+      class="users-table"
+      [nzData]="rows()"
+      [nzLoading]="isLoading()"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzPageIndex]="page()"
+      [nzPageSize]="pageSize()"
+      [nzScroll]="usersTableScroller.scroll()"
+      [appInfiniteTableHasMore]="hasMoreUsers()"
+      [appInfiniteTableLoading]="isLoading()"
+      [appInfiniteTableLoadingMore]="isLoadingMore()"
+      [appInfiniteTableRenderKey]="rows().length"
+      (appInfiniteTableNearEnd)="loadNextPage()"
+    >
+      <thead>
+        <tr>
+          <th>{{ 'users.fields.username' | translate }}</th>
+          <th>{{ 'users.fields.name' | translate }}</th>
+          <th>{{ 'users.fields.role' | translate }}</th>
+          <th>{{ 'users.fields.tenants' | translate }}</th>
+          <th class="checkbox-column disabled-column" nzWidth="112px">
+            {{ 'users.fields.disabled' | translate }}
+          </th>
+          <th class="actions-column" nzWidth="96px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+          <tr>
+            <td>{{ row.username }}</td>
+            <td>{{ row.original.displayName }}</td>
+            <td>{{ userRoleLabelKey(row.original.role) | translate }}</td>
+            <td>{{ userTenantNames(row) }}</td>
+            <td class="checkbox-cell disabled-cell">
+              {{ (row.original.isDisabled ? 'common.yes' : 'common.no') | translate }}
+            </td>
+            <td class="actions-cell">
+              <button
+                nz-button
+                type="button"
+                [disabled]="isSaving() || isDeleting()"
+                [attr.aria-label]="'common.edit' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.edit' | translate"
+                (click)="openEditDialog(row)"
+              >
+                <span nz-icon nzType="edit"></span>
+              </button>
+              <button
+                nz-button
+                nzDanger
+                type="button"
+                [disabled]="isSaving() || isDeleting() || isLastActiveAdminSelf(row)"
+                nz-popconfirm
+                [nzPopconfirmTitle]="
+                  'users.deleteConfirm' | translate: { name: row.form.controls.displayName.value }
+                "
+                [attr.aria-label]="'common.delete' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.delete' | translate"
+                (nzOnConfirm)="deleteUser(row)"
+              >
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+
+    @if (rows().length > 0) {
+      <div
+        class="app-infinite-loader"
+        role="status"
+        aria-live="polite"
+        [attr.aria-busy]="isLoadingMore()"
+      >
+        @if (isLoadingMore()) {
+          <span nz-icon nzType="sync"></span>
+          <span class="app-infinite-loader__text">
+            {{ 'common.loadingMore' | translate }}
+          </span>
+        } @else if (hasMoreUsers()) {
+          <button nz-button type="button" (click)="loadNextPage()">
+            <span nz-icon nzType="down"></span>
+            {{ 'common.loadMore' | translate }}
+          </button>
+        }
+      </div>
+    }
+  </app-table-panel>
+</section>

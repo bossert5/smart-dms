@@ -1,0 +1,466 @@
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+}
+
+<section
+  class="ai-page"
+  [appUnsavedChangesWarning]="hasPendingChanges()"
+  [attr.aria-label]="'settings.ai.overview.title' | translate"
+>
+  <nz-tabs class="ai-tabs">
+    <nz-tab [nzTitle]="'settings.ai.tabs.providers' | translate" [nzForceRender]="true">
+      <div class="ai-provider-page">
+        <ng-template #providerActions>
+          <app-table-actions
+            [revertLabel]="'settings.ai.providers.revertChanges' | translate"
+            [saveLabel]="'settings.ai.providers.saveChanges' | translate"
+            [createLabel]="'settings.ai.providers.add' | translate"
+            [hasChanges]="hasProviderChanges()"
+            [revertDisabled]="isSavingProviders() || !hasProviderChanges()"
+            [saveDisabled]="
+              isSavingProviders() || !hasProviderChanges() || hasInvalidProviderChanges()
+            "
+            [saveLoading]="isSavingProviders()"
+            [createDisabled]="isSavingProviders() || isCreatingProvider()"
+            (revert)="revertProviderChanges()"
+            (save)="saveProviderChanges()"
+            (create)="addProvider()"
+          ></app-table-actions>
+        </ng-template>
+
+        <nz-modal
+          [nzVisible]="isProviderCreateDialogOpen()"
+          [nzTitle]="'settings.ai.providers.createTitle' | translate"
+          [nzFooter]="providerCreateDialogFooter"
+          [nzWidth]="560"
+          (nzOnCancel)="closeProviderCreateDialog()"
+        >
+          <ng-container *nzModalContent>
+            <form
+              nz-form
+              nzLayout="vertical"
+              [formGroup]="createProviderForm"
+              (ngSubmit)="createProvider()"
+              class="ai-provider-create-form"
+            >
+              <div class="ai-provider-create-grid">
+                <nz-form-item>
+                  <nz-form-label nzRequired nzFor="create-ai-provider-name">
+                    {{ 'settings.ai.providers.name' | translate }}
+                  </nz-form-label>
+                  <nz-form-control>
+                    <input
+                      id="create-ai-provider-name"
+                      nz-input
+                      formControlName="name"
+                      maxlength="160"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label nzRequired nzFor="create-ai-provider-base-url">
+                    {{ 'settings.ai.providers.baseUrl' | translate }}
+                  </nz-form-label>
+                  <nz-form-control>
+                    <input
+                      id="create-ai-provider-base-url"
+                      nz-input
+                      formControlName="baseUrl"
+                      maxlength="1000"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label nzFor="create-ai-provider-api-key">
+                    {{ 'settings.ai.providers.apiKey' | translate }}
+                  </nz-form-label>
+                  <nz-form-control>
+                    <input
+                      id="create-ai-provider-api-key"
+                      nz-input
+                      type="password"
+                      formControlName="apiKey"
+                      maxlength="4000"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label nzRequired nzFor="create-ai-provider-metadata-model">
+                    {{ 'settings.ai.providers.selectedMetadataModel' | translate }}
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      id="create-ai-provider-metadata-model"
+                      nzShowSearch
+                      formControlName="selectedMetadataModel"
+                      [nzDisabled]="!hasLoadedCreateProviderModels()"
+                      [nzPlaceHolder]="'settings.ai.providers.modelPlaceholder' | translate"
+                    >
+                      @for (model of createProviderModels(); track model.name) {
+                        <nz-option
+                          [nzValue]="model.name"
+                          [nzLabel]="modelOptionLabel(model)"
+                        ></nz-option>
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </form>
+          </ng-container>
+        </nz-modal>
+
+        <ng-template #providerCreateDialogFooter>
+          <button
+            nz-button
+            type="button"
+            [disabled]="isCreatingProvider() || isLoadingCreateProviderModels()"
+            (click)="closeProviderCreateDialog()"
+          >
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button
+            nz-button
+            type="button"
+            [nzLoading]="isLoadingCreateProviderModels()"
+            [disabled]="!canLoadCreateProviderModels()"
+            (click)="loadCreateProviderModels()"
+          >
+            <span nz-icon nzType="reload"></span>
+            {{ 'settings.ai.providers.loadModels' | translate }}
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            type="button"
+            [nzLoading]="isCreatingProvider()"
+            [disabled]="!canCreateProvider()"
+            (click)="createProvider()"
+          >
+            <span nz-icon nzType="plus"></span>
+            {{ 'common.create' | translate }}
+          </button>
+        </ng-template>
+
+        <nz-modal
+          [nzVisible]="isProviderEditDialogOpen()"
+          [nzTitle]="'common.edit' | translate"
+          [nzFooter]="providerEditDialogFooter"
+          [nzWidth]="640"
+          (nzOnCancel)="closeProviderEditDialog()"
+        >
+          <ng-container *nzModalContent>
+            <form
+              nz-form
+              nzLayout="vertical"
+              [formGroup]="editProviderForm"
+              (ngSubmit)="saveProviderEditDialog()"
+            >
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="edit-ai-provider-name">
+                  {{ 'settings.ai.providers.name' | translate }}
+                </nz-form-label>
+                <nz-form-control>
+                  <input
+                    id="edit-ai-provider-name"
+                    nz-input
+                    formControlName="name"
+                    maxlength="160"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="edit-ai-provider-base-url">
+                  {{ 'settings.ai.providers.baseUrl' | translate }}
+                </nz-form-label>
+                <nz-form-control>
+                  <input
+                    id="edit-ai-provider-base-url"
+                    nz-input
+                    formControlName="baseUrl"
+                    maxlength="1000"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+
+              @if (editingProvider(); as providerRow) {
+                <nz-form-item>
+                  <nz-form-label nzFor="edit-ai-provider-metadata-model">
+                    {{ 'settings.ai.providers.selectedMetadataModel' | translate }}
+                  </nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      id="edit-ai-provider-metadata-model"
+                      nzShowSearch
+                      formControlName="selectedMetadataModel"
+                      [nzPlaceHolder]="'settings.ai.providers.modelPlaceholder' | translate"
+                    >
+                      @if (
+                        editProviderForm.controls.selectedMetadataModel.value &&
+                        !hasProviderModel(
+                          providerRow,
+                          editProviderForm.controls.selectedMetadataModel.value
+                        )
+                      ) {
+                        <nz-option
+                          [nzValue]="editProviderForm.controls.selectedMetadataModel.value"
+                          [nzLabel]="editProviderForm.controls.selectedMetadataModel.value"
+                        ></nz-option>
+                      }
+                      @for (model of providerRow.provider.availableModels; track model.name) {
+                        <nz-option
+                          [nzValue]="model.name"
+                          [nzLabel]="modelOptionLabel(model)"
+                        ></nz-option>
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              }
+
+              <nz-form-item>
+                <nz-form-label nzFor="edit-ai-provider-api-key">
+                  {{ 'settings.ai.providers.apiKey' | translate }}
+                </nz-form-label>
+                <nz-form-control>
+                  <div class="ai-provider-api-key-cell">
+                    <input
+                      id="edit-ai-provider-api-key"
+                      nz-input
+                      type="password"
+                      formControlName="apiKey"
+                      maxlength="4000"
+                      [placeholder]="'settings.ai.providers.apiKeyPlaceholder' | translate"
+                    />
+                    @if (editingProvider()?.provider?.hasApiKey) {
+                      <nz-tag nzColor="processing">{{
+                        'settings.ai.providers.apiKeyConfigured' | translate
+                      }}</nz-tag>
+                      <button
+                        nz-button
+                        nzSize="small"
+                        type="button"
+                        [disabled]="isSavingProviders()"
+                        (click)="clearProviderApiKey(editingProvider()!.provider)"
+                      >
+                        {{ 'settings.ai.providers.clearApiKey' | translate }}
+                      </button>
+                    }
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+
+              <label nz-checkbox formControlName="isDisabled">
+                {{ 'settings.ai.providers.disabled' | translate }}
+              </label>
+            </form>
+          </ng-container>
+        </nz-modal>
+
+        <ng-template #providerEditDialogFooter>
+          <button
+            nz-button
+            type="button"
+            [disabled]="isSavingProviders()"
+            (click)="closeProviderEditDialog()"
+          >
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            type="button"
+            [nzLoading]="isSavingProviders()"
+            [disabled]="editProviderForm.invalid"
+            (click)="saveProviderEditDialog()"
+          >
+            <span nz-icon nzType="save"></span>
+            {{ 'common.save' | translate }}
+          </button>
+        </ng-template>
+
+        <app-table-panel [actions]="providerActions">
+          <nz-table
+            #providerTableScroller="appInfiniteTable"
+            appInfiniteTable
+            class="document-settings-table ai-provider-settings-table"
+            [nzData]="visibleProviderRows()"
+            [nzLoading]="isLoading()"
+            [nzFrontPagination]="false"
+            [nzShowPagination]="false"
+            [nzScroll]="providerTableScroller.scroll()"
+            [appInfiniteTableX]="'max-content'"
+            [appInfiniteTableHasMore]="false"
+            [appInfiniteTableLoading]="isLoading()"
+            [appInfiniteTableLoadingMore]="false"
+            [appInfiniteTableRenderKey]="visibleProviderRows().length"
+          >
+            <thead>
+              <tr>
+                <th class="drag-column" nzWidth="40px"></th>
+                <th>{{ 'settings.ai.providers.name' | translate }}</th>
+                <th>{{ 'settings.ai.providers.baseUrl' | translate }}</th>
+                <th>{{ 'settings.ai.providers.selectedMetadataModel' | translate }}</th>
+                <th>{{ 'settings.ai.providers.apiKey' | translate }}</th>
+                <th class="status-column" nzWidth="132px" nzAlign="center">
+                  {{ 'settings.ai.providers.status' | translate }}
+                </th>
+                <th class="checkbox-column disabled-column" nzWidth="112px">
+                  {{ 'settings.ai.providers.disabled' | translate }}
+                </th>
+                <th class="provider-actions-column" nzWidth="132px"></th>
+              </tr>
+            </thead>
+            <tbody
+              cdkDropList
+              [cdkDropListData]="visibleProviderRows()"
+              (cdkDropListDropped)="dropProvider($event)"
+            >
+              @for (row of visibleProviderRows(); track row.id) {
+                <tr cdkDrag cdkDragLockAxis="y">
+                  <td class="drag-cell">
+                    <button
+                      nz-button
+                      nzType="text"
+                      nzSize="small"
+                      type="button"
+                      cdkDragHandle
+                      [disabled]="isSavingProviders()"
+                      [attr.aria-label]="'settings.ai.providers.dragHandle' | translate"
+                      nz-tooltip
+                      [nzTooltipTitle]="'settings.ai.providers.dragHandle' | translate"
+                    >
+                      <span nz-icon nzType="holder"></span>
+                    </button>
+                  </td>
+                  <td>{{ row.original.name }}</td>
+                  <td>{{ row.original.baseUrl }}</td>
+                  <td>
+                    {{ row.original.selectedMetadataModel || ('common.emptyValue' | translate) }}
+                  </td>
+                  <td>
+                    @if (row.provider.hasApiKey) {
+                      <nz-tag nzColor="processing">{{
+                        'settings.ai.providers.apiKeyConfigured' | translate
+                      }}</nz-tag>
+                    } @else {
+                      {{ 'common.no' | translate }}
+                    }
+                  </td>
+                  <td class="status-cell" nzAlign="center">
+                    <span class="status-chip-anchor">
+                      <nz-tag [nzColor]="providerStatusColor(row.provider.status)">
+                        <span nz-icon [nzType]="providerStatusIcon(row.provider.status)"></span>
+                        {{ 'settings.ai.providerStatus.' + row.provider.status | translate }}
+                      </nz-tag>
+                    </span>
+                  </td>
+                  <td class="checkbox-cell disabled-cell">
+                    {{ (row.original.isDisabled ? 'common.yes' : 'common.no') | translate }}
+                  </td>
+                  <td class="provider-actions-cell">
+                    <button
+                      nz-button
+                      type="button"
+                      [disabled]="isSavingProviders()"
+                      [attr.aria-label]="'common.edit' | translate"
+                      nz-tooltip
+                      [nzTooltipTitle]="'common.edit' | translate"
+                      (click)="openProviderEditDialog(row)"
+                    >
+                      <span nz-icon nzType="edit"></span>
+                    </button>
+                    <button
+                      nz-button
+                      type="button"
+                      [nzLoading]="isProviderActionRunning(row.provider)"
+                      [disabled]="isSavingProviders()"
+                      [attr.aria-label]="'settings.ai.providers.refreshModels' | translate"
+                      nz-tooltip
+                      [nzTooltipTitle]="'settings.ai.providers.refreshModels' | translate"
+                      (click)="refreshModels(row.provider)"
+                    >
+                      <span nz-icon nzType="reload"></span>
+                    </button>
+                    <button
+                      nz-button
+                      nzDanger
+                      type="button"
+                      [disabled]="isSavingProviders()"
+                      nz-popconfirm
+                      [nzPopconfirmTitle]="
+                        'settings.ai.providers.deleteConfirm'
+                          | translate: { name: row.form.controls.name.value }
+                      "
+                      [attr.aria-label]="'common.delete' | translate"
+                      nz-tooltip
+                      [nzTooltipTitle]="'common.delete' | translate"
+                      (nzOnConfirm)="deleteProvider(row)"
+                    >
+                      <span nz-icon nzType="delete"></span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </app-table-panel>
+      </div>
+    </nz-tab>
+
+    <nz-tab [nzTitle]="'settings.ai.tabs.prompts' | translate" [nzForceRender]="true">
+      <section class="settings-section" aria-labelledby="ai-prompts-heading">
+        <header>
+          <h2 id="ai-prompts-heading">{{ 'settings.ai.prompts.title' | translate }}</h2>
+        </header>
+
+        <nz-skeleton [nzLoading]="isLoading()" [nzActive]="true" [nzParagraph]="{ rows: 6 }">
+          <nz-collapse class="ai-prompts" nzSize="small">
+            @for (prompt of aiMetadataPrompts(); track prompt.key) {
+              <nz-collapse-panel [nzHeader]="prompt.label">
+                <div class="ai-prompt-editor">
+                  <p>{{ prompt.description }}</p>
+                  <textarea
+                    nz-input
+                    rows="12"
+                    [ngModel]="promptDraft(prompt)"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="updatePromptDraft(prompt, $event)"
+                  ></textarea>
+                  <div class="ai-worker-actions">
+                    <button
+                      nz-button
+                      nzType="primary"
+                      type="button"
+                      [disabled]="!promptChanged(prompt)"
+                      [nzLoading]="isPromptSaving(prompt)"
+                      (click)="savePrompt(prompt)"
+                    >
+                      <span nz-icon nzType="save"></span>
+                      {{ 'common.save' | translate }}
+                    </button>
+                    <button
+                      nz-button
+                      type="button"
+                      nz-popconfirm
+                      [nzPopconfirmTitle]="'settings.ai.prompts.resetConfirm' | translate"
+                      [nzLoading]="isPromptSaving(prompt)"
+                      (nzOnConfirm)="resetPrompt(prompt)"
+                    >
+                      <span nz-icon nzType="rollback"></span>
+                      {{ 'settings.ai.prompts.reset' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </nz-collapse-panel>
+            }
+          </nz-collapse>
+        </nz-skeleton>
+      </section>
+    </nz-tab>
+  </nz-tabs>
+</section>

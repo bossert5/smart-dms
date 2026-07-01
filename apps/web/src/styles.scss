@@ -1,0 +1,422 @@
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-cyrillic-ext.woff2') format('woff2');
+  unicode-range:
+    U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-greek.woff2') format('woff2');
+  unicode-range:
+    U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-vietnamese.woff2') format('woff2');
+  unicode-range:
+    U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0,
+    U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/source-sans-3/source-sans-3-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+:root {
+  --app-font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --app-bg: #f5f7fb;
+  --app-surface: #fff;
+  --app-surface-muted: #f8fafc;
+  --app-text: #172033;
+  --app-text-muted: #667085;
+  --app-border: #e5e7eb;
+  --app-border-strong: #dde3ec;
+  --app-code-bg: #0f172a;
+  --app-code-text: #e5e7eb;
+  --app-control-bg: #fff;
+  --app-control-bg-hover: #fff;
+  --app-control-placeholder: #98a2b3;
+  --app-row-hover: #e6f4ff;
+  --app-primary: #1890ff;
+  --app-toolbar-bg: #176b7a;
+  --app-toolbar-text: #fff;
+  --app-toolbar-border: #125765;
+  --app-sider-bg: #fff;
+  --app-sider-text: #344054;
+  --app-sider-text-active: #176b7a;
+  --app-sider-border: #e5e7eb;
+  --app-sider-item-hover: rgb(23 107 122 / 8%);
+  --app-sider-item-selected: rgb(23 107 122 / 12%);
+  --app-sider-muted: #667085;
+  --app-sider-badge-bg: #176b7a;
+  --app-sider-badge-text: #fff;
+}
+
+html[data-theme='dark'] {
+  --app-bg: #111315;
+  --app-surface: #1a1d21;
+  --app-surface-muted: #22262b;
+  --app-text: #f2f4f7;
+  --app-text-muted: #a8b0bc;
+  --app-border: #30343a;
+  --app-border-strong: #3b4148;
+  --app-code-bg: #0b0d10;
+  --app-code-text: #e8ebef;
+  --app-control-bg: #15181c;
+  --app-control-bg-hover: #1d2228;
+  --app-control-placeholder: #7f8894;
+  --app-row-hover: #222832;
+  --app-primary: #40a9ff;
+  --app-toolbar-bg: #164b57;
+  --app-toolbar-text: #f8fafc;
+  --app-toolbar-border: #103943;
+  --app-sider-bg: #111922;
+  --app-sider-text: rgb(255 255 255 / 82%);
+  --app-sider-text-active: #f8fafc;
+  --app-sider-border: rgb(255 255 255 / 10%);
+  --app-sider-item-hover: rgb(255 255 255 / 8%);
+  --app-sider-item-selected: rgb(255 255 255 / 13%);
+  --app-sider-muted: rgb(255 255 255 / 56%);
+  --app-sider-badge-bg: rgb(255 255 255 / 13%);
+  --app-sider-badge-text: #f8fafc;
+}
+
+body {
+  margin: 0;
+  font-family: var(--app-font-family);
+  color: var(--app-text);
+  background: var(--app-bg);
+}
+
+html[data-theme] {
+  .ant-pagination-item,
+  .ant-pagination-jump-next,
+  .ant-pagination-jump-prev,
+  .ant-pagination-next,
+  .ant-pagination-prev,
+  .ant-select-multiple.ant-select .ant-select-selection-search-input,
+  .ant-select-multiple.ant-select .ant-select-selection-search-mirror,
+  .ant-select-multiple.ant-select-sm .ant-select-selection-search-input,
+  .ant-select-multiple.ant-select-sm .ant-select-selection-search-mirror,
+  .ant-select-multiple.ant-select-lg .ant-select-selection-search-input,
+  .ant-select-multiple.ant-select-lg .ant-select-selection-search-mirror,
+  .ant-splitter,
+  .ant-statistic-content,
+  .ant-steps-item-icon,
+  .ant-float-btn-group {
+    font-family: var(--app-font-family);
+  }
+
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content,
+  .ant-table-header,
+  .ant-table-body,
+  .ant-table-tbody > tr > td,
+  .ant-table-cell,
+  .ant-table-placeholder {
+    color: var(--app-text);
+    background: var(--app-bg);
+    border-color: var(--app-border);
+  }
+
+  .ant-table-thead > tr > th {
+    color: var(--app-text-muted);
+    background: var(--app-surface-muted);
+    border-color: var(--app-border);
+  }
+
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: var(--app-row-hover);
+  }
+}
+
+nz-empty.page-empty-state.ant-empty {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  text-align: center;
+}
+
+nz-empty.page-empty-state.ant-empty .ant-empty-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+  line-height: 0;
+}
+
+nz-empty.page-empty-state.ant-empty .ant-empty-image svg {
+  display: block;
+  width: 184px;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+nz-empty.page-empty-state.ant-empty .ant-empty-description {
+  margin: 0;
+}
+
+.app-infinite-table {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-infinite-table .ant-spin-nested-loading {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.app-infinite-table .ant-spin-container,
+.app-infinite-table .ant-table,
+.app-infinite-table .ant-table-container,
+.app-infinite-table .ant-table-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-infinite-table .ant-table-body {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-infinite-loader {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 36px;
+  color: var(--app-text-muted);
+}
+
+.app-infinite-loader:empty {
+  min-height: 0;
+}
+
+.app-infinite-loader__text {
+  font-size: 13px;
+}
+
+html[data-theme] body {
+  font-family: var(--app-font-family);
+  color: var(--app-text);
+  background: var(--app-bg);
+}
+
+html[data-theme='dark'] {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  .ant-form-item-label > label,
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper,
+  .ant-descriptions-title,
+  .ant-tabs-tab,
+  .ant-table,
+  .ant-empty-description {
+    color: var(--app-text);
+  }
+
+  p,
+  small,
+  .ant-form-item-extra,
+  .ant-form-item-explain,
+  .ant-descriptions-item-label,
+  .ant-descriptions-item-content,
+  .ant-table-thead > tr > th,
+  .ant-select-selection-placeholder,
+  .ant-picker-input > input::placeholder,
+  .ant-input::placeholder,
+  .ant-input-affix-wrapper input::placeholder {
+    color: var(--app-text-muted);
+  }
+
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-number,
+  .ant-input-number-input,
+  .ant-picker,
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+  textarea.ant-input {
+    color: var(--app-text);
+    background: var(--app-control-bg);
+    border-color: var(--app-border-strong);
+  }
+
+  .ant-input:hover,
+  .ant-input-affix-wrapper:hover,
+  .ant-input-number:hover,
+  .ant-picker:hover,
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector:hover {
+    background: var(--app-control-bg-hover);
+    border-color: var(--app-primary);
+  }
+
+  .ant-input:focus,
+  .ant-input-focused,
+  .ant-input-affix-wrapper-focused,
+  .ant-input-number-focused,
+  .ant-picker-focused,
+  .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+    .ant-select-selector {
+    color: var(--app-text);
+    background: var(--app-control-bg);
+    border-color: var(--app-primary);
+  }
+
+  .ant-input[disabled],
+  .ant-input-affix-wrapper-disabled,
+  .ant-input-number-disabled,
+  .ant-picker-disabled,
+  .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    color: var(--app-text-muted);
+    background: var(--app-surface-muted);
+    border-color: var(--app-border);
+  }
+
+  .ant-input-clear-icon,
+  .ant-input-password-icon,
+  .ant-picker-suffix,
+  .ant-select-arrow,
+  .ant-select-clear {
+    color: var(--app-text-muted);
+  }
+
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content,
+  .ant-table-header,
+  .ant-table-body,
+  .ant-table-tbody > tr > td,
+  .ant-table-cell,
+  .ant-table-placeholder {
+    color: var(--app-text);
+    background: var(--app-bg);
+    border-color: var(--app-border);
+  }
+
+  .ant-table-thead > tr > th {
+    color: var(--app-text-muted);
+    background: var(--app-surface-muted);
+  }
+
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    background: var(--app-row-hover);
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-label,
+  .ant-descriptions-bordered .ant-descriptions-item-content,
+  .ant-descriptions-view,
+  .ant-tabs-content-holder,
+  .ant-tabs-nav::before,
+  .ant-calendar,
+  .ant-picker-calendar,
+  .ant-picker-panel,
+  .ant-picker-body,
+  .ant-picker-content th,
+  .ant-picker-content td {
+    color: var(--app-text);
+    background: var(--app-surface);
+    border-color: var(--app-border);
+  }
+
+  .ant-picker-calendar-date,
+  .ant-picker-cell-in-view {
+    color: var(--app-text);
+  }
+
+  .ant-picker-calendar-date:hover,
+  .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+    background: var(--app-row-hover);
+  }
+
+  .ant-btn-text,
+  .ant-btn-default {
+    color: var(--app-text);
+  }
+
+  .ant-btn-text:not(:disabled):hover,
+  .ant-btn-default:not(:disabled):hover {
+    color: var(--app-primary);
+    background: var(--app-control-bg-hover);
+  }
+}

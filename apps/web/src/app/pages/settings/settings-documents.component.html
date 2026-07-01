@@ -1,0 +1,524 @@
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+}
+
+<section
+  class="documents-settings-page"
+  [appUnsavedChangesWarning]="hasPendingChanges()"
+  [attr.aria-label]="'settings.documents.title' | translate"
+>
+  <ng-template #documentTypeActions>
+    <app-table-actions
+      [revertLabel]="'settings.documents.actions.revertChanges' | translate"
+      [saveLabel]="'settings.documents.actions.saveChanges' | translate"
+      [createLabel]="'settings.documents.documentTypes.create' | translate"
+      [hasChanges]="hasDocumentTypeChanges()"
+      [revertDisabled]="isSavingDocumentTypes() || !hasDocumentTypeChanges()"
+      [saveDisabled]="
+        isSavingDocumentTypes() || !hasDocumentTypeChanges() || hasInvalidDocumentTypeChanges()
+      "
+      [saveLoading]="isSavingDocumentTypes()"
+      [createDisabled]="isSavingDocumentTypes() || isCreatingDocumentType()"
+      (revert)="revertDocumentTypeChanges()"
+      (save)="saveDocumentTypeChanges()"
+      (create)="addDocumentType()"
+    ></app-table-actions>
+  </ng-template>
+
+  <ng-template #fieldDefinitionActions>
+    <app-table-actions
+      [revertLabel]="'settings.documents.actions.revertChanges' | translate"
+      [saveLabel]="'settings.documents.actions.saveChanges' | translate"
+      [createLabel]="'settings.documents.fieldDefinitions.create' | translate"
+      [hasChanges]="hasFieldDefinitionChanges()"
+      [revertDisabled]="isSavingFieldDefinitions() || !hasFieldDefinitionChanges()"
+      [saveDisabled]="
+        isSavingFieldDefinitions() ||
+        !hasFieldDefinitionChanges() ||
+        hasInvalidFieldDefinitionChanges()
+      "
+      [saveLoading]="isSavingFieldDefinitions()"
+      [createDisabled]="isSavingFieldDefinitions() || isCreatingFieldDefinition()"
+      (revert)="revertFieldDefinitionChanges()"
+      (save)="saveFieldDefinitionChanges()"
+      (create)="addFieldDefinition()"
+    ></app-table-actions>
+  </ng-template>
+
+  <app-table-create-dialog
+    [visible]="isDocumentTypeCreateDialogOpen()"
+    [title]="'settings.documents.documentTypes.createTitle' | translate"
+    [cancelLabel]="'common.cancel' | translate"
+    [createLabel]="'common.create' | translate"
+    [createLoading]="isCreatingDocumentType()"
+    [createDisabled]="isCreatingDocumentType()"
+    [width]="560"
+    (cancel)="closeDocumentTypeCreateDialog()"
+    (create)="createDocumentType()"
+  >
+    <form
+      nz-form
+      nzLayout="vertical"
+      [formGroup]="createDocumentTypeForm"
+      (ngSubmit)="createDocumentType()"
+    >
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="create-document-type-key">
+          {{ 'settings.documents.fields.key' | translate }}
+        </nz-form-label>
+        <nz-form-control>
+          <input id="create-document-type-key" nz-input formControlName="key" maxlength="100" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="create-document-type-name">
+          {{ 'settings.documents.fields.name' | translate }}
+        </nz-form-label>
+        <nz-form-control>
+          <input id="create-document-type-name" nz-input formControlName="name" maxlength="200" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </app-table-create-dialog>
+
+  <app-table-create-dialog
+    [visible]="isFieldDefinitionCreateDialogOpen()"
+    [title]="'settings.documents.fieldDefinitions.createTitle' | translate"
+    [cancelLabel]="'common.cancel' | translate"
+    [createLabel]="'common.create' | translate"
+    [createLoading]="isCreatingFieldDefinition()"
+    [createDisabled]="isCreatingFieldDefinition()"
+    [width]="760"
+    (cancel)="closeFieldDefinitionCreateDialog()"
+    (create)="createFieldDefinition()"
+  >
+    <form
+      nz-form
+      nzLayout="vertical"
+      [formGroup]="createFieldDefinitionForm"
+      (ngSubmit)="createFieldDefinition()"
+      class="field-definition-create-form"
+    >
+      <div class="field-definition-create-grid">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-field-definition-key">
+            {{ 'settings.documents.fields.key' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <input
+              id="create-field-definition-key"
+              nz-input
+              formControlName="key"
+              maxlength="100"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-field-definition-label">
+            {{ 'settings.documents.fields.label' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <input
+              id="create-field-definition-label"
+              nz-input
+              formControlName="label"
+              maxlength="200"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-field-definition-type">
+            {{ 'settings.documents.fields.type' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-select id="create-field-definition-type" formControlName="valueType">
+              @for (valueType of valueTypes; track valueType) {
+                <nz-option
+                  [nzValue]="valueType"
+                  [nzLabel]="documentAttributeValueTypeLabelKey(valueType) | translate"
+                ></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div class="field-definition-create-options">
+        <label nz-checkbox formControlName="appliesToAllDocumentTypes">
+          {{ 'settings.documents.fields.allDocumentTypes' | translate }}
+        </label>
+        <label nz-checkbox formControlName="required">
+          {{ 'settings.documents.fields.required' | translate }}
+        </label>
+        <label nz-checkbox formControlName="includeInFullTextSearch">
+          {{ 'settings.documents.fields.fts' | translate }}
+        </label>
+        <label nz-checkbox formControlName="includeInAiExtraction">
+          {{ 'settings.documents.fields.aiWorker' | translate }}
+        </label>
+      </div>
+
+      @if (!createFieldAppliesToAllDocumentTypes()) {
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="create-field-definition-document-types">
+            {{ 'settings.documents.documentTypes.title' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <nz-select
+              id="create-field-definition-document-types"
+              formControlName="documentTypeIds"
+              nzMode="multiple"
+            >
+              @for (documentTypeRow of fieldScopeDocumentTypeRows(); track documentTypeRow.id) {
+                <nz-option
+                  [nzValue]="documentTypeRow.id"
+                  [nzLabel]="documentTypeRowName(documentTypeRow)"
+                ></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      }
+    </form>
+  </app-table-create-dialog>
+
+  <nz-tabs class="settings-tabs documents-settings-tabs">
+    <nz-tab [nzTitle]="'settings.documents.documentTypes.title' | translate" [nzForceRender]="true">
+      <app-table-panel [actions]="documentTypeActions">
+        <nz-table
+          #documentTypesTableScroller="appInfiniteTable"
+          appInfiniteTable
+          class="document-settings-table document-types-table"
+          [nzData]="visibleDocumentTypeRows()"
+          [nzLoading]="isLoading()"
+          [nzFrontPagination]="false"
+          [nzShowPagination]="false"
+          [nzScroll]="documentTypesTableScroller.scroll()"
+          [appInfiniteTableHasMore]="false"
+          [appInfiniteTableLoading]="isLoading()"
+          [appInfiniteTableLoadingMore]="false"
+          [appInfiniteTableRenderKey]="visibleDocumentTypeRows().length"
+        >
+          <thead>
+            <tr>
+              <th class="drag-column" nzWidth="40px"></th>
+              <th>{{ 'settings.documents.fields.key' | translate }}</th>
+              <th>{{ 'settings.documents.fields.name' | translate }}</th>
+              <th class="checkbox-column disabled-column" nzWidth="112px">
+                {{ 'settings.documents.fields.disabled' | translate }}
+              </th>
+              <th class="actions-column" nzWidth="56px"></th>
+            </tr>
+          </thead>
+          <tbody
+            cdkDropList
+            [cdkDropListData]="visibleDocumentTypeRows()"
+            (cdkDropListDropped)="dropDocumentType($event)"
+          >
+            @for (row of visibleDocumentTypeRows(); track row.id) {
+              <tr cdkDrag cdkDragLockAxis="y" [formGroup]="row.form">
+                <td class="drag-cell">
+                  <button
+                    nz-button
+                    nzType="text"
+                    nzSize="small"
+                    type="button"
+                    cdkDragHandle
+                    [disabled]="isSavingDocumentTypes()"
+                    [attr.aria-label]="'settings.documents.documentTypes.dragHandle' | translate"
+                    nz-tooltip
+                    [nzTooltipTitle]="'settings.documents.documentTypes.dragHandle' | translate"
+                  >
+                    <span nz-icon nzType="holder"></span>
+                  </button>
+                </td>
+                <td [class.is-changed-field]="isDocumentTypeFieldChanged(row, 'key')">
+                  <input
+                    nz-input
+                    formControlName="key"
+                    maxlength="100"
+                    [attr.aria-label]="'settings.documents.fields.key' | translate"
+                  />
+                </td>
+                <td [class.is-changed-field]="isDocumentTypeFieldChanged(row, 'name')">
+                  @if (row.isSystem) {
+                    <input
+                      nz-input
+                      disabled
+                      [value]="documentTypeRowName(row)"
+                      [attr.aria-label]="'settings.documents.fields.name' | translate"
+                    />
+                  } @else {
+                    <input
+                      nz-input
+                      formControlName="name"
+                      maxlength="200"
+                      [attr.aria-label]="'settings.documents.fields.name' | translate"
+                    />
+                  }
+                </td>
+                <td
+                  class="checkbox-cell disabled-cell"
+                  [class.is-changed-field]="isDocumentTypeFieldChanged(row, 'isDisabled')"
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="isDisabled"
+                    [attr.aria-label]="'settings.documents.fields.disabled' | translate"
+                  ></label>
+                </td>
+                <td class="actions-cell">
+                  @if (!row.isSystem) {
+                    <button
+                      nz-button
+                      nzDanger
+                      type="button"
+                      [disabled]="isSavingDocumentTypes()"
+                      nz-popconfirm
+                      [nzPopconfirmTitle]="
+                        'settings.documents.documentTypes.deleteConfirm'
+                          | translate: { name: documentTypeRowName(row) }
+                      "
+                      [attr.aria-label]="'common.delete' | translate"
+                      nz-tooltip
+                      [nzTooltipTitle]="'common.delete' | translate"
+                      (nzOnConfirm)="deleteDocumentType(row)"
+                    >
+                      <span nz-icon nzType="delete"></span>
+                    </button>
+                  } @else {
+                    <span
+                      class="disabled-action"
+                      nz-tooltip
+                      [nzTooltipTitle]="
+                        'settings.documents.documentTypes.systemRemoveDisabled' | translate
+                      "
+                    >
+                      <button
+                        nz-button
+                        nzDanger
+                        type="button"
+                        disabled
+                        [attr.aria-label]="'common.delete' | translate"
+                        nz-tooltip
+                        [nzTooltipTitle]="'common.delete' | translate"
+                      >
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      </app-table-panel>
+    </nz-tab>
+
+    <nz-tab
+      [nzTitle]="'settings.documents.fieldDefinitions.title' | translate"
+      [nzForceRender]="true"
+    >
+      <app-table-panel [actions]="fieldDefinitionActions">
+        <nz-table
+          #fieldDefinitionsTableScroller="appInfiniteTable"
+          appInfiniteTable
+          class="document-settings-table field-definitions-table"
+          [nzData]="visibleFieldDefinitionRows()"
+          [nzLoading]="isLoading()"
+          [nzFrontPagination]="false"
+          [nzShowPagination]="false"
+          [nzScroll]="fieldDefinitionsTableScroller.scroll()"
+          [appInfiniteTableX]="'max-content'"
+          [appInfiniteTableHasMore]="false"
+          [appInfiniteTableLoading]="isLoading()"
+          [appInfiniteTableLoadingMore]="false"
+          [appInfiniteTableRenderKey]="visibleFieldDefinitionRows().length"
+        >
+          <thead>
+            <tr>
+              <th class="drag-column" nzWidth="40px"></th>
+              <th>{{ 'settings.documents.fields.key' | translate }}</th>
+              <th>{{ 'settings.documents.fields.label' | translate }}</th>
+              <th>{{ 'settings.documents.fields.type' | translate }}</th>
+              <th class="checkbox-column" nzWidth="168px">
+                {{ 'settings.documents.fields.allDocumentTypes' | translate }}
+              </th>
+              <th>{{ 'settings.documents.documentTypes.title' | translate }}</th>
+              <th class="checkbox-column" nzWidth="136px">
+                {{ 'settings.documents.fields.required' | translate }}
+              </th>
+              <th class="checkbox-column" nzWidth="80px">
+                {{ 'settings.documents.fields.fts' | translate }}
+              </th>
+              <th class="checkbox-column" nzWidth="80px">
+                {{ 'settings.documents.fields.aiWorker' | translate }}
+              </th>
+              <th class="checkbox-column disabled-column" nzWidth="112px">
+                {{ 'settings.documents.fields.disabled' | translate }}
+              </th>
+              <th class="actions-column" nzWidth="56px"></th>
+            </tr>
+          </thead>
+          <tbody
+            cdkDropList
+            [cdkDropListData]="visibleFieldDefinitionRows()"
+            (cdkDropListDropped)="dropFieldDefinition($event)"
+          >
+            @for (row of visibleFieldDefinitionRows(); track row.id) {
+              <tr cdkDrag cdkDragLockAxis="y" [formGroup]="row.form">
+                <td class="drag-cell">
+                  <button
+                    nz-button
+                    nzType="text"
+                    nzSize="small"
+                    type="button"
+                    cdkDragHandle
+                    [disabled]="isSavingFieldDefinitions()"
+                    [attr.aria-label]="'settings.documents.fieldDefinitions.dragHandle' | translate"
+                    nz-tooltip
+                    [nzTooltipTitle]="'settings.documents.fieldDefinitions.dragHandle' | translate"
+                  >
+                    <span nz-icon nzType="holder"></span>
+                  </button>
+                </td>
+                <td [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'key')">
+                  <input
+                    nz-input
+                    formControlName="key"
+                    maxlength="100"
+                    [attr.aria-label]="'settings.documents.fields.key' | translate"
+                  />
+                </td>
+                <td [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'label')">
+                  <input
+                    nz-input
+                    formControlName="label"
+                    maxlength="200"
+                    [attr.aria-label]="'settings.documents.fields.label' | translate"
+                  />
+                </td>
+                <td [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'valueType')">
+                  <nz-select
+                    formControlName="valueType"
+                    [attr.aria-label]="'settings.documents.fields.type' | translate"
+                  >
+                    @for (valueType of valueTypes; track valueType) {
+                      <nz-option
+                        [nzValue]="valueType"
+                        [nzLabel]="documentAttributeValueTypeLabelKey(valueType) | translate"
+                      ></nz-option>
+                    }
+                  </nz-select>
+                </td>
+                <td
+                  class="checkbox-cell"
+                  [class.is-changed-field]="
+                    isFieldDefinitionFieldChanged(row, 'appliesToAllDocumentTypes')
+                  "
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="appliesToAllDocumentTypes"
+                    [attr.aria-label]="'settings.documents.fields.allDocumentTypes' | translate"
+                  ></label>
+                </td>
+                <td
+                  [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'documentTypeIds')"
+                >
+                  @if (fieldAppliesToAllDocumentTypes(row)) {
+                    <span class="muted-cell">
+                      {{ 'settings.documents.allDocumentTypes' | translate }}
+                    </span>
+                  } @else {
+                    <nz-select
+                      formControlName="documentTypeIds"
+                      nzMode="multiple"
+                      [attr.aria-label]="'settings.documents.documentTypes.title' | translate"
+                    >
+                      @for (
+                        documentTypeRow of fieldScopeDocumentTypeRows();
+                        track documentTypeRow.id
+                      ) {
+                        <nz-option
+                          [nzValue]="documentTypeRow.id"
+                          [nzLabel]="documentTypeRowName(documentTypeRow)"
+                        ></nz-option>
+                      }
+                    </nz-select>
+                  }
+                </td>
+                <td
+                  class="checkbox-cell"
+                  [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'required')"
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="required"
+                    [attr.aria-label]="'settings.documents.fields.required' | translate"
+                  ></label>
+                </td>
+                <td
+                  class="checkbox-cell"
+                  [class.is-changed-field]="
+                    isFieldDefinitionFieldChanged(row, 'includeInFullTextSearch')
+                  "
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="includeInFullTextSearch"
+                    [attr.aria-label]="'settings.documents.fields.fts' | translate"
+                  ></label>
+                </td>
+                <td
+                  class="checkbox-cell"
+                  [class.is-changed-field]="
+                    isFieldDefinitionFieldChanged(row, 'includeInAiExtraction')
+                  "
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="includeInAiExtraction"
+                    [attr.aria-label]="'settings.documents.fields.aiWorker' | translate"
+                  ></label>
+                </td>
+                <td
+                  class="checkbox-cell disabled-cell"
+                  [class.is-changed-field]="isFieldDefinitionFieldChanged(row, 'isDisabled')"
+                >
+                  <label
+                    nz-checkbox
+                    formControlName="isDisabled"
+                    [attr.aria-label]="'settings.documents.fields.disabled' | translate"
+                  ></label>
+                </td>
+                <td class="actions-cell">
+                  <button
+                    nz-button
+                    nzDanger
+                    type="button"
+                    [disabled]="isSavingFieldDefinitions()"
+                    nz-popconfirm
+                    [nzPopconfirmTitle]="
+                      'settings.documents.fieldDefinitions.deleteConfirm'
+                        | translate: { label: row.form.controls.label.value }
+                    "
+                    [attr.aria-label]="'common.delete' | translate"
+                    nz-tooltip
+                    [nzTooltipTitle]="'common.delete' | translate"
+                    (nzOnConfirm)="deleteFieldDefinition(row)"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      </app-table-panel>
+    </nz-tab>
+  </nz-tabs>
+</section>

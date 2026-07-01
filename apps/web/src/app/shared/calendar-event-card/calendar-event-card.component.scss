@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+:host + :host {
+  margin-top: 10px;
+}
+
+.calendar-event-card {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.calendar-event-card--plain {
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+a.calendar-event-card:hover,
+a.calendar-event-card:focus-visible {
+  color: inherit;
+  border-color: #1890ff;
+}
+
+a.calendar-event-card:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.calendar-event-card__header,
+.calendar-event-card__title-row,
+.calendar-event-card__footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.calendar-event-card__sender,
+.calendar-event-card__date,
+.calendar-event-card__time {
+  min-width: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.calendar-event-card__date {
+  justify-self: start;
+}
+
+.calendar-event-card__sender {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  gap: 4px;
+}
+
+.calendar-event-card__sender .anticon {
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.calendar-event-card__sender-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-event-card__kinds {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  max-width: 100%;
+  gap: 6px;
+  justify-self: end;
+  min-width: 0;
+}
+
+.calendar-event-card__kind {
+  flex: 0 0 auto;
+  margin-right: 0;
+  white-space: nowrap;
+}
+
+.calendar-event-card__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.calendar-event-card__date,
+.calendar-event-card__time {
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar-event-card__time {
+  justify-self: end;
+  text-align: right;
+  white-space: nowrap;
+}

@@ -1,0 +1,298 @@
+<section class="tenants-settings-page" [appUnsavedChangesWarning]="hasPendingChanges()">
+  <ng-template #tenantActions>
+    <app-table-actions
+      [revertLabel]="'tenants.actions.revertChanges' | translate"
+      [saveLabel]="'tenants.actions.saveChanges' | translate"
+      [createLabel]="'tenants.actions.new' | translate"
+      [createDisabled]="isSaving() || isCreating()"
+      (create)="openCreateDialog()"
+    ></app-table-actions>
+  </ng-template>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  <app-table-create-dialog
+    [visible]="isCreateDialogOpen()"
+    [title]="'tenants.create.title' | translate"
+    [cancelLabel]="'common.cancel' | translate"
+    [createLabel]="'common.create' | translate"
+    [createLoading]="isCreating()"
+    [createDisabled]="isCreating()"
+    [width]="640"
+    (cancel)="closeCreateDialog()"
+    (create)="createTenant()"
+  >
+    <form nz-form nzLayout="vertical" [formGroup]="createForm" (ngSubmit)="createTenant()">
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="create-tenant-name">
+          {{ 'tenants.fields.name' | translate }}
+        </nz-form-label>
+        <nz-form-control>
+          <input id="create-tenant-name" nz-input formControlName="name" maxlength="200" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired nzFor="create-tenant-key">
+          {{ 'tenants.fields.key' | translate }}
+        </nz-form-label>
+        <nz-form-control>
+          <input id="create-tenant-key" nz-input formControlName="key" maxlength="80" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="create-tenant-scanner-import-path">
+          {{ 'tenants.fields.scannerImportPath' | translate }}
+        </nz-form-label>
+        <nz-form-control>
+          <input
+            id="create-tenant-scanner-import-path"
+            nz-input
+            formControlName="scannerImportPath"
+            maxlength="1000"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </app-table-create-dialog>
+
+  <nz-modal
+    [nzVisible]="isEditDialogOpen()"
+    [nzTitle]="'common.edit' | translate"
+    [nzFooter]="editDialogFooter"
+    [nzWidth]="640"
+    (nzOnCancel)="closeEditDialog()"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical" [formGroup]="editForm" (ngSubmit)="saveEditDialog()">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="edit-tenant-name">
+            {{ 'tenants.fields.name' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <input id="edit-tenant-name" nz-input formControlName="name" maxlength="200" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="edit-tenant-key">
+            {{ 'tenants.fields.key' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <input id="edit-tenant-key" nz-input formControlName="key" maxlength="80" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="edit-tenant-scanner-import-path">
+            {{ 'tenants.fields.scannerImportPath' | translate }}
+          </nz-form-label>
+          <nz-form-control>
+            <input
+              id="edit-tenant-scanner-import-path"
+              nz-input
+              formControlName="scannerImportPath"
+              maxlength="1000"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <label nz-checkbox formControlName="isDisabled">
+          {{ 'tenants.fields.disabled' | translate }}
+        </label>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #editDialogFooter>
+    <button nz-button type="button" [disabled]="isSaving()" (click)="closeEditDialog()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [nzLoading]="isSaving()"
+      [disabled]="editForm.invalid"
+      (click)="saveEditDialog()"
+    >
+      <span nz-icon nzType="save"></span>
+      {{ 'common.save' | translate }}
+    </button>
+  </ng-template>
+
+  <app-table-panel [actions]="tenantActions">
+    <nz-table
+      #tenantTableScroller="appInfiniteTable"
+      appInfiniteTable
+      class="tenants-table"
+      [nzData]="rows()"
+      [nzLoading]="isLoading()"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      [nzNoResult]="'tenants.empty' | translate"
+      [nzScroll]="tenantTableScroller.scroll()"
+      [appInfiniteTableX]="'max-content'"
+      [appInfiniteTableHasMore]="false"
+      [appInfiniteTableLoading]="isLoading()"
+      [appInfiniteTableLoadingMore]="false"
+      [appInfiniteTableRenderKey]="rows().length"
+    >
+      <thead>
+        <tr>
+          <th>{{ 'tenants.fields.name' | translate }}</th>
+          <th>{{ 'tenants.fields.key' | translate }}</th>
+          <th>{{ 'tenants.fields.scannerImportPath' | translate }}</th>
+          <th class="count-column">{{ 'tenants.fields.users' | translate }}</th>
+          <th class="count-column">{{ 'tenants.fields.documents' | translate }}</th>
+          <th class="checkbox-column disabled-column" nzWidth="112px">
+            {{ 'tenants.fields.disabled' | translate }}
+          </th>
+          <th class="actions-column" nzWidth="96px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+          <tr>
+            <td>{{ row.original.name }}</td>
+            <td>{{ row.original.key }}</td>
+            <td>{{ row.original.scannerImportPath || ('common.emptyValue' | translate) }}</td>
+            <td class="count-cell">{{ row.userCount }}</td>
+            <td class="count-cell">{{ row.documentCount }}</td>
+            <td class="checkbox-cell disabled-cell">
+              {{ (row.original.isDisabled ? 'common.yes' : 'common.no') | translate }}
+            </td>
+            <td class="actions-cell">
+              <button
+                nz-button
+                type="button"
+                [disabled]="isSaving() || isDeleting()"
+                [attr.aria-label]="'common.edit' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.edit' | translate"
+                (click)="openEditDialog(row)"
+              >
+                <span nz-icon nzType="edit"></span>
+              </button>
+              <button
+                nz-button
+                nzDanger
+                type="button"
+                [disabled]="isSaving() || isDeleting()"
+                [attr.aria-label]="'common.remove' | translate"
+                nz-tooltip
+                [nzTooltipTitle]="'common.remove' | translate"
+                (click)="openDeleteDialog(row)"
+              >
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </app-table-panel>
+
+  <nz-modal
+    [nzVisible]="deleteTenant() !== null"
+    [nzTitle]="'tenants.delete.title' | translate"
+    [nzFooter]="deleteDialogFooter"
+    [nzWidth]="640"
+    (nzOnCancel)="closeDeleteDialog()"
+  >
+    <ng-container *nzModalContent>
+      @if (deleteTenant(); as tenant) {
+        <form nz-form nzLayout="vertical" [formGroup]="deleteForm" class="delete-tenant-form">
+          <p class="delete-warning">
+            {{
+              'tenants.delete.warning'
+                | translate
+                  : {
+                      name: tenantName(tenant),
+                      users: tenant.userCount,
+                      documents: tenant.documentCount,
+                    }
+            }}
+          </p>
+
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="delete-tenant-confirmation">
+              {{ 'tenants.delete.confirmationLabel' | translate: { name: tenantName(tenant) } }}
+            </nz-form-label>
+            <nz-form-control>
+              <input
+                id="delete-tenant-confirmation"
+                nz-input
+                formControlName="confirmationName"
+                autocomplete="off"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzRequired>
+              {{ 'tenants.delete.documentActionLabel' | translate }}
+            </nz-form-label>
+            <nz-form-control>
+              <nz-radio-group formControlName="documentAction" class="document-action-group">
+                <label nz-radio nzValue="DELETE">
+                  {{ 'tenants.delete.documentActions.delete' | translate }}
+                </label>
+                <label nz-radio nzValue="MOVE">
+                  {{ 'tenants.delete.documentActions.move' | translate }}
+                </label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+
+          @if (isMoveDocumentAction()) {
+            <nz-form-item>
+              <nz-form-label nzRequired nzFor="delete-tenant-target">
+                {{ 'tenants.delete.targetTenantLabel' | translate }}
+              </nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  id="delete-tenant-target"
+                  formControlName="targetTenantId"
+                  [attr.aria-label]="'tenants.delete.targetTenantLabel' | translate"
+                >
+                  @for (targetTenant of deleteTargetOptions(); track targetTenant.id) {
+                    <nz-option
+                      [nzValue]="targetTenant.id"
+                      [nzLabel]="tenantName(targetTenant)"
+                    ></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          }
+
+          <p class="delete-user-note">
+            {{ 'tenants.delete.userAssignments' | translate }}
+          </p>
+        </form>
+      }
+    </ng-container>
+  </nz-modal>
+
+  <ng-template #deleteDialogFooter>
+    <button nz-button type="button" [disabled]="isDeleting()" (click)="closeDeleteDialog()">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button
+      nz-button
+      nzDanger
+      nzType="primary"
+      type="button"
+      [nzLoading]="isDeleting()"
+      [disabled]="!canDeleteTenant()"
+      (click)="confirmDeleteTenant()"
+    >
+      <span nz-icon nzType="delete"></span>
+      {{ 'tenants.delete.confirm' | translate }}
+    </button>
+  </ng-template>
+</section>

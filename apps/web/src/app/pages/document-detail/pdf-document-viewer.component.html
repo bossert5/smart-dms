@@ -1,0 +1,68 @@
+<section class="pdf-viewer-shell" [attr.aria-label]="title()">
+  <div class="pdf-viewer-toolbar" role="toolbar" [attr.aria-label]="'documentDetail.pdf.toolbarAria' | translate">
+    <span class="pdf-viewer-page">
+      {{
+        'documentDetail.pdf.pageStatus'
+          | translate: { page: state().page, pageCount: state().pageCount || '—' }
+      }}
+    </span>
+
+    <span class="pdf-viewer-spacer"></span>
+
+    <button
+      nz-button
+      nzSize="small"
+      type="button"
+      [disabled]="!src() || !canZoomOut()"
+      [attr.aria-label]="'documentDetail.pdf.zoomOut' | translate"
+      nz-tooltip
+      [nzTooltipTitle]="'documentDetail.pdf.zoomOut' | translate"
+      (click)="zoomOut()"
+    >
+      <span nz-icon nzType="minus"></span>
+    </button>
+    <button
+      nz-button
+      nzSize="small"
+      type="button"
+      [disabled]="!src()"
+      [attr.aria-label]="'documentDetail.pdf.resetZoom' | translate"
+      (click)="resetZoom()"
+    >
+      {{ state().zoom | percent: '1.0-0' }}
+    </button>
+    <button
+      nz-button
+      nzSize="small"
+      type="button"
+      [disabled]="!src() || !canZoomIn()"
+      [attr.aria-label]="'documentDetail.pdf.zoomIn' | translate"
+      nz-tooltip
+      [nzTooltipTitle]="'documentDetail.pdf.zoomIn' | translate"
+      (click)="zoomIn()"
+    >
+      <span nz-icon nzType="plus"></span>
+    </button>
+  </div>
+
+  @if (state().errorKey; as errorKey) {
+    <nz-alert nzType="error" [nzMessage]="errorKey | translate"></nz-alert>
+  }
+
+  @if (state().isLoading) {
+    <div class="pdf-viewer-loading" role="status">
+      <span>{{ 'documentDetail.pdf.loading' | translate }}</span>
+      <nz-progress
+        nzSize="small"
+        [nzPercent]="state().progressPercent"
+        [nzShowInfo]="state().progressPercent > 0"
+      ></nz-progress>
+    </div>
+  }
+
+  @if (src()) {
+    <div class="pdf-viewer-stage">
+      <ng-container #viewerContainer></ng-container>
+    </div>
+  }
+</section>
