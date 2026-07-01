@@ -13,6 +13,12 @@ jobs:
   verify:
     name: Build and test
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      # Prisma resolves datasource URLs while loading prisma.config.ts. Generate,
+      # builds, and unit tests only need a valid URL string; this workflow does
+      # not start PostgreSQL and intentionally skips migrations/e2e DB checks.
+      DATABASE_URL: postgresql://smart_dms:smart_dms@localhost:5432/smart_dms?schema=public
 
     steps:
       - name: Check out repository
@@ -37,6 +43,9 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm --filter backend prisma:generate
+
+      - name: Lint backend
+        run: pnpm --filter backend lint
 
       - name: Test backend
         run: pnpm --filter backend test --runInBand
