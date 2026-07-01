@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, InjectionToken, signal } from '@angular/core';
 import {
   AI_PROVIDER_CHANGED_EVENT,
   DOCUMENT_CHANGED_EVENT,
@@ -19,14 +19,25 @@ import type {
   RealtimeNotificationDto,
   RealtimeNotificationsSnapshot,
 } from '@smart-dms/shared-dto';
-import { io, type Socket } from 'socket.io-client';
+import { io as createSocket, type Socket } from 'socket.io-client';
 import { ApiUrlService } from '../api/api-url.service';
 import { AuthService } from './auth.service';
+
+export type RealtimeSocketFactory = typeof createSocket;
+
+export const REALTIME_SOCKET_FACTORY = new InjectionToken<RealtimeSocketFactory>(
+  'REALTIME_SOCKET_FACTORY',
+  {
+    providedIn: 'root',
+    factory: () => createSocket,
+  },
+);
 
 @Injectable({ providedIn: 'root' })
 export class RealtimeClientService {
   private readonly auth = inject(AuthService);
   private readonly urls = inject(ApiUrlService);
+  private readonly createSocket = inject(REALTIME_SOCKET_FACTORY);
   private socket: Socket | null = null;
   private socketToken: string | null = null;
   private isRefreshing = false;
@@ -61,7 +72,7 @@ export class RealtimeClientService {
 
     this.disconnect();
     this.socketToken = accessToken;
-    this.socket = io(this.realtimeUrl(), {
+    this.socket = this.createSocket(this.realtimeUrl(), {
       transports: ['websocket'],
       auth: { accessToken },
       withCredentials: true,

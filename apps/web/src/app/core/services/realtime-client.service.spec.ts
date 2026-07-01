@@ -6,10 +6,12 @@ import {
   NOTIFICATIONS_CREATED_EVENT,
   NOTIFICATIONS_SNAPSHOT_EVENT,
 } from '@smart-dms/shared-dto';
-import { io } from 'socket.io-client';
 import { API_BASE_URL } from '../api/api-base-url.token';
 import { AuthService } from './auth.service';
-import { RealtimeClientService } from './realtime-client.service';
+import {
+  REALTIME_SOCKET_FACTORY,
+  RealtimeClientService,
+} from './realtime-client.service';
 
 const socketHandlers = new Map<string, (payload?: unknown) => void>();
 const socket = {
@@ -21,9 +23,7 @@ const socket = {
   disconnect: vi.fn(),
 };
 
-vi.mock('socket.io-client', () => ({
-  io: vi.fn(() => socket),
-}));
+const createSocket = vi.fn(() => socket);
 
 const tenant = {
   id: '00000000-0000-4000-8000-000000000010',
@@ -48,7 +48,7 @@ const user = {
 describe('RealtimeClientService', () => {
   beforeEach(() => {
     socketHandlers.clear();
-    vi.mocked(io).mockClear();
+    createSocket.mockClear();
     socket.on.mockClear();
     socket.removeAllListeners.mockClear();
     socket.disconnect.mockClear();
@@ -57,6 +57,7 @@ describe('RealtimeClientService', () => {
       providers: [
         provideHttpClient(),
         { provide: API_BASE_URL, useValue: 'http://localhost:3010/api' },
+        { provide: REALTIME_SOCKET_FACTORY, useValue: createSocket },
       ],
     });
   });
@@ -69,7 +70,7 @@ describe('RealtimeClientService', () => {
     const service = TestBed.inject(RealtimeClientService);
     TestBed.flushEffects();
 
-    expect(io).toHaveBeenCalledWith(
+    expect(createSocket).toHaveBeenCalledWith(
       'http://localhost:3010/api/realtime',
       expect.objectContaining({
         transports: ['websocket'],
