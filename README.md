@@ -1,122 +1,145 @@
-# Smart DMS
+<h1 align="center">Smart DMS</h1>
+
+<h3 align="center">Archive documents. Surface bills, deadlines and appointments before they are missed.</h3>
 
 <p align="center">
-  <strong>Self-hosted, local-first document management for private paperwork.</strong>
+  <strong>Self-hosted, local-first document management for private paperwork.</strong><br>
+  Smart DMS turns uploads, scans and PDF email attachments into searchable documents and an actionable timeline.
+  OCR and AI-assisted extraction identify payments, due dates, deadlines and calendar events, so the dashboard always shows what needs attention next.
 </p>
 
 <p align="center">
-  Upload, scan, OCR, review and archive important documents - with searchable PDFs and AI-assisted metadata.
+  <a href="https://github.com/bossert5/smart-dms/actions/workflows/ci.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/bossert5/smart-dms/ci.yml?branch=main&style=flat-square&label=build"></a>
+  <img alt="Version" src="https://img.shields.io/github/package-json/v/bossert5/smart-dms?style=flat-square">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/bossert5/smart-dms?style=flat-square"></a>
+  <img alt="Self-hosted with Docker Compose" src="https://img.shields.io/badge/self--hosted-Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white">
+  <img alt="OpenAI-compatible AI providers" src="https://img.shields.io/badge/AI-OpenAI--compatible-412991?style=flat-square">
 </p>
 
 <p align="center">
+  <a href="#why-smart-dms">Why Smart DMS?</a> ·
+  <a href="#from-document-to-action">How it works</a> ·
+  <a href="#product-tour">Product tour</a> ·
   <a href="#quick-start">Quick start</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#screenshots">Screenshots</a> ·
   <a href="#deployment">Deployment</a> ·
-  <a href="#local-development">Development</a> ·
-  <a href="#configuration-and-docs">Docs</a>
+  <a href="#local-development">Development</a>
 </p>
 
 <p align="center">
-  <img alt="Version 1.1.0" src="https://img.shields.io/badge/version-1.1.0-blue">
-  <img alt="License: AGPL-3.0-only" src="https://img.shields.io/badge/license-AGPL--3.0--only-blue">
-  <img alt="Deployment: Docker Compose" src="https://img.shields.io/badge/deploy-Docker%20Compose-blue">
-  <img alt="AI providers: OpenAI-compatible" src="https://img.shields.io/badge/AI-OpenAI--compatible-blue">
+  <img src="docs/assets/screenshots/dashboard.png" alt="Smart DMS dashboard showing upcoming and overdue payments, deadlines and appointments" width="100%">
 </p>
 
----
+## Why Smart DMS?
 
-## What is Smart DMS?
+A searchable archive answers **“Where is the document?”** Smart DMS also answers **“What do I need to do next?”**
 
-Smart DMS is a self-hosted document management system for individuals, households and people who manage private documents together. It turns browser uploads, scanner folders and PDF email attachments into one review inbox, creates searchable documents, suggests metadata with AI and keeps a human review step before anything becomes part of the archive.
+Invoices, letters and contracts often contain the action that matters most: pay an amount, meet a deadline or remember an appointment. Smart DMS extracts that information as structured metadata and keeps open items visible in the dashboard and calendar until they are completed.
 
-It is built for the everyday paper trail that otherwise ends up in binders, inboxes and scattered folders: letters, invoices, insurance documents, contracts, tax paperwork and other important records.
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <strong>💶 Keep invoices on your radar</strong><br><br>
+      Extract payment amounts, currencies and due dates. Open payments stay visible alongside their source documents.
+    </td>
+    <td width="33%" valign="top">
+      <strong>⏰ See deadlines before they pass</strong><br><br>
+      Surface due dates and deadlines, distinguish upcoming from overdue items and mark them done when completed.
+    </td>
+    <td width="33%" valign="top">
+      <strong>📅 Know what is coming up</strong><br><br>
+      Turn appointments and other dated events into a clear timeline and calendar instead of leaving them buried in PDFs.
+    </td>
+  </tr>
+</table>
 
-## Why use Smart DMS?
+> [!NOTE]
+> Smart DMS automatically processes documents and proposes structured metadata with OCR and AI. Important payments, dates and other extracted data should still be reviewed before you rely on them.
 
-| Benefit                         | What it means in practice                                                                                                    |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **One intake workflow**         | Upload documents in the browser, import scanner output from folders or pull PDF attachments from configured IMAP mailboxes.  |
-| **Searchable archive**          | OCR, previews, full-text search, filters, tags and document types help you find documents again.                             |
-| **AI-assisted metadata**        | Extract proposed titles, summaries, parties, tags, payments, deadlines and calendar events from OCR and Markdown text.       |
-| **Review before archive**       | Correct metadata, lock fields, reprocess documents and accept only what you have reviewed.                                   |
-| **Dashboard and calendar**      | Surface payments, due dates, deadlines and appointments from your documents.                                                 |
-| **Local-first infrastructure**  | Run the web UI, API, processor, PostgreSQL, Redis, storage, OCR runtime and Docling runtime with Docker Compose.             |
-| **Flexible AI setup**           | Use configurable OpenAI-compatible providers, including local endpoints such as Ollama or LM Studio, or external model APIs. |
-| **Multi-user and multi-tenant** | Create users and tenants, manage memberships and keep document workflows separated.                                          |
-
-## How it works
+## From document to action
 
 ```mermaid
 flowchart LR
-  A[Upload / Scanner / Email] --> B[OCR + conversion]
-  B --> C[AI metadata extraction]
+  A[Upload, scanner or email] --> B[OCR and conversion]
+  B --> C[AI-assisted extraction]
   C --> D[Human review]
   D --> E[Searchable archive]
-  E --> F[Dashboard + calendar]
+  E --> F[Dashboard and calendar]
 ```
 
-1. **Import** documents through the browser, scanner import folders or email ingestion.
-2. **Process** them with OCR and document conversion to create searchable PDFs, previews, OCR text and Markdown.
-3. **Extract** suggested metadata with an OpenAI-compatible AI provider.
-4. **Review** titles, summaries, tags, parties, payments, deadlines and calendar events.
-5. **Archive** accepted documents and find them later through search, filters, tags and document types.
+1. **Import** documents in the browser, from watched scanner folders or from PDF email attachments.
+2. **Process** them into searchable PDFs, previews, OCR text and Markdown.
+3. **Extract** proposed titles, summaries, parties, document types, tags, payments, deadlines and calendar events with an OpenAI-compatible AI provider.
+4. **Review** and correct the suggestions, lock fields when needed and reprocess documents when the result is not sufficient.
+5. **Act** on open payments, deadlines and appointments from the dashboard or calendar, then mark them completed.
+6. **Find** accepted documents later with full-text search, filters, tags and document types.
 
-## Features
+## Capabilities at a glance
 
-| Area                   | Capabilities                                                                                          |
-| ---------------------- | ----------------------------------------------------------------------------------------------------- |
-| Document intake        | Browser uploads, scanner import directories and PDF attachment import from configured IMAP mailboxes. |
-| OCR and conversion     | Compose-managed OCR and Docling runtimes create searchable PDFs, previews, OCR text and Markdown.     |
-| AI extraction          | Proposed titles, summaries, document types, parties, tags, payments, deadlines and calendar events.   |
-| Review workflow        | Review, correct, lock, reprocess and accept documents before final archiving.                         |
-| Search and retrieval   | Full-text search, filters, document types, tags, downloads and reprocessing.                          |
-| Dashboard and calendar | Important payments, deadlines and appointments prepared for review and surfaced in dedicated views.   |
-| Users and tenants      | Multiple users, multiple tenants, tenant memberships and separated document workflows.                |
-| Deployment             | Source-based Docker Compose deployment with local builds on your Docker host.                         |
+| Area | What Smart DMS provides |
+| --- | --- |
+| **Actionable dashboard** | A combined timeline for open payments, due dates, deadlines and appointments, including overdue states, assignments and completion actions. |
+| **Document intake** | Browser uploads, tenant-specific scanner import directories and PDF attachment import from configured IMAP mailboxes. |
+| **OCR and conversion** | Compose-managed OCR and Docling runtimes that create searchable PDFs, previews, OCR text and Markdown. |
+| **AI-assisted extraction** | Proposed titles, summaries, document types, parties, tags, payment data, deadlines and calendar events. |
+| **Human review workflow** | Review, correct, lock, reprocess and accept documents before final archiving. |
+| **Search and retrieval** | Full-text search, filters, tags, document types, previews, downloads and reprocessing. |
+| **Local-first deployment** | Self-host the web UI, API, processor, PostgreSQL, Redis, document storage, OCR and Docling services with Docker Compose. |
+| **Flexible AI providers** | Use OpenAI-compatible APIs, including local endpoints such as Ollama or LM Studio, or external model providers. |
+| **Users and tenants** | Multiple users, multiple tenants, tenant memberships, assignments and separated document workflows. |
 
-OCR is the text and search foundation. AI extraction is the intended workflow for turning OCR and Markdown text into structured document metadata, but all important metadata should still be reviewed by a user.
+## Product tour
 
-## Screenshots
+All screenshots use synthetic demo data only.
 
-Screenshots use synthetic demo data only.
-
-![Smart DMS dashboard with document workload and review status](docs/assets/screenshots/dashboard.png)
-
-| Document search                                                                                                      | Inbox review                                                                                                 |
-| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| ![Document search with full-text results, filters and document actions](docs/assets/screenshots/document-search.png) | ![Inbox review queue with AI metadata status and document actions](docs/assets/screenshots/inbox-review.png) |
-
-| Document detail                                                                                              | AI provider settings                                                                                     |
-| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| ![Document detail view with extracted metadata and PDF preview](docs/assets/screenshots/document-detail.png) | ![AI provider settings with a local OpenAI-compatible provider](docs/assets/screenshots/ai-settings.png) |
-
-| Calendar                                                                                                  | Email ingestion                                                                                                           |
-| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| ![Calendar view with payment due dates, deadlines and appointments](docs/assets/screenshots/calendar.png) | ![Email ingestion view with mailbox messages, attachments and import status](docs/assets/screenshots/email-ingestion.png) |
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/document-search.png" alt="Document search with full-text results, filters and document actions" width="100%"><br>
+      <strong>Find documents quickly</strong><br>
+      Search OCR content, filter the archive and work with the result without navigating through folder trees.
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/inbox-review.png" alt="Inbox review queue with AI metadata status and document actions" width="100%"><br>
+      <strong>Review before archiving</strong><br>
+      Keep incoming documents in one review queue and accept them only after the extracted metadata is ready.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/document-detail.png" alt="Document detail view with extracted metadata and PDF preview" width="100%"><br>
+      <strong>Document and metadata side by side</strong><br>
+      Verify extracted information against the original PDF, correct fields and reprocess when necessary.
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/calendar.png" alt="Calendar with payment due dates, deadlines and appointments" width="100%"><br>
+      <strong>Turn document dates into a schedule</strong><br>
+      See payments, deadlines and appointments in a dedicated calendar instead of rediscovering them inside documents.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/ai-settings.png" alt="AI provider settings with a local OpenAI-compatible provider" width="100%"><br>
+      <strong>Choose where AI runs</strong><br>
+      Configure OpenAI-compatible providers, including local endpoints, and control the extraction workflow.
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/screenshots/email-ingestion.png" alt="Email ingestion with mailbox messages, attachments and import status" width="100%"><br>
+      <strong>Bring PDF attachments into the same inbox</strong><br>
+      Import configured mailbox attachments and track their processing status without a separate manual workflow.
+    </td>
+  </tr>
+</table>
 
 ## Quick start
 
-Most users should run Smart DMS with Docker Compose on the machine where the documents should live. This can be a Linux server, a workstation or a Windows machine using Docker Desktop with WSL2/Linux containers.
+Smart DMS is distributed as source code and is built locally on the Docker host. The standard deployment runs the application and its supporting services with Docker Compose.
 
 ### Requirements
 
-For Docker deployments:
-
-- Linux server or workstation with Docker Engine and the Docker Compose plugin, or Windows with Docker Desktop in WSL2/Linux-container mode.
-- Git for cloning and updating the source checkout.
-- Enough disk space for PostgreSQL, Redis, document storage, OCR and Docling runtime images.
-- A free host port for the web UI, default `8080`, or an existing Traefik reverse proxy.
-
-For source development:
-
-- Node.js with Corepack and PNPM.
-- Docker and Docker Compose.
-- Free local ports for the default development setup:
-  - API: `3010`
-  - Web: `4200`
-  - PostgreSQL: `5432`
-  - Redis: `6379`
+- Linux with Docker Engine and the Docker Compose plugin, or Windows with Docker Desktop in WSL2/Linux-container mode.
+- Git for cloning and updating the repository.
+- Enough disk space for PostgreSQL, Redis, document storage and the OCR and Docling runtime images.
+- A free host port for the web UI, `8080` by default, or an existing Traefik reverse proxy.
 
 ### 1. Clone the repository
 
@@ -129,24 +152,23 @@ cd smart-dms
 
 ```bash
 cp .env.example .env
-nano .env
 ```
 
-Replace at least these values in `.env`:
+Edit `.env` and replace at least:
 
 - `JWT_ACCESS_SECRET`
 - `DMS_SECRET_ENCRYPTION_KEY`
 - `SMART_DMS_POSTGRES_PASSWORD`
 - `SMART_DMS_REDIS_PASSWORD`, or leave it empty intentionally
 
-Use long random values. On Linux, one simple way to generate a secret is:
+Generate long random secrets, for example:
 
 ```bash
 openssl rand -hex 32
 ```
 
 > [!IMPORTANT]
-> The helper scripts validate `.env` and stop when required values are missing or still contain placeholders. Manual `docker compose` commands require the same `.env` review first.
+> The helper scripts validate `.env` and stop when required values are missing or still contain placeholders. Manual `docker compose` commands require the same configuration review first.
 
 ### 3. Start Smart DMS
 
@@ -154,19 +176,13 @@ openssl rand -hex 32
 scripts/start-compose.sh
 ```
 
-The first build can take several minutes because Docker downloads base images, Node/Python dependencies, Tesseract language data and Docling runtime dependencies.
-
-Open Smart DMS in your browser:
-
-```text
-http://<docker-host>:8080
-```
-
-On the same machine:
+The first build downloads and prepares the application, OCR and Docling dependencies. When the containers are ready, open:
 
 ```text
 http://localhost:8080
 ```
+
+From another device, replace `localhost` with the Docker host name or IP address.
 
 Initial login for a fresh database:
 
@@ -178,81 +194,75 @@ The backend forces a password change after the first login.
 
 ## Deployment
 
-Smart DMS is distributed as source code. The supported deployment path is to clone the repository on your Docker host and build the application containers locally with Docker Compose.
-
-There are currently no published Docker images or binary release artifacts. Deployments and updates use the scripts in this repository, so the running containers are built from the same source code and Dockerfiles that are visible in the checkout.
+There are currently no published Smart DMS Docker images or binary release artifacts. Deployments and updates use the scripts and Dockerfiles in this repository, so the running application is built from the source visible in the checkout.
 
 ### Deployment modes
 
-| Mode                          | Use when                                                     | Start                                                | Update                                                |
-| ----------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------------------- |
-| Local port                    | You want Smart DMS on `http://<host>:8080`.                  | `scripts/start-compose.sh`                           | `scripts/update-compose.sh`                           |
-| Traefik                       | You already run Traefik and want HTTPS/domain routing there. | `scripts/start-compose.sh --traefik`                 | `scripts/update-compose.sh --traefik`                 |
-| Local port with scanner group | The scanner import folder needs a supplemental Linux group.  | `scripts/start-compose.sh --scanner-group`           | `scripts/update-compose.sh --scanner-group`           |
-| Traefik with scanner group    | Traefik deployment plus group-protected scanner import.      | `scripts/start-compose.sh --traefik --scanner-group` | `scripts/update-compose.sh --traefik --scanner-group` |
+| Mode | Use when | Start | Update |
+| --- | --- | --- | --- |
+| Local port | Smart DMS should be available at `http://<host>:8080`. | `scripts/start-compose.sh` | `scripts/update-compose.sh` |
+| Traefik | An existing Traefik instance should handle domain and HTTPS routing. | `scripts/start-compose.sh --traefik` | `scripts/update-compose.sh --traefik` |
+| Local port with scanner group | A scanner import folder is protected by a supplemental Linux group. | `scripts/start-compose.sh --scanner-group` | `scripts/update-compose.sh --scanner-group` |
+| Traefik with scanner group | Traefik routing and group-protected scanner import are both required. | `scripts/start-compose.sh --traefik --scanner-group` | `scripts/update-compose.sh --traefik --scanner-group` |
 
-The scripts validate `.env`, build local Smart DMS images and run:
+The scripts validate `.env`, build the local Smart DMS images and run the equivalent of:
 
 ```bash
 docker compose up -d --build --remove-orphans
 ```
 
-### Useful operations
+### Updates and useful operations
 
 ```bash
+scripts/update-compose.sh
+
 docker compose ps
 docker compose logs -f --tail=100
 docker compose down
 ```
 
-> [!CAUTION]
-> `docker compose down` keeps data volumes. Do not use `docker compose down -v` for normal updates because it deletes persistent PostgreSQL, Redis and document storage volumes.
-
-### Updates
-
-From the checked-out repository on the Docker host:
-
-```bash
-scripts/update-compose.sh
-```
-
-Use the matching option for your deployment, for example:
+Use the matching option when updating another deployment mode, for example:
 
 ```bash
 scripts/update-compose.sh --traefik
 ```
 
-## Scanner import folders
+> [!CAUTION]
+> `docker compose down` keeps persistent volumes. Do not use `docker compose down -v` for normal updates because it deletes PostgreSQL, Redis and document storage volumes.
 
-Smart DMS can import scanned files from a host directory. Set the host-side root folder with `SMART_DMS_SCANNER_IMPORT_PATH` in `.env`; the default is `./scanner-import` inside the repository checkout.
+<details>
+<summary><strong>Scanner import folders</strong></summary>
 
-Inside that root folder, Smart DMS creates one import folder per tenant:
+Smart DMS can import scanned files from a host directory. Set the host-side root with `SMART_DMS_SCANNER_IMPORT_PATH` in `.env`; the default is `./scanner-import` inside the repository checkout.
 
-- The default tenant uses `default`, so the default host path is `./scanner-import/default`.
-- New tenants use their tenant key as scanner import folder unless a custom scanner import path is configured for that tenant.
-- When a tenant scanner import path is changed, Smart DMS creates the new folder automatically.
+Smart DMS creates one import folder per tenant below that root:
 
-Point your network scanner at the tenant folder, not at the general import root. For example, if `.env` contains:
+- The default tenant uses `default`, so its default path is `./scanner-import/default`.
+- New tenants use their tenant key unless a custom scanner import path is configured.
+- When a tenant scanner import path changes, Smart DMS creates the new folder automatically.
+
+Point the network scanner at the tenant folder, not the general import root. For example:
 
 ```env
 SMART_DMS_SCANNER_IMPORT_PATH=/srv/smart-dms/scanner-import
 ```
 
-then the default tenant folder is:
+The default tenant folder is then:
 
 ```text
 /srv/smart-dms/scanner-import/default
 ```
 
-Expose that folder on your network, for example with SMB/Samba or a NAS share, and configure the scanner to write PDFs or images into that share. Smart DMS does not create the SMB share itself; it only watches the mounted host directory.
+Expose that folder through SMB/Samba or a NAS share and configure the scanner to write PDFs or images there. Smart DMS watches the mounted directory; it does not create the network share itself.
 
-The API container must be able to read, move and delete files from the import folder. If the folder is protected by a Linux group, use the `--scanner-group` deployment mode and set `SMART_DMS_SCANNER_IMPORT_GID`.
+The API container must be able to read, move and delete files from the import folder. For a folder protected by a Linux group, use the `--scanner-group` deployment mode and set `SMART_DMS_SCANNER_IMPORT_GID`.
 
-## Traefik deployment
+</details>
 
-Use this path when you already run Traefik on the Docker host and want Smart DMS to be reachable through a domain with Traefik-managed routing.
+<details>
+<summary><strong>Traefik deployment</strong></summary>
 
-First complete the quick-start steps through `.env` creation. Then set the Traefik values in `.env`:
+Complete the quick-start configuration, then set the Traefik values in `.env`:
 
 ```env
 SMART_DMS_TRAEFIK_HOST=dms.your-domain.example
@@ -261,57 +271,67 @@ SMART_DMS_TRAEFIK_CERTRESOLVER=letsencrypt
 SMART_DMS_TRAEFIK_NETWORK=proxy
 ```
 
-Start Smart DMS behind Traefik:
+Start and update Smart DMS behind Traefik:
 
 ```bash
 scripts/start-compose.sh --traefik
-```
-
-Update it later with:
-
-```bash
 scripts/update-compose.sh --traefik
 ```
 
-The Traefik modes do not publish the web port directly. Traffic is routed through Traefik to the `web` service. The helper script creates the configured external Docker network if it does not already exist.
+Traefik modes do not publish the web port directly. Traffic is routed through Traefik to the `web` service. The helper script creates the configured external Docker network when it does not already exist.
 
 Manual Compose commands and all configuration variables are documented in [`docs/docker-compose-deployment/`](docs/docker-compose-deployment/).
 
-## Windows and WSL
+</details>
 
-Docker Compose can run Smart DMS on Windows through Docker Desktop when Linux containers and WSL2 integration are enabled. The helper script is a Bash script for Linux, WSL or Git Bash. On PowerShell, use Docker Compose directly.
+<details>
+<summary><strong>Windows and WSL</strong></summary>
 
-PowerShell startup:
+Docker Compose can run Smart DMS on Windows through Docker Desktop with Linux containers and WSL2 integration. The helper scripts are Bash scripts for Linux, WSL or Git Bash. In PowerShell, use Docker Compose directly.
 
 ```powershell
+# Local port
 docker compose up -d --build --remove-orphans
-```
 
-PowerShell startup behind Traefik:
-
-```powershell
+# Behind Traefik
 docker compose -f docker-compose.traefik.yml up -d --build --remove-orphans
 ```
 
-PowerShell update:
+Update from PowerShell:
 
 ```powershell
 git pull --ff-only
 docker compose up -d --build --remove-orphans
 ```
 
-PowerShell update behind Traefik:
+For Traefik, use the same `git pull --ff-only` command followed by:
 
 ```powershell
-git pull --ff-only
 docker compose -f docker-compose.traefik.yml up -d --build --remove-orphans
 ```
 
-For source builds and scanner-import permissions, checking out the repository inside WSL is usually closer to the Linux server deployment path than building from a Windows filesystem path.
+For source builds and scanner-import permissions, a checkout inside WSL is usually closer to the Linux server deployment path than a checkout on the Windows filesystem.
 
-The same `docker compose ps`, `docker compose logs -f --tail=100` and `docker compose down` commands work from PowerShell.
+</details>
+
+## Architecture and technology
+
+| Layer | Technology and responsibility |
+| --- | --- |
+| Web application | Angular, NG-ZORRO, PDF.js and Socket.IO client for the dashboard, inbox, archive, document review and settings. |
+| API and processor | NestJS, BullMQ and Socket.IO for authentication, document workflows, background processing and realtime updates. |
+| Data and queues | PostgreSQL with Prisma for persistent data and Redis for queues and supporting state. |
+| Document processing | OCR and Docling runtimes for searchable PDFs, previews, text and Markdown extraction. |
+| AI integration | Configurable OpenAI-compatible providers for structured metadata extraction. |
+| Deployment | Docker Compose for the application, database, queue, storage and document-processing services. |
 
 ## Local development
+
+Requirements for source development:
+
+- Node.js with Corepack and PNPM.
+- Docker and Docker Compose.
+- Free local ports for the default setup: API `3010`, web `4200`, PostgreSQL `5432` and Redis `6379`.
 
 Prepare the local development environment:
 
@@ -319,11 +339,9 @@ Prepare the local development environment:
 pnpm run dev:setup
 ```
 
-This command prepares the services and generated artifacts needed for local development. It creates `apps/backend/.env` from `apps/backend/.env.example` when it is missing, starts the local PostgreSQL and Redis Docker containers, prepares the OCR and Docling runtime images, installs PNPM dependencies, builds the shared DTO package, generates the Prisma Client and runs database migrations.
+This command creates `apps/backend/.env` from its example when necessary, starts local PostgreSQL and Redis, prepares the OCR and Docling runtime images, installs dependencies, builds the shared DTO package, generates Prisma Client and runs database migrations.
 
-Run it once after cloning the repository. Run it again after pulling changes that touch dependencies, Prisma migrations, shared DTOs, backend environment defaults, or OCR/Docling runtime Dockerfiles. It is also the first command to use when the local database or Redis containers are missing or were stopped.
-
-Start the backend, processor and web app in separate terminals:
+Start the backend, processor and web application in separate terminals:
 
 ```bash
 pnpm run dev:api
@@ -331,13 +349,13 @@ pnpm run dev:processor
 pnpm run dev:web
 ```
 
-Open the web app at:
+Open the development web application at:
 
 ```text
 http://localhost:4200
 ```
 
-Useful checks for source changes:
+Useful checks:
 
 ```bash
 pnpm run build
@@ -346,26 +364,26 @@ pnpm --filter backend test:e2e
 pnpm --filter web test:e2e
 ```
 
-Pull requests should run the relevant checks and note them in the PR template. The default CI workflow builds shared DTOs, backend and web, generates Prisma Client and validates both Compose files.
+Pull requests should run the relevant checks and note them in the PR template. The default CI workflow builds the shared DTOs, backend and web application, generates Prisma Client and validates both Compose files.
 
-## Configuration and docs
+## Configuration and documentation
 
-| Topic                             | Location                                                                                                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Docker deployment                 | [`docs/docker-compose-deployment/`](docs/docker-compose-deployment/)                                                                                                           |
-| Compose configuration             | [`.env.example`](.env.example), [`.env.full.example`](.env.full.example), [`docs/docker-compose-deployment/configuration.md`](docs/docker-compose-deployment/configuration.md) |
-| Development backend configuration | [`apps/backend/.env.example`](apps/backend/.env.example)                                                                                                                       |
-| Contribution guide                | [`CONTRIBUTING.md`](CONTRIBUTING.md)                                                                                                                                           |
-| Security policy                   | [`SECURITY.md`](SECURITY.md)                                                                                                                                                   |
-| Changelog                         | [`CHANGELOG.md`](CHANGELOG.md)                                                                                                                                                 |
-| Project notice                    | [`NOTICE`](NOTICE)                                                                                                                                                             |
-| Third-party notices               | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)                                                                                                                             |
+| Topic | Location |
+| --- | --- |
+| Docker deployment | [`docs/docker-compose-deployment/`](docs/docker-compose-deployment/) |
+| Compose configuration | [`.env.example`](.env.example), [`.env.full.example`](.env.full.example), [`docs/docker-compose-deployment/configuration.md`](docs/docker-compose-deployment/configuration.md) |
+| Development backend configuration | [`apps/backend/.env.example`](apps/backend/.env.example) |
+| Contribution guide | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| Security policy | [`SECURITY.md`](SECURITY.md) |
+| Changelog | [`CHANGELOG.md`](CHANGELOG.md) |
+| Project notice | [`NOTICE`](NOTICE) |
+| Third-party notices | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
-## Security and reliability notes
+## Security and reliability
 
-Uploaded documents, OCR output, AI responses, email content, metadata and user input are treated as untrusted data. Do not expose Smart DMS without reviewing deployment configuration, secrets, storage paths, backups and network access.
+Uploaded documents, OCR output, AI responses, email content, metadata and user input are untrusted data. Do not expose Smart DMS without reviewing secrets, network access, storage paths, backups and the selected AI provider.
 
-OCR results and AI-extracted metadata can be incomplete or wrong. Users remain responsible for reviewing important data, keeping backups, testing restores and validating the system before relying on it for important documents.
+OCR and AI-extracted metadata can be incomplete or wrong. Users remain responsible for reviewing important data, keeping backups, testing restores and validating the system before relying on it for critical documents, payments, deadlines or appointments.
 
 ## License
 
