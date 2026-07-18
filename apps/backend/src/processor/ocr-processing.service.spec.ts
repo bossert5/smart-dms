@@ -36,7 +36,7 @@ describe('OcrProcessingService', () => {
     const { commandRunner, service, tx } = createService({
       settings: { ocrReprocessExistingTextLayer: false },
       extractedFirstPageText: longGermanText,
-      extractedFullText: `${longGermanText}\nVolltext aus dem vorhandenen Layer.`,
+      extractedFullText: `${longGermanText}\nFull text from the existing layer.`,
     });
 
     await service.processDocument(documentId, processingJobId);
@@ -56,9 +56,7 @@ describe('OcrProcessingService', () => {
         data: expectObjectContaining({
           pdfPath: 'pdfs/document-id.pdf',
           thumbnailPath: 'thumbnails/document-id.jpg',
-          ocrText: expectStringContaining(
-            'Volltext aus dem vorhandenen Layer.',
-          ),
+          ocrText: expectStringContaining('Full text from the existing layer.'),
           ocrLanguage: 'german',
           pageCount: 3,
         }),
@@ -77,7 +75,7 @@ describe('OcrProcessingService', () => {
     const { commandRunner, service, tx } = createService({
       settings: { ocrReprocessExistingTextLayer: true },
       extractedFirstPageText: longGermanText,
-      extractedFullText: `${longGermanText}\nVolltext aus dem vorhandenen Layer.`,
+      extractedFullText: `${longGermanText}\nFull text from the existing layer.`,
       probeText: longGermanText,
       ocrCleanFinal: true,
     });
@@ -104,7 +102,7 @@ describe('OcrProcessingService', () => {
     expect(tx.document.update).toHaveBeenCalledWith(
       expectObjectContaining({
         data: expectObjectContaining({
-          ocrText: expectStringContaining('Vollstaendig erkannter OCR Text.'),
+          ocrText: expectStringContaining('Fully recognized OCR text.'),
         }),
       }),
     );
@@ -138,7 +136,7 @@ describe('OcrProcessingService', () => {
       extractedFirstPageText: longGermanText,
       extractedFullText: longGermanText,
       doclingMarkdown:
-        '# Rechnung\n\n| Nr | Betrag |\n| --- | --- |\n| R-100 | 42,00 EUR |',
+        '# Invoice\n\n| No. | Amount |\n| --- | --- |\n| R-100 | 42.00 EUR |',
     });
 
     await service.processDocument(documentId, processingJobId);
@@ -146,7 +144,7 @@ describe('OcrProcessingService', () => {
     expect(tx.document.update).toHaveBeenCalledWith(
       expectObjectContaining({
         data: expectObjectContaining({
-          extractedMarkdown: expectStringContaining('| Nr | Betrag |'),
+          extractedMarkdown: expectStringContaining('| No. | Amount |'),
         }),
       }),
     );
@@ -177,7 +175,7 @@ describe('OcrProcessingService', () => {
       settings: { ocrReprocessExistingTextLayer: false },
       extractedFirstPageText: longGermanText,
       extractedFullText: longGermanText,
-      doclingMarkdown: '# Rechnung',
+      doclingMarkdown: '# Invoice',
       doclingDebugJson: true,
     });
 
@@ -772,7 +770,7 @@ describe('OcrProcessingService', () => {
               args[sidecarIndex],
               args.includes('--output-type')
                 ? (options.probeText ?? '')
-                : 'Vollstaendig erkannter OCR Text.',
+                : 'Fully recognized OCR text.',
               'utf8',
             );
           }

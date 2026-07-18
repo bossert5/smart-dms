@@ -76,7 +76,7 @@ describe('shared UI and formatters', () => {
     const selector = fixture.nativeElement.querySelector('[data-testid="language-selector"]');
     expect(selector).not.toBeNull();
     expect(TestBed.inject(TranslateService).instant('language.options.en')).toBe('English');
-    expect(TestBed.inject(TranslateService).instant('language.options.de')).toBe('Deutsch');
+    expect(TestBed.inject(TranslateService).instant('language.options.de')).toBe('German');
     fixture.componentInstance.language.use('de');
 
     expect(language.use).toHaveBeenCalledWith('de');

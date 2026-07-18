@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -149,7 +150,16 @@ export class AiProviderService {
   }
 
   async deleteProvider(id: string): Promise<void> {
-    await this.prisma.aiProvider.delete({ where: { id } });
+    try {
+      await this.prisma.aiProvider.delete({ where: { id } });
+    } catch (error) {
+      if (isForeignKeyConstraintError(error)) {
+        throw new ConflictException(
+          'AI provider is referenced by active processing data and cannot be deleted.',
+        );
+      }
+      throw error;
+    }
     await this.realtimeEvents?.aiProviderChanged({
       providerId: id,
       action: 'DELETE',
@@ -303,4 +313,11 @@ function normalizeBaseUrl(value: string, suffix: '/v1'): string {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function isForeignKeyConstraintError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2003'
+  );
 }

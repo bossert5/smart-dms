@@ -21,7 +21,7 @@ describe('CalendarService', () => {
             id: '018f1a44-9093-7f55-a515-278f4d9bd99f',
             documentId: '018f1a44-9093-7f55-a515-278f4d9bd990',
             kind: 'DUE_DATE',
-            title: 'Rate faellig',
+            title: 'Installment due',
             description: null,
             date: new Date('2026-06-30T00:00:00.000Z'),
             time: null,
@@ -134,25 +134,25 @@ describe('CalendarService', () => {
       [
         {
           kind: 'APPOINTMENT',
-          title: 'Erster Termin',
+          title: 'First event',
           date: '2026-06-10',
           time: '09:00',
         },
         {
           kind: 'APPOINTMENT',
-          title: 'Erster Termin',
+          title: 'First event',
           date: '2026-06-10',
           time: '09:00',
         },
         {
           kind: 'APPOINTMENT',
-          title: 'Zweiter Termin',
+          title: 'Second event',
           date: '2026-06-17',
           time: '09:00',
         },
         {
           kind: 'DUE_DATE',
-          title: 'Rate faellig',
+          title: 'Installment due',
           date: '2026-06-30',
         },
       ],
@@ -170,7 +170,7 @@ describe('CalendarService', () => {
         {
           documentId: '018f1a44-9093-7f55-a515-278f4d9bd990',
           kind: 'APPOINTMENT',
-          title: 'Erster Termin',
+          title: 'First event',
           description: null,
           date: new Date('2026-06-10T00:00:00.000Z'),
           time: '09:00',
@@ -182,7 +182,7 @@ describe('CalendarService', () => {
         {
           documentId: '018f1a44-9093-7f55-a515-278f4d9bd990',
           kind: 'APPOINTMENT',
-          title: 'Zweiter Termin',
+          title: 'Second event',
           description: null,
           date: new Date('2026-06-17T00:00:00.000Z'),
           time: '09:00',
@@ -194,7 +194,7 @@ describe('CalendarService', () => {
         {
           documentId: '018f1a44-9093-7f55-a515-278f4d9bd990',
           kind: 'DUE_DATE',
-          title: 'Rate faellig',
+          title: 'Installment due',
           description: null,
           date: new Date('2026-06-30T00:00:00.000Z'),
           time: null,
@@ -352,9 +352,9 @@ describe('CalendarService', () => {
       [
         {
           kind: 'DUE_DATE',
-          title: 'Ueberweisung der Gebuehren',
+          title: 'Fee payment',
           date: '2026-06-30',
-          sourceText: 'Ueberweisung der Gebuehren bis zum 30.06.2026',
+          sourceText: 'Pay the fees by 30 June 2026',
         },
       ],
     );
@@ -385,12 +385,12 @@ describe('CalendarService', () => {
       [
         {
           kind: 'DUE_DATE',
-          title: 'Ueberweisung der Gebuehren',
+          title: 'Fee payment',
           date: '2026-01-02',
-          sourceText: 'Ueberweisung der Gebuehren bis zum 02.01.2026',
+          sourceText: 'Pay the fees by 2 January 2026',
         },
       ],
-      [{ date: '2026-01-02', sourceText: 'bis zum 02.01.2026' }],
+      [{ date: '2026-01-02', sourceText: 'by 2 January 2026' }],
     );
 
     expect(tx.documentPayment.findMany).not.toHaveBeenCalled();

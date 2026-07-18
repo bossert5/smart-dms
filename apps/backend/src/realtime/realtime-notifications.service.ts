@@ -20,14 +20,14 @@ import { createRedisClient } from './redis-client.factory';
 export interface RealtimeNotificationPublishInput {
   type: RealtimeNotificationType;
   severity: RealtimeNotificationSeverity;
-  title: string;
-  message: string;
   tenantId?: string;
   documentId?: string;
   documentTitle?: string;
   jobId?: string;
   status?: DocumentStatus;
   queuePosition?: number;
+  documentCount?: number;
+  targetTenantName?: string;
 }
 
 @Injectable()
@@ -136,16 +136,15 @@ export class RealtimeNotificationsService implements OnModuleDestroy {
   private normalizeInput(
     input: RealtimeNotificationPublishInput,
   ): RealtimeNotificationPublishInput {
-    const title = input.title.trim().slice(0, 120) || 'Benachrichtigung';
-    const message = input.message.trim().slice(0, 500) || title;
     const documentTitle =
       input.documentTitle?.trim().slice(0, 500) || undefined;
+    const targetTenantName =
+      input.targetTenantName?.trim().slice(0, 200) || undefined;
 
     return {
       ...input,
-      title,
-      message,
       documentTitle,
+      targetTenantName,
     };
   }
 

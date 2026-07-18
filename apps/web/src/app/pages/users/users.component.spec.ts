@@ -262,8 +262,8 @@ describe('UsersComponent', () => {
     component.createUserForm.setValue({
       username: 'new-user',
       displayName: 'New User',
-      password: 'Passwort1!',
-      confirmPassword: 'Passwort1!',
+      password: 'Password1!',
+      confirmPassword: 'Password1!',
       role: 'User',
       tenantIds: [tenant.id],
     });
@@ -275,7 +275,7 @@ describe('UsersComponent', () => {
     expect(usersApi.create).toHaveBeenCalledWith({
       username: 'new-user',
       displayName: 'New User',
-      password: 'Passwort1!',
+      password: 'Password1!',
       role: 'User',
       tenantIds: [tenant.id],
       defaultTenantId: tenant.id,

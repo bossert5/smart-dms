@@ -60,7 +60,7 @@ describe('AiPromptPlanner', () => {
     const evidence = emptyEvidence({
       paymentCandidates: [
         candidate('IBAN DE02120300000000202051'),
-        candidate('Bitte zahlen Sie 119,90 EUR'),
+        candidate('Please pay 119.90 EUR'),
       ],
     });
 

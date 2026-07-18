@@ -34,6 +34,7 @@ import { DocumentApiService } from '../../core/api/document-api.service';
 import { UserApiService } from '../../core/api/user-api.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { AuthService } from '../../core/services/auth.service';
+import { OpenDocumentsService } from '../../core/services/open-documents.service';
 import { RealtimeClientService } from '../../core/services/realtime-client.service';
 import { TenantContextService } from '../../core/services/tenant-context.service';
 import { localizedLongDate } from '../../shared/formatters/date.formatter';
@@ -92,6 +93,7 @@ export class DashboardComponent {
   private readonly api = inject(DashboardApiService);
   private readonly documentsApi = inject(DocumentApiService);
   private readonly language = inject(LanguageService);
+  private readonly openDocuments = inject(OpenDocumentsService);
   private readonly realtime = inject(RealtimeClientService);
   private readonly tenantContext = inject(TenantContextService);
   private readonly translate = inject(TranslateService);
@@ -648,6 +650,22 @@ export class DashboardComponent {
       this.language.currentLocale(),
       this.translate.instant('common.emptyValue'),
     );
+  }
+
+  preventMiddleMouseNavigation(event: MouseEvent): void {
+    if (event.button === 1) {
+      event.preventDefault();
+    }
+  }
+
+  handleDocumentAuxClick(event: MouseEvent, documentId: string, documentTitle: string): void {
+    if (event.button !== 1) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.openDocuments.open({ id: documentId, title: documentTitle });
   }
 
   private loadAssignees(): void {

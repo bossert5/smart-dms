@@ -10,11 +10,11 @@ describe('email sender rules', () => {
 
   it('matches exact addresses and domain wildcards case-insensitively', () => {
     const rules = [
-      normalizeSenderRule('rechnung@example.com'),
+      normalizeSenderRule('invoice@example.com'),
       normalizeSenderRule('*@supplier.example'),
     ];
 
-    expect(emailSenderMatchesRules('Rechnung@Example.com', rules)).toBe(true);
+    expect(emailSenderMatchesRules('Invoice@Example.com', rules)).toBe(true);
     expect(emailSenderMatchesRules('team@supplier.example', rules)).toBe(true);
     expect(emailSenderMatchesRules('team@other.example', rules)).toBe(false);
     expect(emailSenderMatchesRules(null, rules)).toBe(false);

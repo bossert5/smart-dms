@@ -22,6 +22,7 @@ import { DocumentApiService } from '../../core/api/document-api.service';
 import { UserApiService } from '../../core/api/user-api.service';
 import { LanguageService } from '../../core/i18n/language.service';
 import { AuthService } from '../../core/services/auth.service';
+import { OpenDocumentsService } from '../../core/services/open-documents.service';
 import { RealtimeClientService } from '../../core/services/realtime-client.service';
 import { TenantContextService } from '../../core/services/tenant-context.service';
 import { provideI18nTesting } from '../../testing/i18n-testing';
@@ -240,6 +241,7 @@ describe('DashboardComponent', () => {
     const usersApi = {
       assignees: vi.fn().mockReturnValue(of({ items: [assignee] })),
     };
+    const openDocuments = { open: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
@@ -262,6 +264,7 @@ describe('DashboardComponent', () => {
         { provide: DashboardApiService, useValue: api },
         { provide: DocumentApiService, useValue: documentsApi },
         { provide: UserApiService, useValue: usersApi },
+        { provide: OpenDocumentsService, useValue: openDocuments },
         {
           provide: AuthService,
           useValue: { canEditDocuments: () => true, isAdmin: () => false },
@@ -280,8 +283,8 @@ describe('DashboardComponent', () => {
 
     expect(api.summary).toHaveBeenCalledTimes(1);
     expect(usersApi.assignees).toHaveBeenCalledTimes(1);
-    expect(text).not.toContain('Chronologie');
-    expect(text).not.toContain('Kombiniert');
+    expect(text).not.toContain('Timeline');
+    expect(text).not.toContain('Combined');
     expect(text).toContain('Documents');
     expect(text).toContain('User');
     expect(text).toContain('Emails');
@@ -371,6 +374,18 @@ describe('DashboardComponent', () => {
     expect(
       fixture.nativeElement.querySelector(`[aria-label="Mark entry Invoice as done"]`),
     ).not.toBeNull();
+
+    const documentLink = fixture.nativeElement.querySelector(
+      '.timeline-document a',
+    ) as HTMLAnchorElement | null;
+    expect(documentLink).not.toBeNull();
+    const middleMouseDown = new MouseEvent('mousedown', { button: 1, cancelable: true });
+    documentLink?.dispatchEvent(middleMouseDown);
+    expect(middleMouseDown.defaultPrevented).toBe(true);
+    const middleClick = new MouseEvent('auxclick', { button: 1, cancelable: true });
+    documentLink?.dispatchEvent(middleClick);
+    expect(middleClick.defaultPrevented).toBe(true);
+    expect(openDocuments.open).toHaveBeenCalledWith({ id: documentId, title: 'Invoice' });
 
     component.assignPayment(summary.payments.upcoming[0], assignee.id);
     expect(documentsApi.updatePaymentTask).toHaveBeenCalledWith(documentId, paymentId, {

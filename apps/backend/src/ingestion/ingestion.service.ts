@@ -181,7 +181,7 @@ export class IngestionService {
     await this.documentHistory.record({
       documentId: updatedDocument.id,
       type: 'SCANNER_DOCUMENT_DETECTED',
-      summary: 'Neues Dokument im Scanner-Verzeichnis erkannt.',
+      summary: 'New document detected in the scanner import directory.',
       metadata: {
         originalFileName: fileName,
         mimeType,
@@ -191,8 +191,6 @@ export class IngestionService {
     await this.notifications.publish({
       type: 'document.scanner_ingested',
       severity: 'info',
-      title: 'Scanner-Dokument erkannt',
-      message: `${documentNotificationTitle(updatedDocument)} wurde erkannt und wird vorbereitet.`,
       documentId: updatedDocument.id,
       documentTitle: documentNotificationTitle(updatedDocument),
       tenantId,
@@ -212,7 +210,7 @@ export class IngestionService {
     await this.documentHistory.record({
       documentId: updatedDocument.id,
       type: 'DOCUMENT_PROCESSING_QUEUED',
-      summary: 'Dokument wurde zur OCR-Verarbeitung eingestellt.',
+      summary: 'Document queued for OCR processing.',
       metadata: {
         jobId: job.id,
         jobType: 'OCR_DOCUMENT',

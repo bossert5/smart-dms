@@ -315,7 +315,7 @@ export class OcrProcessingService {
         {
           documentId,
           type: 'OCR_PROCESSING_COMPLETED',
-          summary: 'OCR-Verarbeitung wurde erfolgreich abgeschlossen.',
+          summary: 'OCR processing completed successfully.',
           metadata: {
             jobId: processingJobId,
             status: document.status,
@@ -337,8 +337,6 @@ export class OcrProcessingService {
     await this.notifications.publish({
       type: 'ocr.completed',
       severity: 'success',
-      title: 'OCR abgeschlossen',
-      message: `${documentNotificationTitle(updatedDocument)} ist bereit.`,
       documentId,
       tenantId: updatedDocument.tenantId,
       documentTitle: documentNotificationTitle(updatedDocument),

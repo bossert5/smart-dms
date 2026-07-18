@@ -35,7 +35,7 @@
   "language": {
     "label": "Language",
     "options": {
-      "de": "Deutsch",
+      "de": "German",
       "en": "English"
     }
   },
@@ -155,6 +155,96 @@
   "notifications": {
     "aria": "Notifications",
     "empty": "No notifications",
+    "events": {
+      "aiBulkQueued": {
+        "message": "Queued documents: {{documentCount}}. First queue position: {{queuePosition}}.",
+        "title": "AI processing scheduled"
+      },
+      "aiFailed": {
+        "message": "AI processing failed for {{documentTitle}}.",
+        "title": "AI processing failed"
+      },
+      "aiFieldUpdateQueued": {
+        "message": "{{documentTitle}} was queued for an AI field update. Queue position: {{queuePosition}}.",
+        "title": "AI field update scheduled"
+      },
+      "aiMetadataExtracted": {
+        "message": "{{documentTitle}} was analyzed by the AI provider.",
+        "title": "AI data extracted"
+      },
+      "aiMetadataUpdated": {
+        "message": "{{documentTitle}} was updated by the AI provider.",
+        "title": "AI data updated"
+      },
+      "aiQueued": {
+        "message": "{{documentTitle}} was queued for AI processing. Queue position: {{queuePosition}}.",
+        "title": "AI processing scheduled"
+      },
+      "aiStarted": {
+        "message": "{{documentTitle}} is being analyzed by the AI provider.",
+        "title": "AI started"
+      },
+      "documentAccepted": {
+        "message": "{{documentTitle}} was accepted into the document overview.",
+        "title": "Document accepted"
+      },
+      "documentArchived": {
+        "message": "{{documentTitle}} was archived.",
+        "title": "Document archived"
+      },
+      "documentDeleted": {
+        "message": "{{documentTitle}} was permanently deleted.",
+        "title": "Document deleted"
+      },
+      "documentMovedToInbox": {
+        "message": "{{documentTitle}} was moved to the inbox.",
+        "title": "Document moved to inbox"
+      },
+      "documentMovedToTenant": {
+        "message": "{{documentTitle}} was moved to {{targetTenantName}}.",
+        "title": "Document moved"
+      },
+      "documentReprocessQueued": {
+        "message": "{{documentTitle}} was queued for reprocessing.",
+        "title": "Document status changed"
+      },
+      "documentStatusChanged": {
+        "message": "The status of {{documentTitle}} changed.",
+        "title": "Document status changed"
+      },
+      "documentUploaded": {
+        "message": "{{documentTitle}} was uploaded and is being prepared.",
+        "title": "Document uploaded"
+      },
+      "extractionCompleted": {
+        "message": "Text extraction for {{documentTitle}} completed.",
+        "title": "Text extraction completed"
+      },
+      "extractionFailed": {
+        "message": "Text extraction failed for {{documentTitle}}.",
+        "title": "Text extraction failed"
+      },
+      "extractionStarted": {
+        "message": "Text is being extracted from {{documentTitle}}.",
+        "title": "Text extraction started"
+      },
+      "ocrCompleted": {
+        "message": "{{documentTitle}} is ready.",
+        "title": "OCR completed"
+      },
+      "ocrStarted": {
+        "message": "{{documentTitle}} is being processed.",
+        "title": "OCR started"
+      },
+      "processingFailed": {
+        "message": "Processing failed for {{documentTitle}}.",
+        "title": "Processing failed"
+      },
+      "scannerDocumentDetected": {
+        "message": "{{documentTitle}} was detected and is being prepared.",
+        "title": "Scanner document detected"
+      }
+    },
     "muted": "Muted",
     "mutedAria": "Notifications muted",
     "status": {
@@ -670,6 +760,49 @@
       "empty": "No history yet",
       "errors": {
         "loadFailed": "History could not be loaded."
+      },
+      "events": {
+        "aiMetadataExtracted": "AI metadata applied",
+        "aiMetadataQueued": "Document queued for AI metadata extraction",
+        "aiMetadataUpdated": "AI metadata updated",
+        "documentAccepted": "Document accepted",
+        "documentArchived": "Document archived",
+        "documentMetadataUpdated": "Metadata changed",
+        "documentMovedToInbox": "Document moved to the inbox",
+        "documentMovedToTenant": "Document moved to another tenant",
+        "documentProcessingFailed": "Document processing failed",
+        "documentProcessingQueued": "Document queued for processing",
+        "documentReprocessRequested": "Reprocessing requested",
+        "documentTagsUpdated": "Tags changed",
+        "documentUploaded": "Document uploaded",
+        "emailAttachmentImported": "PDF attachment imported from email",
+        "ocrProcessingCompleted": "OCR processing completed successfully",
+        "ocrProcessingStarted": "OCR processing started",
+        "scannerDocumentDetected": "New document detected in the scanner import directory"
+      },
+      "fields": {
+        "acceptedAt": "Accepted at",
+        "attributes": "Attributes",
+        "calendarEvents": "Calendar events",
+        "documentDate": "Document date",
+        "documentType": "Document type",
+        "note": "Note",
+        "payments": "Payment details",
+        "recipient": "Recipient",
+        "references": "References",
+        "sender": "Sender",
+        "status": "Status",
+        "summary": "Summary",
+        "tags": "Tags",
+        "tenant": "Tenant",
+        "title": "Document name",
+        "unknown": "Changed field"
+      },
+      "jobTypes": {
+        "CREATE_THUMBNAIL": "Create thumbnail",
+        "EXTRACT_AI_METADATA": "Extract AI metadata",
+        "INGEST_DOCUMENT": "Ingest document",
+        "OCR_DOCUMENT": "Process document with OCR"
       },
       "title": "Document history"
     },

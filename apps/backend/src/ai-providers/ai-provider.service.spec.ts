@@ -1,3 +1,5 @@
+import { ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { expectAny, expectObjectContaining } from '../testing/expect-matchers';
 import { AiProviderService } from './ai-provider.service';
 
@@ -45,6 +47,7 @@ function createService() {
         }),
       ),
       findFirst: jest.fn().mockResolvedValue(null),
+      delete: jest.fn().mockResolvedValue(providerRecord()),
     },
   };
   const models = {
@@ -129,5 +132,22 @@ describe('AiProviderService', () => {
     expect(result.availableModels.map((model) => model.name)).toEqual([
       'qwen3:8b',
     ]);
+  });
+
+  it('maps provider foreign-key violations to a conflict response', async () => {
+    const { service, prisma } = createService();
+    prisma.aiProvider.delete.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError(
+        'Foreign key constraint failed',
+        {
+          code: 'P2003',
+          clientVersion: '7.8.0',
+        },
+      ),
+    );
+
+    await expect(service.deleteProvider(providerId)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 });

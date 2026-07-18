@@ -146,25 +146,25 @@ describe("@smart-dms/shared-dto", () => {
   it("validates password change requests", () => {
     expect(
       ChangePasswordRequestSchema.parse({
-        newPassword: "Passwort1!",
+        newPassword: "Password1!",
       }),
     ).toEqual({
-      newPassword: "Passwort1!",
+      newPassword: "Password1!",
     });
     expect(
       ChangePasswordRequestSchema.parse({
         currentPassword: "Initial1!",
-        newPassword: "Passwort1!",
+        newPassword: "Password1!",
       }),
     ).toEqual({
       currentPassword: "Initial1!",
-      newPassword: "Passwort1!",
+      newPassword: "Password1!",
     });
 
     expect(() =>
       ChangePasswordRequestSchema.parse({
-        currentPassword: "Passwort1!",
-        newPassword: "Passwort1!",
+        currentPassword: "Password1!",
+        newPassword: "Password1!",
       }),
     ).toThrow();
     expect(() =>
@@ -175,12 +175,12 @@ describe("@smart-dms/shared-dto", () => {
     ).toThrow();
     expect(() =>
       ChangePasswordRequestSchema.parse({
-        newPassword: "Passwort!",
+        newPassword: "Password!",
       }),
     ).toThrow();
     expect(() =>
       ChangePasswordRequestSchema.parse({
-        newPassword: "Passwort1",
+        newPassword: "Password1",
       }),
     ).toThrow();
   });
@@ -190,10 +190,10 @@ describe("@smart-dms/shared-dto", () => {
       CreateUserRequestSchema.parse({
         username: "new-user",
         displayName: "New User",
-        password: "Passwort1!",
+        password: "Password1!",
         role: "User",
       }).password,
-    ).toBe("Passwort1!");
+    ).toBe("Password1!");
 
     expect(() =>
       CreateUserRequestSchema.parse({
@@ -207,7 +207,7 @@ describe("@smart-dms/shared-dto", () => {
       CreateUserRequestSchema.parse({
         username: "new-user",
         displayName: "New User",
-        password: "Passwort!",
+        password: "Password!",
         role: "User",
       }),
     ).toThrow();
@@ -215,7 +215,7 @@ describe("@smart-dms/shared-dto", () => {
       CreateUserRequestSchema.parse({
         username: "new-user",
         displayName: "New User",
-        password: "Passwort1",
+        password: "Password1",
         role: "User",
       }),
     ).toThrow();
@@ -336,7 +336,7 @@ describe("@smart-dms/shared-dto", () => {
         password: "secret",
         tenantId: tenant.id,
         selectedFolders: ["INBOX", "Invoices"],
-        senderRules: ["rechnung@example.com", "*@supplier.example"],
+        senderRules: ["invoice@example.com", "*@supplier.example"],
       }).port,
     ).toBe(993);
     expect(
@@ -369,7 +369,7 @@ describe("@smart-dms/shared-dto", () => {
             uidValidity: "7",
             messageId: "<message@example.com>",
             subject: "Invoice",
-            fromAddress: "rechnung@example.com",
+            fromAddress: "invoice@example.com",
             fromName: "Supplier",
             sentAt: createdAt,
             receivedAt: createdAt,
@@ -661,7 +661,7 @@ describe("@smart-dms/shared-dto", () => {
             documentSender: "Sender GmbH",
             tenant,
             kind: "APPOINTMENT",
-            title: "Besprechung",
+            title: "Meeting",
             description: null,
             date: "2026-06-10",
             time: "14:30",
@@ -678,7 +678,7 @@ describe("@smart-dms/shared-dto", () => {
             documentSender: null,
             tenant,
             kind: "DUE_DATE",
-            title: "Rate faellig",
+            title: "Installment due",
             description: null,
             date: "2026-06-30",
             time: null,
@@ -709,7 +709,7 @@ describe("@smart-dms/shared-dto", () => {
 
   it("validates AI metadata extraction calendar events", () => {
     const parsed = AiMetadataExtractionResultSchema.parse({
-      summary: "Rechnung mit drei Terminen",
+      summary: "Invoice with three dates",
       payments: [
         {
           iban: "DE02120300000000202051",
@@ -722,13 +722,13 @@ describe("@smart-dms/shared-dto", () => {
       calendarEvents: [
         {
           kind: "APPOINTMENT",
-          title: "Besprechung",
+          title: "Meeting",
           date: "2026-06-10",
           time: "14:30",
         },
         {
           kind: "APPOINTMENT",
-          title: "Folgetermin",
+          title: "Follow-up appointment",
           relativeDate: {
             amount: 3,
             unit: "WEEKS",
@@ -738,7 +738,7 @@ describe("@smart-dms/shared-dto", () => {
         },
         {
           kind: "DUE_DATE",
-          title: "Rate faellig",
+          title: "Installment due",
           date: "2026-06-30",
         },
       ],
@@ -754,7 +754,7 @@ describe("@smart-dms/shared-dto", () => {
     });
     expect(() =>
       AiMetadataExtractionResultSchema.parse({
-        calendarEvents: [{ kind: "DEADLINE", title: "Frist" }],
+        calendarEvents: [{ kind: "DEADLINE", title: "Deadline" }],
       }),
     ).toThrow();
     expect(() =>
@@ -762,7 +762,7 @@ describe("@smart-dms/shared-dto", () => {
         calendarEvents: [
           {
             kind: "DEADLINE",
-            title: "Frist",
+            title: "Deadline",
             relativeDate: {
               amount: 1,
               unit: "MONTHS",
@@ -779,7 +779,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(
       AiMetadataExtractionJobPayloadSchema.parse({
         documentId: "018f1a44-9093-7f55-a515-278f4d9bd99f",
-        ocrText: "Rechnung R-100",
+        ocrText: "Invoice R-100",
         sourceTextFormat: "MARKDOWN",
         metadata: {
           title: "Invoice",
@@ -790,9 +790,9 @@ describe("@smart-dms/shared-dto", () => {
           sender: null,
           recipient: null,
         },
-        documentTypes: [{ key: "invoice", name: "Rechnung" }],
+        documentTypes: [{ key: "invoice", name: "Invoice" }],
         fieldDefinitions: [
-          { key: "costCenter", label: "Kostenstelle", valueType: "TEXT" },
+          { key: "costCenter", label: "Cost center", valueType: "TEXT" },
         ],
         prompts: [
           {
@@ -812,7 +812,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(
       AiMetadataExtractionJobPayloadSchema.parse({
         documentId: "018f1a44-9093-7f55-a515-278f4d9bd99f",
-        ocrText: "Rechnung R-100",
+        ocrText: "Invoice R-100",
         metadata: {
           title: "Invoice",
           originalFileName: "invoice.pdf",
@@ -836,7 +836,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(() =>
       AiMetadataExtractionJobPayloadSchema.parse({
         documentId: "018f1a44-9093-7f55-a515-278f4d9bd99f",
-        ocrText: "Rechnung R-100",
+        ocrText: "Invoice R-100",
         metadata: {
           title: "Invoice",
           originalFileName: "invoice.pdf",
@@ -928,7 +928,7 @@ describe("@smart-dms/shared-dto", () => {
       references: [
         {
           referenceNumber: "R-100",
-          referenceType: "Rechnung",
+          referenceType: "Invoice",
         },
       ],
       calendarEvents: [
@@ -957,7 +957,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(parsed.payments?.[0].status).toBe("PAID");
     expect(parsed.payments?.[0].dueDate).toBe("2026-05-29");
     expect(parsed.calendarEvents?.[0].time).toBe("10:30");
-    expect(parsed.references?.[0].referenceType).toBe("Rechnung");
+    expect(parsed.references?.[0].referenceType).toBe("Invoice");
     expect(() =>
       DocumentMetadataUpdateRequestSchema.parse({
         calendarEvents: [
@@ -1236,7 +1236,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(
       CreateDocumentFieldDefinitionRequestSchema.parse({
         key: "costCenter",
-        label: "Kostenstelle",
+        label: "Cost center",
         valueType: "TEXT",
         appliesToAllDocumentTypes: false,
         documentTypeIds: ["018f1a44-9093-7f55-a515-278f4d9bd991"],
@@ -1248,7 +1248,7 @@ describe("@smart-dms/shared-dto", () => {
     expect(() =>
       CreateDocumentFieldDefinitionRequestSchema.parse({
         key: "costCenter",
-        label: "Kostenstelle",
+        label: "Cost center",
         valueType: "TEXT",
         appliesToAllDocumentTypes: false,
         documentTypeIds: [],
@@ -1330,6 +1330,9 @@ describe("@smart-dms/shared-dto", () => {
       "document.status_changed",
     );
     expect(RealtimeNotificationTypeSchema.options).toContain(
+      "document.reprocess_queued",
+    );
+    expect(RealtimeNotificationTypeSchema.options).toContain(
       "document.archived",
     );
     expect(RealtimeNotificationTypeSchema.options).toContain(
@@ -1340,21 +1343,31 @@ describe("@smart-dms/shared-dto", () => {
     );
     expect(RealtimeNotificationTypeSchema.options).toContain("ai.started");
     expect(RealtimeNotificationTypeSchema.options).toContain("ai.failed");
+    expect(RealtimeNotificationTypeSchema.options).toContain("ai.queued");
+    expect(RealtimeNotificationTypeSchema.options).toContain("ai.bulk_queued");
+    expect(RealtimeNotificationTypeSchema.options).toContain(
+      "ai.field_update_queued",
+    );
+    expect(RealtimeNotificationTypeSchema.options).toContain(
+      "ai.metadata_updated",
+    );
 
     const parsed = RealtimeNotificationDtoSchema.parse({
       id: "018f1a44-9093-7f55-a515-278f4d9bd99f",
       type: "ocr.completed",
       severity: "success",
-      title: "OCR abgeschlossen",
-      message: "Invoice ist bereit.",
       createdAt,
       documentId: "018f1a44-9093-7f55-a515-278f4d9bd99f",
       documentTitle: "Invoice",
       jobId: "018f1a44-9093-7f55-a515-278f4d9bd990",
       status: "READY",
+      documentCount: 2,
+      targetTenantName: "Archive",
     });
 
     expect(parsed.status).toBe("READY");
+    expect(parsed.documentCount).toBe(2);
+    expect(parsed.targetTenantName).toBe("Archive");
     expect(() =>
       RealtimeNotificationDtoSchema.parse({
         ...parsed,
@@ -1458,7 +1471,7 @@ describe("@smart-dms/shared-dto", () => {
       id: "018f1a44-9093-7f55-a515-278f4d9bd99f",
       documentId: "018f1a44-9093-7f55-a515-278f4d9bd99f",
       type: "DOCUMENT_METADATA_UPDATED",
-      summary: "Metadaten wurden geändert.",
+      summary: "Metadata changed.",
       actor: {
         id: "018f1a44-9093-7f55-a515-278f4d9bd990",
         username: "admin",
@@ -1467,16 +1480,16 @@ describe("@smart-dms/shared-dto", () => {
       changes: [
         {
           field: "title",
-          label: "Titel",
+          label: "Title",
           oldValue: "Alt",
-          newValue: "Neu",
+          newValue: "New",
         },
       ],
       metadata: { status: "READY" },
       createdAt,
     });
 
-    expect(event.changes[0].newValue).toBe("Neu");
+    expect(event.changes[0].newValue).toBe("New");
     expect(
       DocumentHistoryResponseSchema.parse({
         items: [event],

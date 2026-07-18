@@ -19,7 +19,7 @@ const now = '2026-05-08T00:00:00.000Z';
 const systemDocumentType: DocumentTypeDto = {
   id: '00000000-0000-4000-8000-000000000101',
   key: 'invoice',
-  name: 'Rechnung',
+  name: 'Invoice',
   active: true,
   isSystem: true,
   displayOrder: 10,
@@ -41,7 +41,7 @@ const customDocumentType: DocumentTypeDto = {
 const fieldDefinition: DocumentFieldDefinitionDto = {
   id: '00000000-0000-4000-8000-000000000201',
   key: 'customer_number',
-  label: 'Kundennummer',
+  label: 'Customer number',
   valueType: 'TEXT',
   required: false,
   active: true,
@@ -152,7 +152,7 @@ describe('SettingsDocumentsComponent', () => {
     expect(compiled.textContent).toContain('Invoice');
     expect(compiled.textContent).toContain('Custom');
     expect(fixture.componentInstance.fieldDefinitionRows()[0].form.controls.label.value).toBe(
-      'Kundennummer',
+      'Customer number',
     );
   });
 
@@ -325,7 +325,7 @@ describe('SettingsDocumentsComponent', () => {
     });
     const component = fixture.componentInstance;
     const row = component.fieldDefinitionRows()[0];
-    row.form.controls.label.setValue('Customer number');
+    row.form.controls.label.setValue('Customer ID');
     component.addFieldDefinition();
     component.createFieldDefinitionForm.controls.key.setValue('amount');
     component.createFieldDefinitionForm.controls.label.setValue('Amount');
@@ -354,7 +354,7 @@ describe('SettingsDocumentsComponent', () => {
 
     expect(settingsApi.createFieldDefinition).toHaveBeenCalledTimes(1);
     expect(settingsApi.updateFieldDefinition).toHaveBeenCalledWith(fieldDefinition.id, {
-      label: 'Customer number',
+      label: 'Customer ID',
     });
     expect(component.hasPendingChanges()).toBe(false);
   });

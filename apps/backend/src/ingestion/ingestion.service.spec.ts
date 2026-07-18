@@ -102,8 +102,6 @@ describe('IngestionService', () => {
     expect(notifications.publish).toHaveBeenCalledWith({
       type: 'document.scanner_ingested',
       severity: 'info',
-      title: 'Scanner-Dokument erkannt',
-      message: 'invoice wurde erkannt und wird vorbereitet.',
       documentId,
       documentTitle: 'invoice',
       tenantId,

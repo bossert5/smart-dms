@@ -74,7 +74,7 @@ def extract_docling_markdown(args):
         )
         or ""
     )
-    output_path.write_text(markdown, encoding="utf-8")
+    write_text_atomically(output_path, markdown)
     if debug_json_path:
         result.document.save_as_json(debug_json_path)
 
@@ -87,6 +87,12 @@ def extract_docling_markdown(args):
             }
         )
     )
+
+
+def write_text_atomically(path, content):
+    temporary_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    temporary_path.write_text(content, encoding="utf-8")
+    os.replace(temporary_path, path)
 
 
 def remove_blank_pdf_pages(args):

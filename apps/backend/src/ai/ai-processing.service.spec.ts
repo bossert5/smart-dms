@@ -131,7 +131,7 @@ function metadataPayloadTx() {
     documentType: {
       findMany: jest
         .fn()
-        .mockResolvedValue([{ key: 'invoice', name: 'Rechnung' }]),
+        .mockResolvedValue([{ key: 'invoice', name: 'Invoice' }]),
     },
     documentFieldDefinition: {
       findMany: jest.fn().mockResolvedValue([]),
@@ -426,7 +426,7 @@ describe('AiProcessingService', () => {
     const tx = {
       documentType: {
         findMany: jest.fn().mockResolvedValue([
-          { key: 'invoice', name: 'Rechnung' },
+          { key: 'invoice', name: 'Invoice' },
           { key: 'custom_contract', name: 'Custom contract' },
           { key: 'other', name: 'Other' },
         ]),
@@ -435,7 +435,7 @@ describe('AiProcessingService', () => {
         findMany: jest
           .fn()
           .mockResolvedValue([
-            { key: 'costCenter', label: 'Kostenstelle', valueType: 'TEXT' },
+            { key: 'costCenter', label: 'Cost center', valueType: 'TEXT' },
           ]),
       },
       aiMetadataPrompt: {
@@ -472,7 +472,7 @@ describe('AiProcessingService', () => {
       ocrLanguage: 'german',
       sender: null,
       recipient: null,
-      ocrText: 'Rechnung R-100',
+      ocrText: 'Invoice R-100',
       extractedMarkdown: null,
     };
     const serviceWithPrivate = service as unknown as {
@@ -521,8 +521,8 @@ describe('AiProcessingService', () => {
     expect(mergePrompt.text).toContain(
       'Generate human-readable metadata values in german',
     );
-    expect(corePrompt.text).toContain('Rechnung R-100');
-    expect(attributesPrompt.text).toContain('Rechnung R-100');
+    expect(corePrompt.text).toContain('Invoice R-100');
+    expect(attributesPrompt.text).toContain('Invoice R-100');
     expect(payload.sourceTextFormat).toBe('PLAIN_TEXT');
     expect(corePrompt.resultSchema).toEqual(
       expectObjectContaining({
@@ -565,9 +565,9 @@ describe('AiProcessingService', () => {
   it('uses payment prompt guardrails', () => {
     const [paymentsPrompt] = new AiMetadataPromptBuilder().build({
       documentId,
-      ocrText: 'Bitte zahlen Sie 370,00 EUR als Ratenzahlung an TARGOBANK AG.',
+      ocrText: 'Please pay 370.00 EUR in installments to TARGOBANK AG.',
       metadata: {
-        title: 'Ratenzahlung',
+        title: 'Installment payment',
         originalFileName: 'payment.pdf',
         documentDate: null,
         ocrLanguage: 'german',
@@ -635,7 +635,7 @@ describe('AiProcessingService', () => {
       ocrLanguage: 'german',
       sender: null,
       recipient: null,
-      ocrText: 'Rechnung R-100',
+      ocrText: 'Invoice R-100',
       extractedMarkdown: null,
     };
     const serviceWithPrivate = service as unknown as {
@@ -676,13 +676,13 @@ describe('AiProcessingService', () => {
       ocrLanguage: 'german',
       sender: null,
       recipient: null,
-      ocrText: 'Plain OCR Rechnung R-100',
+      ocrText: 'Plain OCR Invoice R-100',
       extractedMarkdown:
-        '# Rechnung\n\n| Nr | Betrag |\n| --- | --- |\n| R-100 | 42,00 EUR |',
+        '# Invoice\n\n| No. | Amount |\n| --- | --- |\n| R-100 | 42.00 EUR |',
     });
 
-    expect(payload.ocrText).toContain('| Nr | Betrag |');
-    expect(payload.ocrText).not.toContain('Plain OCR Rechnung R-100');
+    expect(payload.ocrText).toContain('| No. | Amount |');
+    expect(payload.ocrText).not.toContain('Plain OCR Invoice R-100');
     expect(payload.sourceTextFormat).toBe('MARKDOWN');
     expect(payload.prompts[0]?.text).toContain(
       'Markdown converted from the PDF',
@@ -707,11 +707,11 @@ describe('AiProcessingService', () => {
       ocrLanguage: 'german',
       sender: null,
       recipient: null,
-      ocrText: 'Plain OCR Rechnung R-100',
+      ocrText: 'Plain OCR Invoice R-100',
       extractedMarkdown: '   ',
     });
 
-    expect(payload.ocrText).toBe('Plain OCR Rechnung R-100');
+    expect(payload.ocrText).toBe('Plain OCR Invoice R-100');
     expect(payload.sourceTextFormat).toBe('PLAIN_TEXT');
     expect(payload.prompts[0]?.text).toContain('plain OCR text');
   });
@@ -719,12 +719,12 @@ describe('AiProcessingService', () => {
   it('uses calendar event prompt guardrails', () => {
     const [calendarPrompt] = new AiMetadataPromptBuilder().build({
       documentId,
-      ocrText: 'Bitte antworten Sie bis 30.06.2026.',
+      ocrText: 'Please respond by 30 June 2026.',
       metadata: {
-        title: 'Frist',
+        title: 'Deadline',
         originalFileName: 'deadline.pdf',
         documentDate: null,
-        ocrLanguage: 'german',
+        ocrLanguage: 'english',
         sender: null,
         recipient: null,
       },
@@ -758,12 +758,12 @@ describe('AiProcessingService', () => {
   it('uses document date prompt guardrails', () => {
     const [documentDatePrompt] = new AiMetadataPromptBuilder().build({
       documentId,
-      ocrText: 'Rechnungsdatum: 02.01.2026\nZahlbar bis 16.01.2026.',
+      ocrText: 'Invoice date: 2 January 2026\nPayable by 16 January 2026.',
       metadata: {
-        title: 'Rechnung',
+        title: 'Invoice',
         originalFileName: 'invoice.pdf',
         documentDate: null,
-        ocrLanguage: 'german',
+        ocrLanguage: 'english',
         sender: null,
         recipient: null,
       },
@@ -885,20 +885,20 @@ describe('AiProcessingService', () => {
   it('sends invoice payment OCR directly to the payment prompt', async () => {
     const { service } = createService();
     const ocrText = [
-      'Rechnung R-100',
-      'Bitte ueberweisen Sie den offenen Betrag von 119,90 EUR.',
+      'Invoice R-100',
+      'Please transfer the outstanding amount of 119.90 EUR.',
       'IBAN: DE02120300000000202051',
-      'Verwendungszweck: Rechnung R-100 Kundennummer K-42',
+      'Payment reference: Invoice R-100 customer K-42',
     ].join('\n');
     const payload = {
       documentId,
       ocrText,
       sourceTextFormat: 'PLAIN_TEXT',
       metadata: {
-        title: 'Rechnung',
+        title: 'Invoice',
         originalFileName: 'invoice.pdf',
         documentDate: null,
-        ocrLanguage: 'german',
+        ocrLanguage: 'english',
         sender: null,
         recipient: null,
       },
@@ -927,7 +927,7 @@ describe('AiProcessingService', () => {
               iban: 'DE02120300000000202051',
               amount: 119.9,
               currency: 'EUR',
-              purpose: 'Rechnung R-100 Kundennummer K-42',
+              purpose: 'Invoice R-100 customer K-42',
             },
           ],
         });
@@ -940,7 +940,7 @@ describe('AiProcessingService', () => {
           iban: 'DE02120300000000202051',
           amount: 119.9,
           currency: 'EUR',
-          purpose: 'Rechnung R-100 Kundennummer K-42',
+          purpose: 'Invoice R-100 customer K-42',
         },
       ],
     });
@@ -953,7 +953,7 @@ describe('AiProcessingService', () => {
     expect(calls[0].text).toContain('Evidence candidates:');
     expect(calls[0].text).toContain('IBAN: DE02120300000000202051');
     expect(calls[0].text).toContain(
-      'Verwendungszweck: Rechnung R-100 Kundennummer K-42',
+      'Payment reference: Invoice R-100 customer K-42',
     );
     expect(calls[0].sourceTextKind).toBe('CLEANED_OCR');
   });

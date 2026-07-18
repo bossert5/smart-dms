@@ -84,6 +84,42 @@ import {
 } from './document-detail.form';
 import { PdfDocumentViewerComponent } from './pdf-document-viewer.component';
 
+const HISTORY_EVENT_I18N_KEY: Record<DocumentHistoryEventType, string> = {
+  SCANNER_DOCUMENT_DETECTED: 'documentDetail.history.events.scannerDocumentDetected',
+  DOCUMENT_UPLOADED: 'documentDetail.history.events.documentUploaded',
+  EMAIL_ATTACHMENT_IMPORTED: 'documentDetail.history.events.emailAttachmentImported',
+  DOCUMENT_PROCESSING_QUEUED: 'documentDetail.history.events.documentProcessingQueued',
+  DOCUMENT_REPROCESS_REQUESTED: 'documentDetail.history.events.documentReprocessRequested',
+  OCR_PROCESSING_STARTED: 'documentDetail.history.events.ocrProcessingStarted',
+  OCR_PROCESSING_COMPLETED: 'documentDetail.history.events.ocrProcessingCompleted',
+  DOCUMENT_PROCESSING_FAILED: 'documentDetail.history.events.documentProcessingFailed',
+  AI_METADATA_EXTRACTED: 'documentDetail.history.events.aiMetadataExtracted',
+  DOCUMENT_METADATA_UPDATED: 'documentDetail.history.events.documentMetadataUpdated',
+  DOCUMENT_TAGS_UPDATED: 'documentDetail.history.events.documentTagsUpdated',
+  DOCUMENT_ACCEPTED: 'documentDetail.history.events.documentAccepted',
+  DOCUMENT_MOVED_TO_INBOX: 'documentDetail.history.events.documentMovedToInbox',
+  DOCUMENT_MOVED_TO_TENANT: 'documentDetail.history.events.documentMovedToTenant',
+  DOCUMENT_ARCHIVED: 'documentDetail.history.events.documentArchived',
+};
+
+const HISTORY_FIELD_I18N_KEY: Record<string, string> = {
+  title: 'documentDetail.history.fields.title',
+  documentTypeId: 'documentDetail.history.fields.documentType',
+  documentDate: 'documentDetail.history.fields.documentDate',
+  summary: 'documentDetail.history.fields.summary',
+  sender: 'documentDetail.history.fields.sender',
+  recipient: 'documentDetail.history.fields.recipient',
+  note: 'documentDetail.history.fields.note',
+  payments: 'documentDetail.history.fields.payments',
+  references: 'documentDetail.history.fields.references',
+  calendarEvents: 'documentDetail.history.fields.calendarEvents',
+  attributes: 'documentDetail.history.fields.attributes',
+  tags: 'documentDetail.history.fields.tags',
+  status: 'documentDetail.history.fields.status',
+  acceptedAt: 'documentDetail.history.fields.acceptedAt',
+  tenant: 'documentDetail.history.fields.tenant',
+};
+
 type MetadataForm = FormGroup<{
   title: FormControl<string>;
   documentTypeId: FormControl<string>;
@@ -1118,6 +1154,25 @@ export class DocumentDetailPaneComponent implements OnInit {
     return event.actor?.displayName ?? this.translate.instant('common.system');
   }
 
+  historySummaryKey(event: DocumentHistoryEventDto): string {
+    if (
+      event.type === 'DOCUMENT_PROCESSING_QUEUED' &&
+      event.metadata?.['jobType'] === 'EXTRACT_AI_METADATA'
+    ) {
+      return 'documentDetail.history.events.aiMetadataQueued';
+    }
+
+    if (event.type === 'AI_METADATA_EXTRACTED' && Array.isArray(event.metadata?.['scopes'])) {
+      return 'documentDetail.history.events.aiMetadataUpdated';
+    }
+
+    return HISTORY_EVENT_I18N_KEY[event.type];
+  }
+
+  historyChangeLabelKey(field: string): string {
+    return HISTORY_FIELD_I18N_KEY[field] ?? 'documentDetail.history.fields.unknown';
+  }
+
   historyColor(type: DocumentHistoryEventType): string {
     switch (type) {
       case 'OCR_PROCESSING_COMPLETED':
@@ -1135,9 +1190,15 @@ export class DocumentDetailPaneComponent implements OnInit {
   historyContext(event: DocumentHistoryEventDto): string {
     const metadata = event.metadata ?? {};
     const parts = [
-      this.contextPart('documentDetail.history.context.status', metadata['status']),
+      this.contextPart(
+        'documentDetail.history.context.status',
+        this.translatedHistoryValue('enums.documentStatus', metadata['status']),
+      ),
       this.contextPart('documentDetail.history.context.job', metadata['jobId']),
-      this.contextPart('documentDetail.history.context.type', metadata['jobType']),
+      this.contextPart(
+        'documentDetail.history.context.type',
+        this.translatedHistoryValue('documentDetail.history.jobTypes', metadata['jobType']),
+      ),
       this.contextPart(
         'documentDetail.history.context.calendarEvents',
         metadata['calendarEventCount'],
@@ -1147,7 +1208,10 @@ export class DocumentDetailPaneComponent implements OnInit {
     return parts.join(' · ');
   }
 
-  changeValue(value: DocumentHistoryEventDto['changes'][number]['oldValue']): string {
+  changeValue(
+    value: DocumentHistoryEventDto['changes'][number]['oldValue'],
+    field?: string,
+  ): string {
     if (value === null) {
       return this.translate.instant('common.empty');
     }
@@ -1158,6 +1222,10 @@ export class DocumentDetailPaneComponent implements OnInit {
 
     if (typeof value === 'boolean') {
       return this.translate.instant(value ? 'common.yes' : 'common.no');
+    }
+
+    if (field === 'status' && typeof value === 'string') {
+      return String(this.translatedHistoryValue('enums.documentStatus', value));
     }
 
     return String(value);
@@ -1568,6 +1636,16 @@ export class DocumentDetailPaneComponent implements OnInit {
     }
 
     return `${this.translate.instant(labelKey)}: ${String(value)}`;
+  }
+
+  private translatedHistoryValue(prefix: string, value: unknown): unknown {
+    if (typeof value !== 'string' || !value) {
+      return value;
+    }
+
+    const key = `${prefix}.${value}`;
+    const translated = this.translate.instant(key);
+    return translated === key ? value : translated;
   }
 
   private loadPdfObjectUrl(source: string | null): void {

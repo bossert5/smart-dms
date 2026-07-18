@@ -403,8 +403,6 @@ describe('DocumentsService', () => {
     expect(notifications.publish).toHaveBeenCalledWith({
       type: 'document.archived',
       severity: 'warning',
-      title: 'Dokument archiviert',
-      message: 'Invoice wurde archiviert.',
       documentId,
       documentTitle: 'Invoice',
       tenantId: tenant.id,
@@ -878,10 +876,8 @@ describe('DocumentsService', () => {
       undefined,
     );
     expect(notifications.publish).toHaveBeenCalledWith({
-      type: 'document.status_changed',
+      type: 'document.reprocess_queued',
       severity: 'info',
-      title: 'Dokumentstatus geändert',
-      message: 'Invoice wurde zur erneuten Verarbeitung eingestellt.',
       documentId,
       documentTitle: 'Invoice',
       tenantId: tenant.id,
@@ -1118,7 +1114,7 @@ describe('DocumentsService', () => {
         changes: [
           {
             field: 'title',
-            label: 'Name des Dokuments',
+            label: 'Document name',
             oldValue: 'Old invoice',
             newValue: 'Invoice',
           },
@@ -1594,13 +1590,13 @@ describe('DocumentsService', () => {
         {
           id: 'reference-ai',
           referenceNumber: 'R-100',
-          referenceType: 'Rechnung',
+          referenceType: 'Invoice',
           source: 'AI_EXTRACTED',
         },
         {
           id: 'reference-changed',
           referenceNumber: 'OLD',
-          referenceType: 'Rechnung',
+          referenceType: 'Invoice',
           source: 'AI_EXTRACTED',
         },
       ],
@@ -1639,16 +1635,16 @@ describe('DocumentsService', () => {
           {
             id: 'reference-ai',
             referenceNumber: 'R-100',
-            referenceType: 'Rechnung',
+            referenceType: 'Invoice',
           },
           {
             id: 'reference-changed',
             referenceNumber: 'NEW',
-            referenceType: 'Rechnung',
+            referenceType: 'Invoice',
           },
           {
             referenceNumber: 'MAN-1',
-            referenceType: 'Manuell',
+            referenceType: 'Manual',
           },
         ],
       },
@@ -1856,7 +1852,7 @@ describe('DocumentsService', () => {
         changes: expectArrayContaining([
           expectObjectContaining({
             field: 'calendarEvents',
-            label: 'Kalendertermine',
+            label: 'Calendar events',
           }),
         ]),
       }),
@@ -2128,8 +2124,8 @@ describe('DocumentsService', () => {
     const { service } = createService();
 
     expect(
-      metadataContainsSearchTokens(service, 'muster, "Mara". Rechnung-2026'),
-    ).toEqual(metadataTokens('muster', 'mara', 'rechnung', '2026'));
+      metadataContainsSearchTokens(service, 'sample, "Mara". Invoice-2026'),
+    ).toEqual(metadataTokens('sample', 'mara', 'invoice', '2026'));
   });
 
   it('escapes metadata contains LIKE wildcard tokens', () => {

@@ -76,10 +76,12 @@
   --app-bg: #f5f7fb;
   --app-surface: #fff;
   --app-surface-muted: #f8fafc;
+  --app-table-surface: var(--app-surface);
   --app-text: #172033;
   --app-text-muted: #667085;
   --app-border: #e5e7eb;
   --app-border-strong: #dde3ec;
+  --app-card-radius: 2px;
   --app-code-bg: #0f172a;
   --app-code-text: #e5e7eb;
   --app-control-bg: #fff;
@@ -105,6 +107,7 @@ html[data-theme='dark'] {
   --app-bg: #111315;
   --app-surface: #1a1d21;
   --app-surface-muted: #22262b;
+  --app-table-surface: var(--app-bg);
   --app-text: #f2f4f7;
   --app-text-muted: #a8b0bc;
   --app-border: #30343a;
@@ -165,7 +168,7 @@ html[data-theme] {
   .ant-table-cell,
   .ant-table-placeholder {
     color: var(--app-text);
-    background: var(--app-bg);
+    background: var(--app-table-surface);
     border-color: var(--app-border);
   }
 
@@ -276,6 +279,15 @@ html[data-theme] body {
   background: var(--app-bg);
 }
 
+html[data-theme] body .ant-card {
+  border-radius: var(--app-card-radius);
+}
+
+html[data-theme] body .ant-card-head,
+html[data-theme] body .ant-card-cover > * {
+  border-radius: var(--app-card-radius) var(--app-card-radius) 0 0;
+}
+
 html[data-theme='dark'] {
   h1,
   h2,
@@ -368,7 +380,7 @@ html[data-theme='dark'] {
   .ant-table-cell,
   .ant-table-placeholder {
     color: var(--app-text);
-    background: var(--app-bg);
+    background: var(--app-table-surface);
     border-color: var(--app-border);
   }
 

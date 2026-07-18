@@ -222,8 +222,7 @@ export class AiProcessingService {
           {
             documentId: document.id,
             type: 'DOCUMENT_PROCESSING_QUEUED',
-            summary:
-              'Unterbrochene AI-Metadatenextraktion wurde erneut eingestellt.',
+            summary: 'Interrupted AI metadata extraction was queued again.',
             metadata: {
               jobId: job.id,
               jobType: AI_JOB_TYPE,
@@ -326,7 +325,7 @@ export class AiProcessingService {
       {
         documentId,
         type: 'DOCUMENT_PROCESSING_QUEUED',
-        summary: 'Dokument wurde zur AI-Metadatenextraktion eingestellt.',
+        summary: 'Document queued for AI metadata extraction.',
         metadata: {
           jobId: job.id,
           jobType: AI_JOB_TYPE,
@@ -416,7 +415,7 @@ export class AiProcessingService {
           documentId,
           actorUserId,
           type: 'DOCUMENT_PROCESSING_QUEUED',
-          summary: 'Dokument wurde zur AI-Metadatenextraktion eingestellt.',
+          summary: 'Document queued for AI metadata extraction.',
           metadata: {
             jobId: job.id,
             jobType: AI_JOB_TYPE,
@@ -432,12 +431,8 @@ export class AiProcessingService {
     });
 
     await this.notifications.publish({
-      type: 'document.status_changed',
+      type: scopes?.length ? 'ai.field_update_queued' : 'ai.queued',
       severity: 'info',
-      title: scopes?.length
-        ? 'AI-Feldaktualisierung geplant'
-        : 'AI-Verarbeitung geplant',
-      message: `${displayDocumentTitle(document)} wurde zur AI-Verarbeitung eingestellt. Position ${result.queuePosition} in der AI-Warteschlange.`,
       documentId,
       tenantId: document.tenantId,
       documentTitle: displayDocumentTitle(document),
@@ -543,7 +538,7 @@ export class AiProcessingService {
             documentId: document.id,
             actorUserId,
             type: 'DOCUMENT_PROCESSING_QUEUED',
-            summary: 'Dokument wurde zur AI-Metadatenextraktion eingestellt.',
+            summary: 'Document queued for AI metadata extraction.',
             metadata: {
               jobId: job.id,
               jobType: AI_JOB_TYPE,
@@ -568,10 +563,10 @@ export class AiProcessingService {
 
     if (queuedCount > 0) {
       await this.notifications.publish({
-        type: 'document.status_changed',
+        type: 'ai.bulk_queued',
         severity: 'info',
-        title: 'AI-Verarbeitung geplant',
-        message: `${queuedCount} Dokumente wurden zur AI-Verarbeitung eingestellt. Erste Position: ${queuedDocuments[0]?.queuePosition ?? 1}.`,
+        documentCount: queuedCount,
+        queuePosition: queuedDocuments[0]?.queuePosition ?? 1,
       });
     }
     const realtimeEvents = this.realtimeEvents;
@@ -648,7 +643,7 @@ export class AiProcessingService {
             documentId: document.id,
             actorUserId,
             type: 'DOCUMENT_PROCESSING_QUEUED',
-            summary: 'Zurückgestellte AI-Metadatenextraktion wurde gestartet.',
+            summary: 'Deferred AI metadata extraction started.',
             metadata: {
               jobId: job.id,
               jobType: AI_JOB_TYPE,
@@ -804,8 +799,6 @@ export class AiProcessingService {
     await this.notifications.publish({
       type: 'ai.started',
       severity: 'info',
-      title: 'AI gestartet',
-      message: `${claimed.documentTitle} wird durch den AI Provider ausgewertet.`,
       documentId: claimed.documentId,
       tenantId: claimed.tenantId,
       documentTitle: claimed.documentTitle,
@@ -1012,8 +1005,6 @@ export class AiProcessingService {
       await this.notifications.publish({
         type: 'ai.failed',
         severity: 'warning',
-        title: 'AI-Verarbeitung fehlgeschlagen',
-        message: `${displayDocumentTitle(document)}: ${errorMessage}`,
         documentId: document.id,
         tenantId: document.tenantId,
         documentTitle: displayDocumentTitle(document),

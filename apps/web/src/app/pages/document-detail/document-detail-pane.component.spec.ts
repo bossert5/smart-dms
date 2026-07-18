@@ -1,6 +1,7 @@
 import { Component, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import {
   CloseOutline,
   CheckCircleOutline,
@@ -98,7 +99,7 @@ const documentDetail: DocumentDetailDto = {
     {
       id: '018f1a44-9093-7f55-a515-278f4d9bd998',
       key: 'invoice',
-      name: 'Rechnung',
+      name: 'Invoice',
       active: true,
       isSystem: true,
       displayOrder: 10,
@@ -142,7 +143,7 @@ const historyResponse: DocumentHistoryResponse = {
       id: '018f1a44-9093-7f55-a515-278f4d9bd990',
       documentId,
       type: 'DOCUMENT_METADATA_UPDATED',
-      summary: 'Metadata changed.',
+      summary: 'Backend summary must not be displayed.',
       actor: {
         id: '018f1a44-9093-7f55-a515-278f4d9bd991',
         username: 'admin',
@@ -151,9 +152,9 @@ const historyResponse: DocumentHistoryResponse = {
       changes: [
         {
           field: 'title',
-          label: 'Titel',
-          oldValue: 'Alt',
-          newValue: 'Neu',
+          label: 'Backend label must not be displayed',
+          oldValue: 'Old',
+          newValue: 'New',
         },
       ],
       metadata: { status: 'READY' },
@@ -414,6 +415,20 @@ describe('DocumentDetailPaneComponent', () => {
       'Invoice',
     );
     expect(fixture.nativeElement.textContent).toContain('History');
+    const historyEvent = historyResponse.items[0]!;
+    const translate = TestBed.inject(TranslateService);
+    expect(translate.instant(fixture.componentInstance.historySummaryKey(historyEvent))).toBe(
+      'Metadata changed',
+    );
+    expect(
+      translate.instant(
+        fixture.componentInstance.historyChangeLabelKey(historyEvent.changes[0]!.field),
+      ),
+    ).toBe('Document name');
+    expect(fixture.componentInstance.historyContext(historyEvent)).toContain('Status: Ready');
+    expect(fixture.componentInstance.historySummaryKey(historyEvent)).not.toContain(
+      historyEvent.summary,
+    );
   });
 
   it('renders a back-to-list link for directly opened documents', async () => {

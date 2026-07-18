@@ -15,6 +15,7 @@ export const RealtimeNotificationTypeSchema = z.enum([
   'document.uploaded',
   'document.scanner_ingested',
   'document.status_changed',
+  'document.reprocess_queued',
   'document.accepted',
   'document.moved_to_inbox',
   'document.moved_to_tenant',
@@ -26,9 +27,13 @@ export const RealtimeNotificationTypeSchema = z.enum([
   'extraction.completed',
   'extraction.failed',
   'processing.failed',
+  'ai.queued',
+  'ai.bulk_queued',
+  'ai.field_update_queued',
   'ai.started',
   'ai.failed',
   'ai.metadata_extracted',
+  'ai.metadata_updated',
 ]);
 export type RealtimeNotificationType = z.infer<
   typeof RealtimeNotificationTypeSchema
@@ -49,14 +54,14 @@ export const RealtimeNotificationDtoSchema = z.object({
   tenantId: UuidSchema.optional(),
   type: RealtimeNotificationTypeSchema,
   severity: RealtimeNotificationSeveritySchema,
-  title: z.string().trim().min(1).max(120),
-  message: z.string().trim().min(1).max(500),
   createdAt: IsoDateTimeSchema,
   documentId: UuidSchema.optional(),
   documentTitle: z.string().trim().min(1).max(500).optional(),
   jobId: UuidSchema.optional(),
   status: DocumentStatusSchema.optional(),
   queuePosition: z.number().int().positive().optional(),
+  documentCount: z.number().int().positive().optional(),
+  targetTenantName: z.string().trim().min(1).max(200).optional(),
 });
 export type RealtimeNotificationDto = z.infer<
   typeof RealtimeNotificationDtoSchema

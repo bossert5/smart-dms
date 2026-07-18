@@ -21,10 +21,10 @@ describe('AiOcrTextPreprocessor', () => {
 
   it('repairs simple hyphenation and soft line breaks', () => {
     const result = preprocessor.preprocess(
-      ['Bitte ueber-', 'weisen Sie den Betrag', 'bis morgen.'].join('\n'),
+      ['Please trans-', 'fer the amount', 'by tomorrow.'].join('\n'),
     );
 
-    expect(result.cleanedText).toContain('Bitte ueberweisen Sie den Betrag');
+    expect(result.cleanedText).toContain('Please transfer the amount');
   });
 
   it('keeps critical identifiers, amounts, and dates even when repeated', () => {
@@ -32,14 +32,14 @@ describe('AiOcrTextPreprocessor', () => {
       'IBAN DE02120300000000202051',
       'IBAN DE02120300000000202051',
       'IBAN DE02120300000000202051',
-      'Rechnung vom 20.05.2026',
-      'Betrag 119,90 EUR',
+      'Invoice dated 20 May 2026',
+      'Amount 119.90 EUR',
     ].join('\n');
 
     const result = preprocessor.preprocess(text);
 
     expect(result.cleanedText).toContain('DE02120300000000202051');
-    expect(result.cleanedText).toContain('20.05.2026');
-    expect(result.cleanedText).toContain('119,90 EUR');
+    expect(result.cleanedText).toContain('20 May 2026');
+    expect(result.cleanedText).toContain('119.90 EUR');
   });
 });

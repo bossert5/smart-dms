@@ -155,6 +155,96 @@
   "notifications": {
     "aria": "Benachrichtigungen",
     "empty": "Keine Benachrichtigungen",
+    "events": {
+      "aiBulkQueued": {
+        "message": "Eingestellte Dokumente: {{documentCount}}. Erste Warteschlangenposition: {{queuePosition}}.",
+        "title": "KI-Verarbeitung geplant"
+      },
+      "aiFailed": {
+        "message": "Die KI-Verarbeitung für {{documentTitle}} ist fehlgeschlagen.",
+        "title": "KI-Verarbeitung fehlgeschlagen"
+      },
+      "aiFieldUpdateQueued": {
+        "message": "{{documentTitle}} wurde für eine KI-Feldaktualisierung eingestellt. Warteschlangenposition: {{queuePosition}}.",
+        "title": "KI-Feldaktualisierung geplant"
+      },
+      "aiMetadataExtracted": {
+        "message": "{{documentTitle}} wurde durch den KI-Anbieter ausgewertet.",
+        "title": "KI-Daten extrahiert"
+      },
+      "aiMetadataUpdated": {
+        "message": "{{documentTitle}} wurde durch den KI-Anbieter aktualisiert.",
+        "title": "KI-Daten aktualisiert"
+      },
+      "aiQueued": {
+        "message": "{{documentTitle}} wurde für die KI-Verarbeitung eingestellt. Warteschlangenposition: {{queuePosition}}.",
+        "title": "KI-Verarbeitung geplant"
+      },
+      "aiStarted": {
+        "message": "{{documentTitle}} wird durch den KI-Anbieter ausgewertet.",
+        "title": "KI gestartet"
+      },
+      "documentAccepted": {
+        "message": "{{documentTitle}} wurde in die Dokumentübersicht übernommen.",
+        "title": "Dokument übernommen"
+      },
+      "documentArchived": {
+        "message": "{{documentTitle}} wurde archiviert.",
+        "title": "Dokument archiviert"
+      },
+      "documentDeleted": {
+        "message": "{{documentTitle}} wurde unwiderruflich gelöscht.",
+        "title": "Dokument gelöscht"
+      },
+      "documentMovedToInbox": {
+        "message": "{{documentTitle}} wurde in die Inbox verschoben.",
+        "title": "Dokument in die Inbox verschoben"
+      },
+      "documentMovedToTenant": {
+        "message": "{{documentTitle}} wurde nach {{targetTenantName}} verschoben.",
+        "title": "Dokument verschoben"
+      },
+      "documentReprocessQueued": {
+        "message": "{{documentTitle}} wurde zur erneuten Verarbeitung eingestellt.",
+        "title": "Dokumentstatus geändert"
+      },
+      "documentStatusChanged": {
+        "message": "Der Status von {{documentTitle}} wurde geändert.",
+        "title": "Dokumentstatus geändert"
+      },
+      "documentUploaded": {
+        "message": "{{documentTitle}} wurde hochgeladen und wird vorbereitet.",
+        "title": "Dokument hochgeladen"
+      },
+      "extractionCompleted": {
+        "message": "Die Textextraktion für {{documentTitle}} wurde abgeschlossen.",
+        "title": "Textextraktion abgeschlossen"
+      },
+      "extractionFailed": {
+        "message": "Die Textextraktion für {{documentTitle}} ist fehlgeschlagen.",
+        "title": "Textextraktion fehlgeschlagen"
+      },
+      "extractionStarted": {
+        "message": "Text wird aus {{documentTitle}} extrahiert.",
+        "title": "Textextraktion gestartet"
+      },
+      "ocrCompleted": {
+        "message": "{{documentTitle}} ist bereit.",
+        "title": "OCR abgeschlossen"
+      },
+      "ocrStarted": {
+        "message": "{{documentTitle}} wird verarbeitet.",
+        "title": "OCR gestartet"
+      },
+      "processingFailed": {
+        "message": "Die Verarbeitung für {{documentTitle}} ist fehlgeschlagen.",
+        "title": "Verarbeitung fehlgeschlagen"
+      },
+      "scannerDocumentDetected": {
+        "message": "{{documentTitle}} wurde erkannt und wird vorbereitet.",
+        "title": "Scanner-Dokument erkannt"
+      }
+    },
     "muted": "Stummgeschaltet",
     "mutedAria": "Benachrichtigungen stummgeschaltet",
     "status": {
@@ -670,6 +760,49 @@
       "empty": "Noch keine Historie",
       "errors": {
         "loadFailed": "Historie konnte nicht geladen werden."
+      },
+      "events": {
+        "aiMetadataExtracted": "KI-Metadaten übernommen",
+        "aiMetadataQueued": "Dokument zur KI-Metadatenextraktion eingestellt",
+        "aiMetadataUpdated": "KI-Metadaten aktualisiert",
+        "documentAccepted": "Dokument übernommen",
+        "documentArchived": "Dokument archiviert",
+        "documentMetadataUpdated": "Metadaten geändert",
+        "documentMovedToInbox": "Dokument in die Inbox verschoben",
+        "documentMovedToTenant": "Dokument in einen anderen Mandanten verschoben",
+        "documentProcessingFailed": "Dokumentverarbeitung fehlgeschlagen",
+        "documentProcessingQueued": "Dokument zur Verarbeitung eingestellt",
+        "documentReprocessRequested": "Erneute Verarbeitung angefordert",
+        "documentTagsUpdated": "Tags geändert",
+        "documentUploaded": "Dokument hochgeladen",
+        "emailAttachmentImported": "PDF-Anhang aus E-Mail importiert",
+        "ocrProcessingCompleted": "OCR-Verarbeitung erfolgreich abgeschlossen",
+        "ocrProcessingStarted": "OCR-Verarbeitung gestartet",
+        "scannerDocumentDetected": "Neues Dokument im Scanner-Importverzeichnis erkannt"
+      },
+      "fields": {
+        "acceptedAt": "Übernommen am",
+        "attributes": "Attribute",
+        "calendarEvents": "Kalendereinträge",
+        "documentDate": "Dokumentdatum",
+        "documentType": "Dokumenttyp",
+        "note": "Notiz",
+        "payments": "Zahlungsdaten",
+        "recipient": "Empfänger",
+        "references": "Referenzen",
+        "sender": "Absender",
+        "status": "Status",
+        "summary": "Zusammenfassung",
+        "tags": "Tags",
+        "tenant": "Mandant",
+        "title": "Dokumentname",
+        "unknown": "Geändertes Feld"
+      },
+      "jobTypes": {
+        "CREATE_THUMBNAIL": "Vorschaubild erstellen",
+        "EXTRACT_AI_METADATA": "KI-Metadaten extrahieren",
+        "INGEST_DOCUMENT": "Dokument aufnehmen",
+        "OCR_DOCUMENT": "Dokument mit OCR verarbeiten"
       },
       "title": "Dokumenthistorie"
     },

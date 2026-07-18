@@ -97,7 +97,13 @@
                 </div>
 
                 <div class="timeline-document">
-                  <a [routerLink]="['/documents', entry.documentId]">{{ entry.documentTitle }}</a>
+                  <a
+                    [routerLink]="['/documents', entry.documentId]"
+                    (mousedown)="preventMiddleMouseNavigation($event)"
+                    (auxclick)="handleDocumentAuxClick($event, entry.documentId, entry.documentTitle)"
+                  >
+                    {{ entry.documentTitle }}
+                  </a>
                   <div class="timeline-meta">
                     @if (entry.documentSender) {
                       <span>{{ entry.documentSender }}</span>
@@ -201,7 +207,13 @@
                 </div>
 
                 <div class="timeline-document">
-                  <a [routerLink]="['/documents', item.documentId]">
+                  <a
+                    [routerLink]="['/documents', item.documentId]"
+                    (mousedown)="preventMiddleMouseNavigation($event)"
+                    (auxclick)="
+                      handleDocumentAuxClick($event, item.documentId, completedDocumentTitle(item))
+                    "
+                  >
                     {{ completedDocumentTitle(item) }}
                   </a>
                   <div class="timeline-meta">

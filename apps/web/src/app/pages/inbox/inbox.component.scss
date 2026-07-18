@@ -109,21 +109,21 @@
 .inbox-table td.is-changed-field,
 .inbox-table tr:hover > td.is-changed-field,
 .inbox-table td.is-changed-field.ant-table-cell-row-hover {
-  background: color-mix(in srgb, #faad14 18%, var(--app-bg));
+  background: color-mix(in srgb, #faad14 18%, var(--app-table-surface));
   box-shadow: inset 3px 0 0 #d48806;
 }
 
 :host-context(html[data-theme='dark']) .inbox-table td.is-changed-field,
 :host-context(html[data-theme='dark']) .inbox-table tr:hover > td.is-changed-field,
 :host-context(html[data-theme='dark']) .inbox-table td.is-changed-field.ant-table-cell-row-hover {
-  background: color-mix(in srgb, #faad14 24%, var(--app-bg));
+  background: color-mix(in srgb, #faad14 24%, var(--app-table-surface));
   box-shadow: inset 3px 0 0 #ffc53d;
 }
 
 .inbox-table td.is-missing-required-field,
 .inbox-table tr:hover > td.is-missing-required-field,
 .inbox-table td.is-missing-required-field.ant-table-cell-row-hover {
-  background: color-mix(in srgb, #ff4d4f 18%, var(--app-bg));
+  background: color-mix(in srgb, #ff4d4f 18%, var(--app-table-surface));
   box-shadow: inset 3px 0 0 #cf1322;
 }
 
@@ -132,7 +132,7 @@
 :host-context(html[data-theme='dark'])
   .inbox-table
   td.is-missing-required-field.ant-table-cell-row-hover {
-  background: color-mix(in srgb, #ff4d4f 24%, var(--app-bg));
+  background: color-mix(in srgb, #ff4d4f 24%, var(--app-table-surface));
   box-shadow: inset 3px 0 0 #ff7875;
 }
 

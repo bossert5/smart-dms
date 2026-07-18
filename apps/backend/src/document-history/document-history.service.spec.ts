@@ -11,7 +11,7 @@ function historyEvent(overrides: Record<string, unknown> = {}) {
     id: '018f1a44-9093-7f55-a515-278f4d9bd991',
     documentId,
     type: 'DOCUMENT_METADATA_UPDATED',
-    summary: 'Metadaten wurden geändert.',
+    summary: 'Metadata changed.',
     actorUser: {
       id: userId,
       username: 'admin',
@@ -20,9 +20,9 @@ function historyEvent(overrides: Record<string, unknown> = {}) {
     changes: [
       {
         field: 'title',
-        label: 'Titel',
+        label: 'Title',
         oldValue: 'Alt',
-        newValue: 'Neu',
+        newValue: 'New',
       },
     ],
     metadata: { status: 'READY' },
@@ -61,9 +61,9 @@ describe('DocumentHistoryService', () => {
         changes: [
           {
             field: 'title',
-            label: 'Titel',
+            label: 'Title',
             oldValue: 'Alt',
-            newValue: 'Neu',
+            newValue: 'New',
           },
         ],
         metadata: {
@@ -75,7 +75,7 @@ describe('DocumentHistoryService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd991',
       documentId,
       type: 'DOCUMENT_METADATA_UPDATED',
-      summary: 'Metadaten wurden geändert.',
+      summary: 'Metadata changed.',
       actor: {
         id: userId,
         username: 'admin',
@@ -84,9 +84,9 @@ describe('DocumentHistoryService', () => {
       changes: [
         {
           field: 'title',
-          label: 'Titel',
+          label: 'Title',
           oldValue: 'Alt',
-          newValue: 'Neu',
+          newValue: 'New',
         },
       ],
       metadata: { status: 'READY' },

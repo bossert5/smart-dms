@@ -153,10 +153,10 @@ describe('AiService', () => {
         },
         {
           kind: 'DEADLINE',
-          title: 'Klageerweiterung',
-          description: 'Klageerweiterung vom 08.07.2025',
+          title: 'Amended complaint',
+          description: 'Amended complaint dated 8 July 2025',
           sourceText:
-            'Die Vorsitzende übergibt an den Beklagtenvertreter die Klageerweiterung vom 08.07.2025.',
+            'The presiding judge hands the amended complaint dated 8 July 2025 to counsel for the defendant.',
         },
       ],
     });
@@ -388,7 +388,7 @@ describe('AiService', () => {
         },
         {
           recipient: 'Example Bank AG',
-          purpose: 'Bearbeitungsgebuehr',
+          purpose: 'Processing fee',
           amount: 42,
           currency: 'EUR',
         },
@@ -404,7 +404,7 @@ describe('AiService', () => {
           documentId,
           iban: null,
           recipient: 'Example Bank AG',
-          purpose: 'Bearbeitungsgebuehr',
+          purpose: 'Processing fee',
           amount: 42,
           currency: 'EUR',
           source: 'AI_EXTRACTED',
@@ -468,23 +468,23 @@ describe('AiService', () => {
     const { calendarService, service, tx } = createService();
 
     await service.applyMetadataExtractionResult(documentId, {
-      summary: 'German fee notice with payment due date',
+      summary: 'Fee notice with payment due date',
       payments: [
         {
-          recipient: 'Behoerde',
-          purpose: 'Gebuehren',
+          recipient: 'Authority',
+          purpose: 'Fees',
           amount: 80,
           currency: 'EUR',
-          dueDate: '2026-01-02',
-          dueDateSourceText: 'bis zum 02.01.2026',
+          dueDate: '2027-01-02',
+          dueDateSourceText: 'by 2 January 2027',
         },
       ],
       calendarEvents: [
         {
           kind: 'DUE_DATE',
-          title: 'Ueberweisung der Gebuehren',
-          date: '2026-01-02',
-          sourceText: 'Ueberweisung der Gebuehren bis zum 02.01.2026',
+          title: 'Fee payment',
+          date: '2027-01-02',
+          sourceText: 'Pay the fees by 2 January 2027',
         },
       ],
     });
@@ -494,10 +494,10 @@ describe('AiService', () => {
         documentId,
         paymentId: '018f1a44-9093-7f55-a515-278f4d9bd901',
         kind: 'DUE_DATE',
-        title: 'Ueberweisung der Gebuehren',
-        description: 'Gebuehren',
-        date: new Date('2026-01-02T00:00:00.000Z'),
-        sourceText: 'Ueberweisung der Gebuehren bis zum 02.01.2026',
+        title: 'Fee payment',
+        description: 'Fees',
+        date: new Date('2027-01-02T00:00:00.000Z'),
+        sourceText: 'Pay the fees by 2 January 2027',
       }),
     });
     expect(calendarService.replaceAiExtractedEvents).toHaveBeenCalledWith(
@@ -505,8 +505,8 @@ describe('AiService', () => {
       [],
       [
         {
-          date: '2026-01-02',
-          sourceText: 'Ueberweisung der Gebuehren bis zum 02.01.2026',
+          date: '2027-01-02',
+          sourceText: 'Pay the fees by 2 January 2027',
         },
       ],
     );
@@ -521,7 +521,7 @@ describe('AiService', () => {
         {
           iban: 'DE02120300000000202051',
           recipient: 'Example GmbH',
-          purpose: 'Rechnung R-100 Kundennummer K-42',
+          purpose: 'Invoice R-100 customer K-42',
           amount: 119.9,
           currency: 'EUR',
         },
@@ -534,7 +534,7 @@ describe('AiService', () => {
           documentId,
           iban: 'DE02120300000000202051',
           recipient: 'Example GmbH',
-          purpose: 'Rechnung R-100 Kundennummer K-42',
+          purpose: 'Invoice R-100 customer K-42',
           amount: 119.9,
           currency: 'EUR',
           source: 'AI_EXTRACTED',
@@ -560,7 +560,7 @@ describe('AiService', () => {
       references: [
         {
           referenceNumber: 'R-100',
-          referenceType: 'Rechnung',
+          referenceType: 'Invoice',
         },
       ],
     });

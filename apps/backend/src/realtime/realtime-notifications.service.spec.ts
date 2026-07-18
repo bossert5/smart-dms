@@ -50,8 +50,6 @@ describe('RealtimeNotificationsService', () => {
     const notification = await service.publish({
       type: 'ocr.completed',
       severity: 'success',
-      title: 'OCR abgeschlossen',
-      message: 'Document ist bereit.',
       documentId: '018f1a44-9093-7f55-a515-278f4d9bd99f',
       documentTitle: 'Document',
       jobId: '018f1a44-9093-7f55-a515-278f4d9bd990',
@@ -67,6 +65,8 @@ describe('RealtimeNotificationsService', () => {
       NOTIFICATIONS_REDIS_CHANNEL,
       JSON.stringify(notification),
     );
+    expect(notification).not.toHaveProperty('title');
+    expect(notification).not.toHaveProperty('message');
   });
 
   it('returns only valid notifications from the last five minutes', async () => {
@@ -74,23 +74,30 @@ describe('RealtimeNotificationsService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd99f',
       type: 'ocr.started',
       severity: 'info',
-      title: 'OCR gestartet',
-      message: 'Document wird verarbeitet.',
       createdAt: '2026-05-07T18:04:00.000Z',
       documentId: '018f1a44-9093-7f55-a515-278f4d9bd99f',
       documentTitle: 'Document',
       jobId: '018f1a44-9093-7f55-a515-278f4d9bd990',
       status: 'OCR_RUNNING',
     };
-    const old = {
+    const legacyRecent = {
       ...recent,
+      title: 'OCR started',
+      message: 'Document is being processed.',
+    };
+    const old = {
+      ...legacyRecent,
       id: '018f1a44-9093-7f55-a515-278f4d9bd991',
       createdAt: '2026-05-07T17:59:00.000Z',
     };
     const history = redisClient({
       zrangebyscore: jest
         .fn()
-        .mockResolvedValue([JSON.stringify(old), JSON.stringify(recent), '{']),
+        .mockResolvedValue([
+          JSON.stringify(old),
+          JSON.stringify(legacyRecent),
+          '{',
+        ]),
     });
     const publisher = redisClient();
     jest

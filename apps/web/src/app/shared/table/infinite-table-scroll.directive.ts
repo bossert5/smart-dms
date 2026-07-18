@@ -37,6 +37,7 @@ export class InfiniteTableScrollDirective implements AfterViewInit {
   private resizeObserver: ResizeObserver | null = null;
   private tableBody: HTMLElement | null = null;
   private observedResizeElements: HTMLElement[] = [];
+  private resizeRefreshFrame: number | null = null;
   private refreshScheduled = false;
   private widthSyncScheduled = false;
   private initialized = false;
@@ -293,9 +294,7 @@ export class InfiniteTableScrollDirective implements AfterViewInit {
       headerCells.length > 0
         ? headerCells
         : Array.from(
-            host.querySelectorAll<HTMLTableCellElement>(
-              '.ant-table-thead > tr:first-child > th',
-            ),
+            host.querySelectorAll<HTMLTableCellElement>('.ant-table-thead > tr:first-child > th'),
           );
     const columns: boolean[] = [];
 
@@ -329,7 +328,15 @@ export class InfiniteTableScrollDirective implements AfterViewInit {
       return;
     }
 
-    this.resizeObserver = new ResizeObserver(() => this.refresh());
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.destroyed || this.resizeRefreshFrame !== null) {
+        return;
+      }
+      this.resizeRefreshFrame = globalThis.requestAnimationFrame(() => {
+        this.resizeRefreshFrame = null;
+        this.refresh();
+      });
+    });
     const host = this.elementRef.nativeElement;
     this.observedResizeElements = [host, host.parentElement].filter(
       (element): element is HTMLElement => !!element,
@@ -342,6 +349,10 @@ export class InfiniteTableScrollDirective implements AfterViewInit {
     globalThis.removeEventListener?.('resize', this.handleResize);
     globalThis.removeEventListener?.(APP_LAYOUT_RESIZE_EVENT, this.handleLayoutResize);
     this.resizeObserver?.disconnect();
+    if (this.resizeRefreshFrame !== null) {
+      globalThis.cancelAnimationFrame(this.resizeRefreshFrame);
+      this.resizeRefreshFrame = null;
+    }
     this.observedResizeElements = [];
     this.detachScrollTarget();
   }

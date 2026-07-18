@@ -109,7 +109,7 @@ export class UploadsService {
       documentId: updatedDocument.id,
       actorUserId: user.id,
       type: 'DOCUMENT_UPLOADED',
-      summary: 'Dokument wurde hochgeladen.',
+      summary: 'Document uploaded.',
       metadata: {
         originalFileName: file.originalname,
         mimeType: file.mimetype,
@@ -119,8 +119,6 @@ export class UploadsService {
     await this.notifications.publish({
       type: 'document.uploaded',
       severity: 'info',
-      title: 'Dokument hochgeladen',
-      message: `${documentNotificationTitle(updatedDocument)} wurde hochgeladen und wird vorbereitet.`,
       documentId: updatedDocument.id,
       documentTitle: documentNotificationTitle(updatedDocument),
       tenantId: updatedDocument.tenantId,
@@ -141,7 +139,7 @@ export class UploadsService {
       documentId: updatedDocument.id,
       actorUserId: user.id,
       type: 'DOCUMENT_PROCESSING_QUEUED',
-      summary: 'Dokument wurde zur OCR-Verarbeitung eingestellt.',
+      summary: 'Document queued for OCR processing.',
       metadata: {
         jobId: job.id,
         jobType: 'OCR_DOCUMENT',

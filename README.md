@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img alt="Version 1.0.0" src="https://img.shields.io/badge/version-1.0.0-blue">
+  <img alt="Version 1.1.0" src="https://img.shields.io/badge/version-1.1.0-blue">
   <img alt="License: AGPL-3.0-only" src="https://img.shields.io/badge/license-AGPL--3.0--only-blue">
   <img alt="Deployment: Docker Compose" src="https://img.shields.io/badge/deploy-Docker%20Compose-blue">
   <img alt="AI providers: OpenAI-compatible" src="https://img.shields.io/badge/AI-OpenAI--compatible-blue">
@@ -34,16 +34,16 @@ It is built for the everyday paper trail that otherwise ends up in binders, inbo
 
 ## Why use Smart DMS?
 
-| Benefit | What it means in practice |
-| --- | --- |
-| **One intake workflow** | Upload documents in the browser, import scanner output from folders or pull PDF attachments from configured IMAP mailboxes. |
-| **Searchable archive** | OCR, previews, full-text search, filters, tags and document types help you find documents again. |
-| **AI-assisted metadata** | Extract proposed titles, summaries, parties, tags, payments, deadlines and calendar events from OCR and Markdown text. |
-| **Review before archive** | Correct metadata, lock fields, reprocess documents and accept only what you have reviewed. |
-| **Dashboard and calendar** | Surface payments, due dates, deadlines and appointments from your documents. |
-| **Local-first infrastructure** | Run the web UI, API, processor, PostgreSQL, Redis, storage, OCR runtime and Docling runtime with Docker Compose. |
-| **Flexible AI setup** | Use configurable OpenAI-compatible providers, including local endpoints such as Ollama or LM Studio, or external model APIs. |
-| **Multi-user and multi-tenant** | Create users and tenants, manage memberships and keep document workflows separated. |
+| Benefit                         | What it means in practice                                                                                                    |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **One intake workflow**         | Upload documents in the browser, import scanner output from folders or pull PDF attachments from configured IMAP mailboxes.  |
+| **Searchable archive**          | OCR, previews, full-text search, filters, tags and document types help you find documents again.                             |
+| **AI-assisted metadata**        | Extract proposed titles, summaries, parties, tags, payments, deadlines and calendar events from OCR and Markdown text.       |
+| **Review before archive**       | Correct metadata, lock fields, reprocess documents and accept only what you have reviewed.                                   |
+| **Dashboard and calendar**      | Surface payments, due dates, deadlines and appointments from your documents.                                                 |
+| **Local-first infrastructure**  | Run the web UI, API, processor, PostgreSQL, Redis, storage, OCR runtime and Docling runtime with Docker Compose.             |
+| **Flexible AI setup**           | Use configurable OpenAI-compatible providers, including local endpoints such as Ollama or LM Studio, or external model APIs. |
+| **Multi-user and multi-tenant** | Create users and tenants, manage memberships and keep document workflows separated.                                          |
 
 ## How it works
 
@@ -64,16 +64,16 @@ flowchart LR
 
 ## Features
 
-| Area | Capabilities |
-| --- | --- |
-| Document intake | Browser uploads, scanner import directories and PDF attachment import from configured IMAP mailboxes. |
-| OCR and conversion | Compose-managed OCR and Docling runtimes create searchable PDFs, previews, OCR text and Markdown. |
-| AI extraction | Proposed titles, summaries, document types, parties, tags, payments, deadlines and calendar events. |
-| Review workflow | Review, correct, lock, reprocess and accept documents before final archiving. |
-| Search and retrieval | Full-text search, filters, document types, tags, downloads and reprocessing. |
-| Dashboard and calendar | Important payments, deadlines and appointments prepared for review and surfaced in dedicated views. |
-| Users and tenants | Multiple users, multiple tenants, tenant memberships and separated document workflows. |
-| Deployment | Source-based Docker Compose deployment with local builds on your Docker host. |
+| Area                   | Capabilities                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| Document intake        | Browser uploads, scanner import directories and PDF attachment import from configured IMAP mailboxes. |
+| OCR and conversion     | Compose-managed OCR and Docling runtimes create searchable PDFs, previews, OCR text and Markdown.     |
+| AI extraction          | Proposed titles, summaries, document types, parties, tags, payments, deadlines and calendar events.   |
+| Review workflow        | Review, correct, lock, reprocess and accept documents before final archiving.                         |
+| Search and retrieval   | Full-text search, filters, document types, tags, downloads and reprocessing.                          |
+| Dashboard and calendar | Important payments, deadlines and appointments prepared for review and surfaced in dedicated views.   |
+| Users and tenants      | Multiple users, multiple tenants, tenant memberships and separated document workflows.                |
+| Deployment             | Source-based Docker Compose deployment with local builds on your Docker host.                         |
 
 OCR is the text and search foundation. AI extraction is the intended workflow for turning OCR and Markdown text into structured document metadata, but all important metadata should still be reviewed by a user.
 
@@ -83,16 +83,16 @@ Screenshots use synthetic demo data only.
 
 ![Smart DMS dashboard with document workload and review status](docs/assets/screenshots/dashboard.png)
 
-| Document search | Inbox review |
-| --- | --- |
+| Document search                                                                                                      | Inbox review                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | ![Document search with full-text results, filters and document actions](docs/assets/screenshots/document-search.png) | ![Inbox review queue with AI metadata status and document actions](docs/assets/screenshots/inbox-review.png) |
 
-| Document detail | AI provider settings |
-| --- | --- |
+| Document detail                                                                                              | AI provider settings                                                                                     |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | ![Document detail view with extracted metadata and PDF preview](docs/assets/screenshots/document-detail.png) | ![AI provider settings with a local OpenAI-compatible provider](docs/assets/screenshots/ai-settings.png) |
 
-| Calendar | Email ingestion |
-| --- | --- |
+| Calendar                                                                                                  | Email ingestion                                                                                                           |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | ![Calendar view with payment due dates, deadlines and appointments](docs/assets/screenshots/calendar.png) | ![Email ingestion view with mailbox messages, attachments and import status](docs/assets/screenshots/email-ingestion.png) |
 
 ## Quick start
@@ -184,12 +184,12 @@ There are currently no published Docker images or binary release artifacts. Depl
 
 ### Deployment modes
 
-| Mode | Use when | Start | Update |
-| --- | --- | --- | --- |
-| Local port | You want Smart DMS on `http://<host>:8080`. | `scripts/start-compose.sh` | `scripts/update-compose.sh` |
-| Traefik | You already run Traefik and want HTTPS/domain routing there. | `scripts/start-compose.sh --traefik` | `scripts/update-compose.sh --traefik` |
-| Local port with scanner group | The scanner import folder needs a supplemental Linux group. | `scripts/start-compose.sh --scanner-group` | `scripts/update-compose.sh --scanner-group` |
-| Traefik with scanner group | Traefik deployment plus group-protected scanner import. | `scripts/start-compose.sh --traefik --scanner-group` | `scripts/update-compose.sh --traefik --scanner-group` |
+| Mode                          | Use when                                                     | Start                                                | Update                                                |
+| ----------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------------------- |
+| Local port                    | You want Smart DMS on `http://<host>:8080`.                  | `scripts/start-compose.sh`                           | `scripts/update-compose.sh`                           |
+| Traefik                       | You already run Traefik and want HTTPS/domain routing there. | `scripts/start-compose.sh --traefik`                 | `scripts/update-compose.sh --traefik`                 |
+| Local port with scanner group | The scanner import folder needs a supplemental Linux group.  | `scripts/start-compose.sh --scanner-group`           | `scripts/update-compose.sh --scanner-group`           |
+| Traefik with scanner group    | Traefik deployment plus group-protected scanner import.      | `scripts/start-compose.sh --traefik --scanner-group` | `scripts/update-compose.sh --traefik --scanner-group` |
 
 The scripts validate `.env`, build local Smart DMS images and run:
 
@@ -350,16 +350,16 @@ Pull requests should run the relevant checks and note them in the PR template. T
 
 ## Configuration and docs
 
-| Topic | Location |
-| --- | --- |
-| Docker deployment | [`docs/docker-compose-deployment/`](docs/docker-compose-deployment/) |
-| Compose configuration | [`.env.example`](.env.example), [`.env.full.example`](.env.full.example), [`docs/docker-compose-deployment/configuration.md`](docs/docker-compose-deployment/configuration.md) |
-| Development backend configuration | [`apps/backend/.env.example`](apps/backend/.env.example) |
-| Contribution guide | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| Security policy | [`SECURITY.md`](SECURITY.md) |
-| Changelog | [`CHANGELOG.md`](CHANGELOG.md) |
-| Project notice | [`NOTICE`](NOTICE) |
-| Third-party notices | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| Topic                             | Location                                                                                                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Docker deployment                 | [`docs/docker-compose-deployment/`](docs/docker-compose-deployment/)                                                                                                           |
+| Compose configuration             | [`.env.example`](.env.example), [`.env.full.example`](.env.full.example), [`docs/docker-compose-deployment/configuration.md`](docs/docker-compose-deployment/configuration.md) |
+| Development backend configuration | [`apps/backend/.env.example`](apps/backend/.env.example)                                                                                                                       |
+| Contribution guide                | [`CONTRIBUTING.md`](CONTRIBUTING.md)                                                                                                                                           |
+| Security policy                   | [`SECURITY.md`](SECURITY.md)                                                                                                                                                   |
+| Changelog                         | [`CHANGELOG.md`](CHANGELOG.md)                                                                                                                                                 |
+| Project notice                    | [`NOTICE`](NOTICE)                                                                                                                                                             |
+| Third-party notices               | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)                                                                                                                             |
 
 ## Security and reliability notes
 

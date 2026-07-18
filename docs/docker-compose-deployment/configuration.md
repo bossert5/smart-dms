@@ -34,10 +34,10 @@ also catch unchanged placeholder values.
 
 ## Ports
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `SMART_DMS_WEB_PORT` | `8080` | Browser port for the web UI |
-| `SMART_DMS_API_PORT` | `3010` | Local API port, bound to `127.0.0.1` |
+| Variable             | Default | Meaning                              |
+| -------------------- | ------- | ------------------------------------ |
+| `SMART_DMS_WEB_PORT` | `8080`  | Browser port for the web UI          |
+| `SMART_DMS_API_PORT` | `3010`  | Local API port, bound to `127.0.0.1` |
 
 The web UI talks to the API through the Nginx reverse proxy in the `web`
 container. The API port is also published on `127.0.0.1` for local tools.
@@ -47,12 +47,12 @@ container. The API port is also published on `127.0.0.1` for local tools.
 `docker-compose.traefik.yml` runs the same stack behind an existing Traefik
 reverse proxy.
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `SMART_DMS_TRAEFIK_HOST` | `dms.example.com` | Hostname for the Traefik route |
-| `SMART_DMS_TRAEFIK_ENTRYPOINT` | `websecure` | Traefik entrypoint |
-| `SMART_DMS_TRAEFIK_CERTRESOLVER` | `letsencrypt` | Traefik TLS cert resolver |
-| `SMART_DMS_TRAEFIK_NETWORK` | `proxy` | External Docker network used by Traefik |
+| Variable                         | Default           | Meaning                                 |
+| -------------------------------- | ----------------- | --------------------------------------- |
+| `SMART_DMS_TRAEFIK_HOST`         | `dms.example.com` | Hostname for the Traefik route          |
+| `SMART_DMS_TRAEFIK_ENTRYPOINT`   | `websecure`       | Traefik entrypoint                      |
+| `SMART_DMS_TRAEFIK_CERTRESOLVER` | `letsencrypt`     | Traefik TLS cert resolver               |
+| `SMART_DMS_TRAEFIK_NETWORK`      | `proxy`           | External Docker network used by Traefik |
 
 The helper script validates `SMART_DMS_TRAEFIK_HOST`, checks the configured
 external network and creates it when it is missing:
@@ -70,12 +70,12 @@ docker compose -f docker-compose.traefik.yml up -d --build --remove-orphans
 
 ## Database and Redis
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `SMART_DMS_POSTGRES_USER` | `smart_dms` | PostgreSQL user |
-| `SMART_DMS_POSTGRES_PASSWORD` | required | PostgreSQL password |
-| `SMART_DMS_POSTGRES_DB` | `smart_dms` | PostgreSQL database |
-| `SMART_DMS_REDIS_PASSWORD` | empty | Optional Redis password |
+| Variable                      | Default     | Meaning                 |
+| ----------------------------- | ----------- | ----------------------- |
+| `SMART_DMS_POSTGRES_USER`     | `smart_dms` | PostgreSQL user         |
+| `SMART_DMS_POSTGRES_PASSWORD` | required    | PostgreSQL password     |
+| `SMART_DMS_POSTGRES_DB`       | `smart_dms` | PostgreSQL database     |
+| `SMART_DMS_REDIS_PASSWORD`    | empty       | Optional Redis password |
 
 Internal service names are:
 
@@ -86,11 +86,11 @@ redis:6379
 
 ## Backend Secrets
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `JWT_ACCESS_SECRET` | required | Access token signing secret |
-| `JWT_ACCESS_TTL_SECONDS` | `900` | Access token lifetime |
-| `REFRESH_TOKEN_TTL_DAYS` | `30` | Refresh token lifetime |
+| Variable                    | Default  | Meaning                                         |
+| --------------------------- | -------- | ----------------------------------------------- |
+| `JWT_ACCESS_SECRET`         | required | Access token signing secret                     |
+| `JWT_ACCESS_TTL_SECONDS`    | `900`    | Access token lifetime                           |
+| `REFRESH_TOKEN_TTL_DAYS`    | `30`     | Refresh token lifetime                          |
 | `DMS_SECRET_ENCRYPTION_KEY` | required | Encryption key for stored provider/mail secrets |
 
 Production deployments must replace placeholder secrets with long random
@@ -102,11 +102,11 @@ openssl rand -hex 32
 
 ## Storage and Scanner Import
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `SMART_DMS_SCANNER_IMPORT_PATH` | `./scanner-import` | Host path for scanner import |
-| `SMART_DMS_SCANNER_IMPORT_GID` | empty | Supplemental Linux group ID for scanner import host access |
-| `DMS_MAX_UPLOAD_SIZE_MB` | `100` | Maximum upload size in MB |
+| Variable                        | Default            | Meaning                                                    |
+| ------------------------------- | ------------------ | ---------------------------------------------------------- |
+| `SMART_DMS_SCANNER_IMPORT_PATH` | `./scanner-import` | Host path for scanner import                               |
+| `SMART_DMS_SCANNER_IMPORT_GID`  | empty              | Supplemental Linux group ID for scanner import host access |
+| `DMS_MAX_UPLOAD_SIZE_MB`        | `100`              | Maximum upload size in MB                                  |
 
 Container paths:
 
@@ -205,28 +205,28 @@ filesystem permission errors.
 
 ## Persistent Volumes
 
-| Variable | Default | Content |
-| --- | --- | --- |
-| `SMART_DMS_POSTGRES_VOLUME_NAME` | `smart-dms_smart-dms-postgres-data` | PostgreSQL data |
-| `SMART_DMS_REDIS_VOLUME_NAME` | `smart-dms_smart-dms-redis-data` | Redis append-only data |
-| `SMART_DMS_STORAGE_VOLUME_NAME` | `smart-dms_smart-dms-storage` | Documents, PDFs, thumbnails and temporary files |
+| Variable                         | Default                             | Content                                         |
+| -------------------------------- | ----------------------------------- | ----------------------------------------------- |
+| `SMART_DMS_POSTGRES_VOLUME_NAME` | `smart-dms_smart-dms-postgres-data` | PostgreSQL data                                 |
+| `SMART_DMS_REDIS_VOLUME_NAME`    | `smart-dms_smart-dms-redis-data`    | Redis append-only data                          |
+| `SMART_DMS_STORAGE_VOLUME_NAME`  | `smart-dms_smart-dms-storage`       | Documents, PDFs, thumbnails and temporary files |
 
 Keep these names stable after the first production start. Backups should cover
 PostgreSQL and DMS storage at minimum.
 
 ## OCR and Docling
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `DMS_OCR_SERVICE_URL` | `http://ocr-runtime:8080` | Internal OCR runtime service |
-| `DMS_DOCLING_SERVICE_URL` | `http://docling-runtime:8080` | Internal Docling runtime service |
-| `DMS_DOCLING_ENABLED` | `true` | Enables Docling Markdown extraction |
-| `DMS_OCR_IMAGE_DPI` | `600` | DPI for image originals |
-| `DMS_OCR_JOBS` | `2` | Parallel OCRmyPDF jobs per document |
-| `DMS_OCR_TIMEOUT_MS` | `1800000` | OCR command timeout |
-| `DMS_DOCLING_TIMEOUT_MS` | `600000` | Docling conversion timeout |
-| `DMS_THUMBNAIL_DPI` | `144` | Thumbnail DPI |
-| `DMS_THUMBNAIL_JPEG_QUALITY` | `85` | Thumbnail JPEG quality |
+| Variable                     | Default                       | Meaning                             |
+| ---------------------------- | ----------------------------- | ----------------------------------- |
+| `DMS_OCR_SERVICE_URL`        | `http://ocr-runtime:8080`     | Internal OCR runtime service        |
+| `DMS_DOCLING_SERVICE_URL`    | `http://docling-runtime:8080` | Internal Docling runtime service    |
+| `DMS_DOCLING_ENABLED`        | `true`                        | Enables Docling Markdown extraction |
+| `DMS_OCR_IMAGE_DPI`          | `600`                         | DPI for image originals             |
+| `DMS_OCR_JOBS`               | `2`                           | Parallel OCRmyPDF jobs per document |
+| `DMS_OCR_TIMEOUT_MS`         | `1800000`                     | OCR command timeout                 |
+| `DMS_DOCLING_TIMEOUT_MS`     | `600000`                      | Docling conversion timeout          |
+| `DMS_THUMBNAIL_DPI`          | `144`                         | Thumbnail DPI                       |
+| `DMS_THUMBNAIL_JPEG_QUALITY` | `85`                          | Thumbnail JPEG quality              |
 
 OCR and Docling services share the DMS storage volume with the processor. The
 processor does not need access to the Docker socket in Compose deployments.

@@ -645,7 +645,7 @@ export class EmailMailboxesService {
         {
           documentId: document.id,
           type: 'EMAIL_ATTACHMENT_IMPORTED',
-          summary: 'PDF-Anhang aus Email wurde importiert.',
+          summary: 'PDF attachment imported from email.',
           metadata: {
             tenantId: mailbox.tenantId,
             mailboxId: mailbox.id,

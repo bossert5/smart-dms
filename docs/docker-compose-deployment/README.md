@@ -112,16 +112,16 @@ docker compose -f docker-compose.traefik.yml up -d --build --remove-orphans
 
 ## Services
 
-| Service | Image | Purpose |
-| --- | --- | --- |
-| `web` | `smart-dms-web:source-local` | Nginx with the built Angular application |
-| `api` | `smart-dms-api:source-local` | NestJS API process |
-| `processor` | `smart-dms-api:source-local` | NestJS processor for queue and OCR jobs |
-| `ocr-runtime` | `smart-dms-ocr-runtime:source-local` | OCRmyPDF/Tesseract runtime service |
-| `docling-runtime` | `smart-dms-docling-runtime:source-local` | Docling Markdown runtime service |
-| `migrate` | `smart-dms-api:source-local` | One-shot Prisma migration process |
-| `postgres` | `postgres:16-alpine` | PostgreSQL database |
-| `redis` | `redis:7-alpine` | BullMQ and realtime infrastructure |
+| Service           | Image                                    | Purpose                                  |
+| ----------------- | ---------------------------------------- | ---------------------------------------- |
+| `web`             | `smart-dms-web:source-local`             | Nginx with the built Angular application |
+| `api`             | `smart-dms-api:source-local`             | NestJS API process                       |
+| `processor`       | `smart-dms-api:source-local`             | NestJS processor for queue and OCR jobs  |
+| `ocr-runtime`     | `smart-dms-ocr-runtime:source-local`     | OCRmyPDF/Tesseract runtime service       |
+| `docling-runtime` | `smart-dms-docling-runtime:source-local` | Docling Markdown runtime service         |
+| `migrate`         | `smart-dms-api:source-local`             | One-shot Prisma migration process        |
+| `postgres`        | `postgres:16-alpine`                      | PostgreSQL database                      |
+| `redis`           | `redis:7-alpine`                         | BullMQ and realtime infrastructure       |
 
 `api`, `processor` and `migrate` intentionally use the same locally built API
 image. They share DTOs, Prisma Client, migrations and runtime dependencies but

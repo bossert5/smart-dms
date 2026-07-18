@@ -51,8 +51,6 @@ export class DocumentProcessingConsumer extends WorkerHost {
     await this.notifications.publish({
       type: 'ocr.started',
       severity: 'info',
-      title: 'OCR gestartet',
-      message: `${documentNotificationTitle(runningDocument)} wird verarbeitet.`,
       documentId,
       tenantId: runningDocument.tenantId,
       documentTitle: documentNotificationTitle(runningDocument),
@@ -69,7 +67,7 @@ export class DocumentProcessingConsumer extends WorkerHost {
     await this.documentHistory.record({
       documentId,
       type: 'OCR_PROCESSING_STARTED',
-      summary: 'OCR-Verarbeitung wurde gestartet.',
+      summary: 'OCR processing started.',
       metadata: {
         jobId: processingJobId,
         status: runningDocument.status,
@@ -114,8 +112,6 @@ export class DocumentProcessingConsumer extends WorkerHost {
       await this.notifications.publish({
         type: 'processing.failed',
         severity: 'error',
-        title: 'Verarbeitung fehlgeschlagen',
-        message: `${documentNotificationTitle(failedDocument)}: ${message}`,
         documentId,
         tenantId: failedDocument.tenantId,
         documentTitle: documentNotificationTitle(failedDocument),
@@ -132,7 +128,7 @@ export class DocumentProcessingConsumer extends WorkerHost {
       await this.documentHistory.record({
         documentId,
         type: 'DOCUMENT_PROCESSING_FAILED',
-        summary: 'Verarbeitung ist fehlgeschlagen.',
+        summary: 'Processing failed.',
         metadata: {
           jobId: processingJobId,
           status: failedDocument.status,

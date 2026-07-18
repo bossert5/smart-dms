@@ -397,7 +397,7 @@ export class AiService {
     await this.documentHistory.record({
       documentId,
       type: 'AI_METADATA_EXTRACTED',
-      summary: 'AI-Metadaten wurden übernommen.',
+      summary: 'AI metadata applied.',
       metadata: {
         calendarEventCount: resolvedCalendarEvents.length,
         paymentCount: appliedPaymentCount,
@@ -408,8 +408,6 @@ export class AiService {
     await this.notifications.publish({
       type: 'ai.metadata_extracted',
       severity: 'success',
-      title: 'AI-Daten extrahiert',
-      message: `${displayAiDocumentTitle(document)} wurde durch den AI Provider ausgewertet.`,
       documentId,
       tenantId: document?.tenantId,
       documentTitle: displayAiDocumentTitle(document),
@@ -669,7 +667,7 @@ export class AiService {
     await this.documentHistory.record({
       documentId,
       type: 'AI_METADATA_EXTRACTED',
-      summary: 'AI-Metadaten wurden aktualisiert.',
+      summary: 'AI metadata updated.',
       metadata: {
         scopes,
         calendarEventCount: calendarEvents?.length ?? undefined,
@@ -677,10 +675,8 @@ export class AiService {
       },
     });
     await this.notifications.publish({
-      type: 'ai.metadata_extracted',
+      type: 'ai.metadata_updated',
       severity: 'success',
-      title: 'AI-Daten aktualisiert',
-      message: `${displayAiDocumentTitle(document)} wurde durch den AI Provider aktualisiert.`,
       documentId,
       tenantId: document?.tenantId,
       documentTitle: displayAiDocumentTitle(document),
@@ -1353,5 +1349,5 @@ function displayAiDocumentTitle(
     | null
     | undefined,
 ): string {
-  return document?.title?.trim() || document?.originalFileName || 'Dokument';
+  return document?.title?.trim() || document?.originalFileName || 'Document';
 }

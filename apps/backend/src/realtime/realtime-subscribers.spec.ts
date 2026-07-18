@@ -57,8 +57,6 @@ describe('realtime Redis subscribers', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd99f',
       type: 'ocr.completed' as const,
       severity: 'success' as const,
-      title: 'OCR abgeschlossen',
-      message: 'Document ist bereit.',
       createdAt: '2026-05-07T18:04:00.000Z',
       status: 'READY' as const,
     };

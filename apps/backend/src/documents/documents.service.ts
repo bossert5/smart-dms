@@ -806,7 +806,7 @@ export class DocumentsService {
             documentId: id,
             actorUserId: user.id,
             type: 'DOCUMENT_METADATA_UPDATED',
-            summary: 'Metadaten wurden geändert.',
+            summary: 'Metadata changed.',
             changes,
           },
           tx,
@@ -1115,7 +1115,7 @@ export class DocumentsService {
             documentId: id,
             actorUserId: user.id,
             type: 'DOCUMENT_TAGS_UPDATED',
-            summary: 'Tags wurden geändert.',
+            summary: 'Tags changed.',
             changes: [
               {
                 field: 'tags',
@@ -1228,7 +1228,7 @@ export class DocumentsService {
             documentId: document.id,
             actorUserId: user.id,
             type: 'DOCUMENT_ACCEPTED',
-            summary: 'Dokument wurde übernommen.',
+            summary: 'Document accepted.',
             metadata: {
               status: document.status,
               acceptedAt: acceptedAt.toISOString(),
@@ -1269,8 +1269,6 @@ export class DocumentsService {
         this.notifications.publish({
           type: 'document.accepted',
           severity: 'success',
-          title: 'Dokument übernommen',
-          message: `${document.title} wurde in die Dokumentübersicht übernommen.`,
           documentId: document.id,
           documentTitle: documentDisplayTitle(document),
           tenantId: document.tenantId,
@@ -1326,7 +1324,7 @@ export class DocumentsService {
           documentId: id,
           actorUserId: user.id,
           type: 'DOCUMENT_ARCHIVED',
-          summary: 'Dokument wurde archiviert.',
+          summary: 'Document archived.',
           changes: [
             {
               field: 'status',
@@ -1350,8 +1348,6 @@ export class DocumentsService {
     await this.notifications.publish({
       type: 'document.archived',
       severity: 'warning',
-      title: 'Dokument archiviert',
-      message: `${document.title} wurde archiviert.`,
       documentId: document.id,
       documentTitle: documentDisplayTitle(document),
       tenantId: document.tenantId,
@@ -1417,11 +1413,11 @@ export class DocumentsService {
           documentId: id,
           actorUserId: user.id,
           type: 'DOCUMENT_MOVED_TO_INBOX',
-          summary: 'Dokument wurde in die Inbox verschoben.',
+          summary: 'Document moved to the inbox.',
           changes: [
             {
               field: 'acceptedAt',
-              label: 'Übernommen am',
+              label: 'Accepted at',
               oldValue: previousAcceptedAt.toISOString(),
               newValue: null,
             },
@@ -1445,8 +1441,6 @@ export class DocumentsService {
     await this.notifications.publish({
       type: 'document.moved_to_inbox',
       severity: 'info',
-      title: 'Dokument in Inbox verschoben',
-      message: `${documentDisplayTitle(document)} wurde in die Inbox verschoben.`,
       documentId: document.id,
       documentTitle: documentDisplayTitle(document),
       tenantId: document.tenantId,
@@ -1605,11 +1599,11 @@ export class DocumentsService {
           documentId: id,
           actorUserId: user.id,
           type: 'DOCUMENT_MOVED_TO_TENANT',
-          summary: 'Dokument wurde in einen anderen Mandanten verschoben.',
+          summary: 'Document moved to another tenant.',
           changes: [
             {
               field: 'tenant',
-              label: 'Mandant',
+              label: 'Tenant',
               oldValue: sourceTenant?.name ?? before.tenantId,
               newValue: targetTenant.name,
             },
@@ -1639,10 +1633,9 @@ export class DocumentsService {
     await this.notifications.publish({
       type: 'document.moved_to_tenant',
       severity: 'info',
-      title: 'Dokument verschoben',
-      message: `${documentDisplayTitle(document)} wurde nach ${targetTenant.name} verschoben.`,
       documentId: document.id,
       documentTitle: documentDisplayTitle(document),
+      targetTenantName: targetTenant.name,
       tenantId: document.tenantId,
       status: document.status,
     });
@@ -1710,8 +1703,6 @@ export class DocumentsService {
     await this.notifications.publish({
       type: 'document.deleted',
       severity: 'warning',
-      title: 'Dokument gelöscht',
-      message: `${documentDisplayTitle(document)} wurde unwiderruflich gelöscht.`,
       documentId: document.id,
       documentTitle: documentDisplayTitle(document),
       tenantId: document.tenantId,
@@ -1795,7 +1786,7 @@ export class DocumentsService {
       documentId: id,
       actorUserId: user.id,
       type: 'DOCUMENT_REPROCESS_REQUESTED',
-      summary: 'Erneute Verarbeitung wurde angefordert.',
+      summary: 'Reprocessing requested.',
       changes: [
         {
           field: 'status',
@@ -1814,7 +1805,7 @@ export class DocumentsService {
       documentId: id,
       actorUserId: user.id,
       type: 'DOCUMENT_PROCESSING_QUEUED',
-      summary: 'Dokument wurde zur OCR-Verarbeitung eingestellt.',
+      summary: 'Document queued for OCR processing.',
       metadata: queuedMetadata,
     });
 
@@ -1826,10 +1817,8 @@ export class DocumentsService {
       metadata: reprocessMetadata,
     });
     await this.notifications.publish({
-      type: 'document.status_changed',
+      type: 'document.reprocess_queued',
       severity: 'info',
-      title: 'Dokumentstatus geändert',
-      message: `${document.title} wurde zur erneuten Verarbeitung eingestellt.`,
       documentId: document.id,
       documentTitle: documentDisplayTitle(document),
       tenantId: document.tenantId,
@@ -2147,47 +2136,47 @@ export class DocumentsService {
     this.addChange(
       changes,
       'title',
-      'Name des Dokuments',
+      'Document name',
       before.title,
       after.title,
     );
     this.addChange(
       changes,
       'documentTypeId',
-      'Art des Dokuments',
+      'Document type',
       before.documentTypeId,
       after.documentTypeId,
     );
     this.addChange(
       changes,
       'documentDate',
-      'Dokumentdatum',
+      'Document date',
       this.dateValue(before.documentDate),
       this.dateValue(after.documentDate),
     );
     this.addChange(
       changes,
       'summary',
-      'Zusammenfassung',
+      'Summary',
       before.summary,
       after.summary,
     );
-    this.addChange(changes, 'sender', 'Absender', before.sender, after.sender);
+    this.addChange(changes, 'sender', 'Sender', before.sender, after.sender);
     this.addChange(
       changes,
       'recipient',
-      'Empfänger',
+      'Recipient',
       before.recipient,
       after.recipient,
     );
-    this.addChange(changes, 'note', 'Notiz', before.note, after.note);
+    this.addChange(changes, 'note', 'Note', before.note, after.note);
 
     const previousPayments = this.paymentValues(before.payments);
     const nextPayments = this.paymentValues(after.payments);
     if (!this.sameValues(previousPayments, nextPayments)) {
       changes.push({
         field: 'payments',
-        label: 'Zahlungsdaten',
+        label: 'Payment details',
         oldValue: previousPayments,
         newValue: nextPayments,
       });
@@ -2198,7 +2187,7 @@ export class DocumentsService {
     if (!this.sameValues(previousReferences, nextReferences)) {
       changes.push({
         field: 'references',
-        label: 'Referenzen',
+        label: 'References',
         oldValue: previousReferences,
         newValue: nextReferences,
       });
@@ -2211,7 +2200,7 @@ export class DocumentsService {
     if (!this.sameValues(previousCalendarEvents, nextCalendarEvents)) {
       changes.push({
         field: 'calendarEvents',
-        label: 'Kalendertermine',
+        label: 'Calendar events',
         oldValue: previousCalendarEvents,
         newValue: nextCalendarEvents,
       });

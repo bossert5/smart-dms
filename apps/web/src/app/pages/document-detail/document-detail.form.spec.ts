@@ -27,7 +27,7 @@ const document: DocumentDetailDto = {
   acceptedById: null,
   aiProcessedAt: null,
   documentDate: '2026-04-30T00:00:00.000Z',
-  summary: 'Rechnung',
+  summary: 'Invoice',
   sender: 'Sender GmbH',
   recipient: null,
   note: null,
@@ -52,7 +52,7 @@ const document: DocumentDetailDto = {
       id: '00000000-0000-4000-8000-000000000003',
       fieldDefinitionId: '00000000-0000-4000-8000-000000000006',
       key: 'invoiceNo',
-      label: 'Rechnungsnummer',
+      label: 'Invoice number',
       value: 'R-100',
       valueType: 'TEXT',
       source: 'AI_EXTRACTED',
@@ -81,7 +81,7 @@ const document: DocumentDetailDto = {
     {
       id: '00000000-0000-4000-8000-000000000005',
       referenceNumber: 'R-100',
-      referenceType: 'Rechnung',
+      referenceType: 'Invoice',
       source: 'AI_EXTRACTED',
       displayOrder: 0,
       createdAt: '2026-05-01T00:00:00.000Z',
@@ -92,7 +92,7 @@ const document: DocumentDetailDto = {
     {
       id: '00000000-0000-4000-8000-000000000006',
       key: 'invoiceNo',
-      label: 'Rechnungsnummer',
+      label: 'Invoice number',
       valueType: 'TEXT',
       required: false,
       active: true,
@@ -163,7 +163,7 @@ describe('document detail form mapping', () => {
       title: 'Invoice',
       documentTypeId: '',
       documentDate: '2026-04-30',
-      summary: 'Rechnung',
+      summary: 'Invoice',
       sender: 'Sender GmbH',
       recipient: '',
       note: '',
@@ -200,7 +200,7 @@ describe('document detail form mapping', () => {
         {
           id: '00000000-0000-4000-8000-000000000005',
           referenceNumber: 'R-100',
-          referenceType: 'Rechnung',
+          referenceType: 'Invoice',
         },
       ],
       attributes: [
@@ -263,7 +263,7 @@ describe('document detail form mapping', () => {
           {
             id: '00000000-0000-4000-8000-000000000005',
             referenceNumber: ' R-100 ',
-            referenceType: ' Rechnung ',
+            referenceType: ' Invoice ',
           },
         ],
         attributes: [
@@ -314,7 +314,7 @@ describe('document detail form mapping', () => {
         {
           id: '00000000-0000-4000-8000-000000000005',
           referenceNumber: 'R-100',
-          referenceType: 'Rechnung',
+          referenceType: 'Invoice',
         },
       ],
       attributes: [

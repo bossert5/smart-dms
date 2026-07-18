@@ -1,87 +1,87 @@
 # Smart DMS Backend
 
-## Rolle im Projekt
+## Role in the Project
 
-Das Backend ist die NestJS-API fuer Smart DMS. Es verantwortet Authentifizierung, Benutzerverwaltung, Dokumentverwaltung, Uploads, Scanner-Ingestion, Storage-Zugriff, Queue-Jobs, Health Checks und die AI-Provider-Integration.
+The backend is the Smart DMS NestJS API. It handles authentication, user management, document management, uploads, scanner ingestion, storage access, queue jobs, health checks, and AI provider integration.
 
-Die Anwendung besteht aus zwei NestJS-Laufzeiten:
+The application has two NestJS runtimes:
 
-- API-Prozess: startet `AppModule` ueber `src/main.ts`.
-- Processor-Prozess: startet `ProcessorAppModule` ueber `src/processor.ts` und konsumiert BullMQ-Jobs.
+- API process: starts `AppModule` through `src/main.ts`.
+- Processor process: starts `ProcessorAppModule` through `src/processor.ts` and consumes BullMQ jobs.
 
-## Voraussetzungen
+## Requirements
 
-- Node.js mit Corepack/PNPM.
-- Docker mit laufender Docker Engine.
-- PostgreSQL fuer Prisma und die DMS-Daten; im Dev-Testbetrieb nutzt `pnpm run dev:setup` einen PostgreSQL-Docker-Container auf Basis von `postgres:16-alpine`.
-- Redis fuer BullMQ; im Dev-Testbetrieb als Docker-Container.
-- OCRmyPDF/Tesseract fuer OCR; im Dev-Testbetrieb ueber das OCR-Runtime-Docker-Image mit `tessdata_best`.
-- Docling fuer Markdown-Extraktion; im Dev-Testbetrieb ueber das Docling-Runtime-Docker-Image.
-- Ein Storage-Verzeichnis fuer Originale, PDFs, Thumbnails, temporaere Uploads und Fehlerartefakte.
-- Optional ein Scanner-Import-Verzeichnis fuer automatische Dateiuebernahme.
+- Node.js with Corepack/PNPM.
+- Docker with a running Docker Engine.
+- PostgreSQL for Prisma and DMS data; in local development and test environments, `pnpm run dev:setup` uses a PostgreSQL Docker container based on `postgres:16-alpine`.
+- Redis for BullMQ; provided as a Docker container in local development and test environments.
+- OCRmyPDF/Tesseract for OCR; provided through the OCR runtime Docker image with `tessdata_best` in local development and test environments.
+- Docling for Markdown extraction; provided through the Docling runtime Docker image in local development and test environments.
+- A storage directory for originals, PDFs, thumbnails, temporary uploads, and error artifacts.
+- An optional scanner import directory for automatic file ingestion.
 
-## Konfiguration
+## Configuration
 
-Die Konfiguration wird ueber `apps/backend/.env` geladen. Wenn die Datei fehlt, erzeugt `pnpm run dev:setup` sie aus `apps/backend/.env.example`.
+Configuration is loaded from `apps/backend/.env`. If the file is missing, `pnpm run dev:setup` creates it from `apps/backend/.env.example`.
 
-Wichtige Variablen:
+Important variables:
 
-| Variable                                     | Bedeutung                                                                              |
-| -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                               | PostgreSQL-Verbindungsstring fuer Prisma                                               |
-| `DMS_POSTGRES_DOCKER_IMAGE`                  | lokales Dev-Image fuer PostgreSQL, Standard ist `postgres:16-alpine`                   |
-| `PORT`                                       | API-Port, Standard ist `3010`                                                          |
-| `JWT_ACCESS_SECRET`                          | Secret fuer JWT Access Tokens                                                          |
-| `JWT_ACCESS_TTL_SECONDS`                     | Lebensdauer der Access Tokens                                                          |
-| `REFRESH_TOKEN_TTL_DAYS`                     | Lebensdauer der Refresh Tokens                                                         |
-| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` | Redis-Verbindung fuer BullMQ                                                           |
-| `DMS_STORAGE_ROOT`                           | Root-Verzeichnis fuer DMS-Artefakte                                                    |
-| `DMS_SCANNER_IMPORT_DIR`                     | Verzeichnis, das die Scanner-Ingestion ueberwacht                                      |
-| `DMS_MAX_UPLOAD_SIZE_MB`                     | maximales Uploadlimit in MB                                                            |
-| `DMS_OCR_CLEAN`                              | aktiviert `--clean`; bereinigt das OCR-Eingangsbild, Standard ist `true`               |
-| `DMS_OCR_CLEAN_FINAL`                        | aktiviert `--clean-final`; veraendert auch das finale PDF-Bild, Standard ist `false`   |
-| `DMS_OCR_OPTIMIZE`                           | OCRmyPDF-Optimierungsstufe `0` bis `3`, Standard ist `1`                               |
-| `DMS_OCR_DOCKER_IMAGE`                       | OCR-Runtime-Image fuer lokalen Processor-Betrieb, Standard ist `smart-dms/ocr-runtime:latest` |
-| `DMS_DOCLING_DOCKER_IMAGE`                   | Docling-Runtime-Image fuer lokalen Processor-Betrieb, Standard ist `smart-dms/docling-runtime:latest` |
-| `DMS_OCR_SERVICE_URL`                        | interne OCR-Runtime-Service-URL fuer Containerbetrieb, optional                        |
-| `DMS_DOCLING_SERVICE_URL`                    | interne Docling-Runtime-Service-URL fuer Containerbetrieb, optional                    |
-| `DMS_OCR_IMAGE_DPI`                          | DPI fuer Bild-Originale, Standard ist `600`                                            |
-| `DMS_OCR_JOBS`                               | maximale parallele OCRmyPDF-Worker pro Dokument, Standard ist `2`                      |
-| `DMS_OCR_TIMEOUT_MS`                         | Timeout fuer OCR-/Thumbnail-Kommandos, Standard ist `1800000`                          |
-| `DMS_OCR_TESSERACT_TIMEOUT_SECONDS`          | Timeout fuer Tesseract-OCR pro Seite, Standard ist `30`                                |
-| `DMS_OCR_TESSERACT_NON_OCR_TIMEOUT_SECONDS`  | Timeout fuer Tesseract-Orientierung/Deskew pro Seite, Standard ist `10`                |
-| `DMS_OCR_STORAGE_CONTAINER_ROOT`             | Storage-Mountpfad im OCR-Container, Standard ist `/data`                               |
-| `DMS_DOCLING_ENABLED`                        | aktiviert Docling-Markdown-Extraktion nach OCR, Standard ist `true`                    |
-| `DMS_DOCLING_TIMEOUT_MS`                     | Timeout fuer Docling-Konvertierung, Standard ist `600000`                              |
-| `DMS_DOCLING_MAX_PAGES`                      | maximale Seitenzahl fuer Docling-Konvertierung, Standard ist `200`                     |
-| `DMS_DOCLING_MAX_FILE_SIZE_BYTES`            | maximale PDF-Groesse fuer Docling-Konvertierung, Standard ist `104857600`              |
-| `DMS_DOCLING_DEBUG_JSON`                     | speichert optional DoclingDocument-JSON als Debug-Artefakt, Standard ist `false`       |
+| Variable                                     | Description                                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `DATABASE_URL`                               | PostgreSQL connection string for Prisma                                                                      |
+| `DMS_POSTGRES_DOCKER_IMAGE`                  | Local PostgreSQL development image; defaults to `postgres:16-alpine`                                         |
+| `PORT`                                       | API port; defaults to `3010`                                                                                 |
+| `JWT_ACCESS_SECRET`                          | Secret used to sign JWT access tokens                                                                        |
+| `JWT_ACCESS_TTL_SECONDS`                     | Access token lifetime                                                                                        |
+| `REFRESH_TOKEN_TTL_DAYS`                     | Refresh token lifetime                                                                                       |
+| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` | Redis connection for BullMQ                                                                                  |
+| `DMS_STORAGE_ROOT`                           | Root directory for DMS artifacts                                                                             |
+| `DMS_SCANNER_IMPORT_DIR`                     | Directory monitored by scanner ingestion                                                                     |
+| `DMS_MAX_UPLOAD_SIZE_MB`                     | Maximum upload size in MB                                                                                    |
+| `DMS_OCR_CLEAN`                              | Enables `--clean` to clean the OCR input image; defaults to `true`                                           |
+| `DMS_OCR_CLEAN_FINAL`                        | Enables `--clean-final`, which also changes the final PDF image; defaults to `false`                          |
+| `DMS_OCR_OPTIMIZE`                           | OCRmyPDF optimization level from `0` to `3`; defaults to `1`                                                 |
+| `DMS_OCR_DOCKER_IMAGE`                       | OCR runtime image for a locally running processor; defaults to `smart-dms/ocr-runtime:latest`                 |
+| `DMS_DOCLING_DOCKER_IMAGE`                   | Docling runtime image for a locally running processor; defaults to `smart-dms/docling-runtime:latest`         |
+| `DMS_OCR_SERVICE_URL`                        | Internal OCR runtime service URL for container deployments; optional                                        |
+| `DMS_DOCLING_SERVICE_URL`                    | Internal Docling runtime service URL for container deployments; optional                                    |
+| `DMS_OCR_IMAGE_DPI`                          | DPI used for image originals; defaults to `600`                                                              |
+| `DMS_OCR_JOBS`                               | Maximum number of parallel OCRmyPDF workers per document; defaults to `2`                                    |
+| `DMS_OCR_TIMEOUT_MS`                         | Timeout for OCR and thumbnail commands; defaults to `1800000`                                                |
+| `DMS_OCR_TESSERACT_TIMEOUT_SECONDS`          | Tesseract OCR timeout per page; defaults to `30`                                                             |
+| `DMS_OCR_TESSERACT_NON_OCR_TIMEOUT_SECONDS`  | Tesseract orientation and deskew timeout per page; defaults to `10`                                          |
+| `DMS_OCR_STORAGE_CONTAINER_ROOT`             | Storage mount path inside the OCR container; defaults to `/data`                                             |
+| `DMS_DOCLING_ENABLED`                        | Enables Docling Markdown extraction after OCR; defaults to `true`                                            |
+| `DMS_DOCLING_TIMEOUT_MS`                     | Docling conversion timeout; defaults to `600000`                                                             |
+| `DMS_DOCLING_MAX_PAGES`                      | Maximum page count for Docling conversion; defaults to `200`                                                 |
+| `DMS_DOCLING_MAX_FILE_SIZE_BYTES`            | Maximum PDF size for Docling conversion; defaults to `104857600`                                             |
+| `DMS_DOCLING_DEBUG_JSON`                     | Optionally stores DoclingDocument JSON as a debug artifact; defaults to `false`                              |
 
-Relative Pfade wie `./storage` werden gegen `apps/backend` aufgeloest. `DMS_STORAGE_ROOT` und `DMS_SCANNER_IMPORT_DIR` duerfen auch absolute Pfade ausserhalb des Projekts sein.
-Relative Scanner-Import-Pfade in der Tenant-Verwaltung werden unterhalb von `DMS_SCANNER_IMPORT_DIR` aufgeloest. Der initiale Tenant verwendet den Key `default`, also standardmaessig `apps/backend/scanner-import/default`.
+Relative paths such as `./storage` are resolved against `apps/backend`. `DMS_STORAGE_ROOT` and `DMS_SCANNER_IMPORT_DIR` may also be absolute paths outside the project.
+Relative scanner import paths configured in tenant management are resolved below `DMS_SCANNER_IMPORT_DIR`. The initial tenant uses the key `default`, so its default directory is `apps/backend/scanner-import/default`.
 
-Beim ersten Start mit leerer Benutzer-Tabelle legt das Backend automatisch den Admin-Benutzer `admin` mit Passwort `admin` an.
+On the first start with an empty user table, the backend automatically creates the administrator user `admin` with the password `admin`.
 
-## Lokale Entwicklung
+## Local Development
 
-Vom Workspace-Root aus:
+Run the following command from the workspace root:
 
 ```bash
 pnpm run dev:setup
 ```
 
-Das Skript erledigt die komplette lokale Vorbereitung:
+The script performs the complete local setup:
 
-- `apps/backend/.env` erzeugen, falls sie fehlt.
-- PostgreSQL und Redis per Docker erstellen oder starten.
-- OCR- und Docling-Runtime-Images bauen oder laden und pruefen.
-- Storage- und Scanner-Import-Verzeichnisse aus `.env` erstellen.
-- PNPM-Abhaengigkeiten installieren.
-- Shared DTOs bauen.
-- Prisma Client generieren.
-- Prisma-Migrationen ausfuehren.
+- Creates `apps/backend/.env` if it is missing.
+- Creates or starts PostgreSQL and Redis through Docker.
+- Builds or loads and verifies the OCR and Docling runtime images.
+- Creates the storage and scanner import directories configured in `.env`.
+- Installs PNPM dependencies.
+- Builds the shared DTOs.
+- Generates the Prisma client.
+- Applies Prisma migrations.
 
-Reset-Optionen:
+Reset options:
 
 ```bash
 pnpm run dev:setup -- --delete-postgres-data
@@ -90,31 +90,31 @@ pnpm run dev:setup -- --delete-all-data
 pnpm run dev:setup -- --stop-backend-processes
 ```
 
-Die PowerShell-Schreibweise `-DeletePostgresData`, `-DeleteRedisData`, `-DeleteAllData` und `-StopBackendProcesses` wird vom PNPM-Einstieg ebenfalls akzeptiert.
+The PNPM entry point also accepts the PowerShell forms `-DeletePostgresData`, `-DeleteRedisData`, `-DeleteAllData`, and `-StopBackendProcesses`.
 
-Unter Windows sperren laufende Backend- oder Processor-Prozesse die Prisma Query-Engine-DLL in `node_modules\.prisma\client`. Wenn `prisma generate` mit `EPERM: operation not permitted, rename ... query_engine-windows.dll.node` scheitert, diese Prozesse stoppen oder das Dev-Skript mit `--stop-backend-processes` ausfuehren. Unter Linux laeuft `prisma generate` auch bei erkannten Backend-Prozessen weiter und gibt nur eine Warnung aus.
+On Windows, running backend or processor processes lock the Prisma query engine DLL in `node_modules\.prisma\client`. If `prisma generate` fails with `EPERM: operation not permitted, rename ... query_engine-windows.dll.node`, stop those processes or run the development script with `--stop-backend-processes`. On Linux, `prisma generate` continues when backend processes are detected and only prints a warning.
 
-`-DeleteAllData` loescht nur PostgreSQL- und Redis-Daten. Storage- und Scanner-Import-Verzeichnisse werden durch das Skript nie geloescht.
+`-DeleteAllData` deletes only PostgreSQL and Redis data. The script never deletes storage or scanner import directories.
 
-API im Watch-Modus starten:
+Start the API in watch mode:
 
 ```bash
 pnpm run dev:api
 ```
 
-Die API laeuft standardmaessig auf `http://localhost:3010`. Der Health Check ist oeffentlich:
+The API runs at `http://localhost:3010` by default. The health check is public:
 
 ```bash
 curl http://localhost:3010/api/health
 ```
 
-Processor im Watch-Modus starten:
+Start the processor in watch mode:
 
 ```bash
 pnpm run dev:processor
 ```
 
-Weitere nuetzliche Befehle:
+Other useful commands:
 
 ```bash
 pnpm --filter backend build
@@ -122,13 +122,12 @@ pnpm --filter backend test
 pnpm --filter backend test:e2e
 ```
 
-## OCR und Docling per Docker
+## OCR and Docling with Docker
 
-OCR und Docling sind im Backend in den Processor verdrahtet. Der Dev-Standard ist: Der lokal laufende Processor startet pro OCR-Job einen OCR- oder Docling-Runtime-Container, mountet das Storage-Verzeichnis und liest danach die erzeugten Artefakte ein. Im Docker-Compose-Betrieb ruft der Processor stattdessen die internen Runtime-Services `ocr-runtime` und `docling-runtime` per HTTP auf.
+OCR and Docling are wired into the backend processor. By default in development, the locally running processor starts an OCR or Docling runtime container for each job, mounts the storage directory, and reads the generated artifacts. In Docker Compose deployments, the processor instead calls the internal `ocr-runtime` and `docling-runtime` services over HTTP.
 
-`pnpm run dev:setup` baut die Runtime-Images mit den Standard-Tags aus
-`apps/backend/.env.example`. Wenn du nur die Runtime-Images manuell vorbereiten
-willst:
+`pnpm run dev:setup` builds the runtime images with the default tags from
+`apps/backend/.env.example`. To prepare only the runtime images manually, run:
 
 ```bash
 docker build -f docker/ocr-runtime/Dockerfile -t smart-dms/ocr-runtime:latest .
@@ -136,7 +135,7 @@ docker build -f docker/docling-runtime/Dockerfile -t smart-dms/docling-runtime:l
 docker run --rm smart-dms/ocr-runtime:latest --version
 ```
 
-Manueller OCR-Test mit PDF-Ausgabe und separater Textausgabe:
+Run a manual OCR test with separate PDF and text outputs:
 
 ```bash
 mkdir -p apps/backend/storage/ocr-test
@@ -158,35 +157,35 @@ docker run --rm \
   output-searchable.pdf
 ```
 
-Der Processor verwendet denselben Mechanismus: Das unveraenderte Original bleibt als `ORIGINAL`-Artefakt erhalten, das erzeugte PDF wird als finales PDF-Artefakt gespeichert, die Sidecar-Datei wird gelesen und in `Document.ocrText` persistiert. OCR-Reprocessing startet wieder vom `ORIGINAL`, nicht vom bereits erzeugten finalen PDF.
-Vor dem Speichern normalisiert der Processor offensichtliche OCR-Whitespace-Artefakte im Sidecar-Text, zum Beispiel Leerzeichen vor Satzzeichen oder Datums-Punkten. Unsichere Wortkorrekturen werden nicht geraten.
-Danach kann die getrennte Docling-Runtime Markdown aus dem finalen OCR-PDF erzeugen. Dieses Markdown wird separat in `Document.extractedMarkdown` gespeichert und bevorzugt fuer die AI-Metadatenextraktion genutzt; `Document.ocrText` bleibt Plaintext- und Suchquelle. Docling-Fehler blockieren die OCR-Verarbeitung nicht. Der Markdown-Export schliesst auch Docling-Furniture wie Page Header und Page Footer ein. Bei `DMS_DOCLING_DEBUG_JSON=true` speichert der Processor zusaetzlich das DoclingDocument-JSON als Debug-Artefakt.
+The processor uses the same mechanism: the unchanged original remains stored as an `ORIGINAL` artifact, the generated PDF becomes the final PDF artifact, and the sidecar file is read into `Document.ocrText`. OCR reprocessing starts from the `ORIGINAL`, not from the previously generated final PDF.
+Before storage, the processor normalizes obvious OCR whitespace artifacts in the sidecar text, such as spaces before punctuation or within dates. It does not guess uncertain word corrections.
+The separate Docling runtime can then generate Markdown from the final OCR PDF. The Markdown is stored in `Document.extractedMarkdown` and is preferred for AI metadata extraction, while `Document.ocrText` remains the plain-text and search source. Docling failures do not block OCR processing. The Markdown export also includes Docling furniture such as page headers and footers. When `DMS_DOCLING_DEBUG_JSON=true`, the processor additionally stores DoclingDocument JSON as a debug artifact.
 
 ## Backend Modules
 
-| Modul        | Beschreibung                                                                            |
-| ------------ | --------------------------------------------------------------------------------------- |
-| AI           | AI-Verfuegbarkeit, Provider-Routing und Uebernahme AI-extrahierter Metadaten            |
-| Audit        | Protokolliert wichtige Aktionen in `AuditEvent`                                         |
-| Auth         | Login, Refresh Tokens, Logout, aktueller Benutzer und JWT-basierte Sessions             |
-| Calendar     | Kalenderereignisse fuer Dokumente und AI-extrahierte Termine                            |
-| Common       | Konfiguration, Guards, Rollen, Decorators, Zod-Validierung und Datumshelfer             |
-| Documents    | Dokumentsuche, Details, Metadaten, Tags, Archivierung, Reprocess und Artefakt-Downloads |
-| Health       | Oeffentlicher Health Check mit Datenbankpruefung                                        |
-| Ingestion    | Scanner-Verzeichnisueberwachung und automatische Uebernahme stabiler Dateien            |
-| Prisma       | Globaler Prisma Client und Datenbankzugriff                                             |
-| Processing   | Persistente Processing-Jobs und Einreihen in BullMQ                                     |
-| Processor    | Separater BullMQ-Worker fuer Dokumentverarbeitung, OCR, Docling und Thumbnails          |
-| Queue        | Globale BullMQ-/Redis-Konfiguration                                                     |
-| Search       | Aktuelle Suche, Filterung und Pagination liegen im Documents-Modul                      |
-| Storage      | Storage-Pfade, Artefaktbereiche, Checksummen und sichere Pfadauflösung                  |
-| Uploads      | Web-Upload von PDF, TIFF, JPEG und PNG in die Dokumentpipeline                          |
-| Users        | Admin-Benutzerverwaltung und initialer Admin                                            |
+| Module     | Description                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| AI         | AI availability, provider routing, and application of AI-extracted metadata                   |
+| Audit      | Records important actions in `AuditEvent`                                                     |
+| Auth       | Login, refresh tokens, logout, current user, and JWT-based sessions                            |
+| Calendar   | Calendar events for documents and AI-extracted dates                                          |
+| Common     | Configuration, guards, roles, decorators, Zod validation, and date helpers                     |
+| Documents  | Document search, details, metadata, tags, archiving, reprocessing, and artifact downloads      |
+| Health     | Public health check with a database check                                                      |
+| Ingestion  | Scanner directory monitoring and automatic ingestion of stable files                           |
+| Prisma     | Global Prisma client and database access                                                       |
+| Processing | Persistent processing jobs and BullMQ enqueueing                                               |
+| Processor  | Separate BullMQ worker for document processing, OCR, Docling, and thumbnails                   |
+| Queue      | Global BullMQ and Redis configuration                                                          |
+| Search     | Search, filtering, and pagination, currently implemented in the Documents module               |
+| Storage    | Storage paths, artifact areas, checksums, and safe path resolution                              |
+| Uploads    | Web uploads of PDF, TIFF, JPEG, and PNG files into the document pipeline                       |
+| Users      | Administrator user management and the initial administrator                                    |
 
-## Architekturhinweise
+## Architecture Notes
 
-- Alle nicht mit `@Public()` markierten Endpunkte sind durch globale JWT- und Rollen-Guards geschuetzt.
-- API-DTOs und Zod-Schemas kommen aus `@smart-dms/shared-dto`; Prisma-Modelle werden explizit gemappt.
-- Dateien werden im Dateisystem gespeichert, aber ueber kontrollierte Backend-Endpunkte ausgeliefert.
-- Redis/BullMQ trennt lange Dokumentverarbeitung vom API-Prozess.
-- AI-Metadatenextraktion, Provider-Routing, Full-Text Search und OCR-Verarbeitung sind im Backend verdrahtet.
+- All endpoints not marked with `@Public()` are protected by global JWT and role guards.
+- API DTOs and Zod schemas come from `@smart-dms/shared-dto`; Prisma models are mapped explicitly.
+- Files are stored in the file system but served through controlled backend endpoints.
+- Redis and BullMQ separate long-running document processing from the API process.
+- AI metadata extraction, provider routing, full-text search, and OCR processing are wired into the backend.

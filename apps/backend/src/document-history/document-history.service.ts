@@ -65,7 +65,7 @@ export class DocumentHistoryService {
         actorUserId: input.actorUserId,
         type: input.type,
         summary: this.truncate(
-          input.summary.trim() || 'Verlaufseintrag',
+          input.summary.trim() || 'History entry',
           MAX_SUMMARY_LENGTH,
         ),
         changes: changes.length

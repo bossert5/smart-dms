@@ -62,14 +62,14 @@ describe('PasswordChangeComponent', () => {
     const fixture = TestBed.createComponent(PasswordChangeComponent);
     const component = fixture.componentInstance;
     component.form.setValue({
-      newPassword: 'Passwort1!',
-      confirmPassword: 'Passwort1!',
+      newPassword: 'Password1!',
+      confirmPassword: 'Password1!',
     });
 
     component.submit();
 
     expect(auth.changePassword).toHaveBeenCalledWith({
-      newPassword: 'Passwort1!',
+      newPassword: 'Password1!',
     });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/documents');
   });
@@ -99,8 +99,8 @@ describe('PasswordChangeComponent', () => {
     expect(fixture.debugElement.queryAll(By.css('.password-requirement'))).toHaveLength(4);
 
     component.form.setValue({
-      newPassword: 'Passwort1!',
-      confirmPassword: 'Passwort1!',
+      newPassword: 'Password1!',
+      confirmPassword: 'Password1!',
     });
 
     expect(component.passwordRequirements().every((item) => item.isMet)).toBe(true);

@@ -1442,7 +1442,7 @@
                     <nz-timeline-item [nzColor]="historyColor(event.type)">
                       <article class="history-event">
                         <header>
-                          <strong>{{ event.summary }}</strong>
+                          <strong>{{ historySummaryKey(event) | translate }}</strong>
                           <time>{{ dateTime(event.createdAt) }}</time>
                         </header>
                         <small>{{ historyActor(event) }}</small>
@@ -1453,11 +1453,11 @@
                           <dl>
                             @for (change of event.changes; track change.field) {
                               <div>
-                                <dt>{{ change.label }}</dt>
+                                <dt>{{ historyChangeLabelKey(change.field) | translate }}</dt>
                                 <dd>
-                                  <span>{{ changeValue(change.oldValue) }}</span>
+                                  <span>{{ changeValue(change.oldValue, change.field) }}</span>
                                   <span aria-hidden="true">&rarr;</span>
-                                  <span>{{ changeValue(change.newValue) }}</span>
+                                  <span>{{ changeValue(change.newValue, change.field) }}</span>
                                 </dd>
                               </div>
                             }

@@ -53,8 +53,15 @@
               (click)="openNotification(notification)"
             >
               <div class="notification-main">
-                <strong>{{ notification.title }}</strong>
-                <small>{{ notification.message }}</small>
+                <strong>
+                  {{ center.notificationTitleKey(notification) | translate }}
+                </strong>
+                <small>
+                  {{
+                    center.notificationMessageKey(notification)
+                      | translate: center.notificationParams(notification)
+                  }}
+                </small>
               </div>
               <div class="notification-meta">
                 <nz-tag [nzColor]="severityColor(notification.severity)">

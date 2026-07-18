@@ -1,9 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import type { RealtimeNotificationDto } from '@smart-dms/shared-dto';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NotificationCenterService } from './notification-center.service';
 import { RealtimeClientService } from './realtime-client.service';
+import { provideI18nTesting } from '../../testing/i18n-testing';
 
 const messages = {
   create: vi.fn(),
@@ -13,8 +15,6 @@ const baseNotification: RealtimeNotificationDto = {
   id: '018f1a44-9093-7f55-a515-278f4d9bd99f',
   type: 'ocr.completed' as const,
   severity: 'success' as const,
-  title: 'OCR abgeschlossen',
-  message: 'Document ist bereit.',
   createdAt: '2026-05-07T18:05:01.000Z',
   documentId: '018f1a44-9093-7f55-a515-278f4d9bd99f',
   documentTitle: 'Document',
@@ -47,6 +47,7 @@ describe('NotificationCenterService', () => {
       providers: [
         { provide: NzMessageService, useValue: messages },
         { provide: RealtimeClientService, useValue: realtime },
+        provideI18nTesting(),
       ],
     });
   });
@@ -60,11 +61,9 @@ describe('NotificationCenterService', () => {
 
     expect(service.notifications()).toEqual([notification]);
     expect(service.unreadCount()).toBe(1);
-    expect(messages.create).toHaveBeenCalledWith(
-      'success',
-      'OCR abgeschlossen: Document ist bereit.',
-      { nzDuration: 2500 },
-    );
+    expect(messages.create).toHaveBeenCalledWith('success', 'OCR completed: Document is ready.', {
+      nzDuration: 2500,
+    });
   });
 
   it('loads snapshots and persists mute state locally without clearing the badge', () => {
@@ -84,6 +83,24 @@ describe('NotificationCenterService', () => {
     service.setMuted(false);
 
     expect(localStorage.getItem('smart-dms-notifications-muted')).toBeNull();
+  });
+
+  it('renders toast messages in the active frontend language', () => {
+    const service = TestBed.inject(NotificationCenterService);
+    TestBed.inject(TranslateService).use('de').subscribe();
+    TestBed.flushEffects();
+
+    realtime.latestNotification.set(notification);
+    TestBed.flushEffects();
+
+    expect(messages.create).toHaveBeenCalledWith(
+      'success',
+      'OCR abgeschlossen: Document ist bereit.',
+      { nzDuration: 2500 },
+    );
+    expect(service.notificationTitleKey(notification)).toBe(
+      'notifications.events.ocrCompleted.title',
+    );
   });
 
   it('does not show toasts while notifications are muted', () => {
@@ -127,8 +144,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd991',
       type: 'document.scanner_ingested',
       severity: 'info',
-      title: 'Scanner-Dokument erkannt',
-      message: 'Document wurde erkannt und wird vorbereitet.',
       createdAt: new Date(visibleSecondMs + 100).toISOString(),
       status: 'OCR_PENDING',
     };
@@ -137,8 +152,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd992',
       type: 'ocr.started',
       severity: 'info',
-      title: 'OCR gestartet',
-      message: 'Document wird verarbeitet.',
       createdAt: new Date(visibleSecondMs + 800).toISOString(),
       status: 'OCR_RUNNING',
     };
@@ -163,8 +176,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd993',
       type: 'ocr.completed',
       severity: 'success',
-      title: 'OCR abgeschlossen',
-      message: 'Document ist bereit.',
       createdAt: new Date(visibleSecondMs + 950).toISOString(),
       status: 'READY',
     };
@@ -173,8 +184,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd994',
       type: 'ai.started',
       severity: 'info',
-      title: 'AI-Auswertung gestartet',
-      message: 'Document wird fuer die AI-Auswertung verarbeitet.',
       createdAt: new Date(visibleSecondMs + 1050).toISOString(),
       status: 'READY',
     };
@@ -197,10 +206,8 @@ describe('NotificationCenterService', () => {
     const statusChangedNotification: RealtimeNotificationDto = {
       ...baseNotification,
       id: '018f1a44-9093-7f55-a515-278f4d9bd995',
-      type: 'document.status_changed',
+      type: 'document.reprocess_queued',
       severity: 'info',
-      title: 'Dokumentstatus geändert',
-      message: 'Document wurde zur erneuten Verarbeitung eingestellt.',
       createdAt: new Date(visibleSecondMs + 950).toISOString(),
       status: 'OCR_PENDING',
     };
@@ -209,8 +216,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd996',
       type: 'ocr.started',
       severity: 'info',
-      title: 'OCR gestartet',
-      message: 'Document wird verarbeitet.',
       createdAt: new Date(visibleSecondMs + 1050).toISOString(),
       status: 'OCR_RUNNING',
     };
@@ -222,7 +227,7 @@ describe('NotificationCenterService', () => {
     TestBed.flushEffects();
 
     expect(service.notifications().map((item) => item.type)).toEqual([
-      'document.status_changed',
+      'document.reprocess_queued',
       'ocr.started',
     ]);
   });
@@ -233,10 +238,8 @@ describe('NotificationCenterService', () => {
     const statusChangedNotification: RealtimeNotificationDto = {
       ...baseNotification,
       id: '018f1a44-9093-7f55-a515-278f4d9bd997',
-      type: 'document.status_changed',
+      type: 'document.reprocess_queued',
       severity: 'info',
-      title: 'Dokumentstatus geändert',
-      message: 'Document wurde zur erneuten Verarbeitung eingestellt.',
       createdAt: new Date(visibleSecondMs + 100).toISOString(),
       status: 'OCR_PENDING',
     };
@@ -245,8 +248,6 @@ describe('NotificationCenterService', () => {
       id: '018f1a44-9093-7f55-a515-278f4d9bd998',
       type: 'ocr.started',
       severity: 'info',
-      title: 'OCR gestartet',
-      message: 'Document wird verarbeitet.',
       createdAt: new Date(visibleSecondMs + 1600).toISOString(),
       status: 'OCR_RUNNING',
     };
@@ -259,7 +260,7 @@ describe('NotificationCenterService', () => {
 
     expect(service.notifications().map((item) => item.type)).toEqual([
       'ocr.started',
-      'document.status_changed',
+      'document.reprocess_queued',
     ]);
   });
 });
