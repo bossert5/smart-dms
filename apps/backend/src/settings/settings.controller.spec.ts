@@ -16,6 +16,7 @@ describe('SettingsController', () => {
     const controller = new SettingsController(
       {} as never,
       aiProviders as never,
+      {} as never,
     );
 
     await expect(
@@ -37,6 +38,7 @@ describe('SettingsController', () => {
     const controller = new SettingsController(
       {} as never,
       aiProviders as never,
+      {} as never,
     );
 
     await expect(
@@ -48,5 +50,38 @@ describe('SettingsController', () => {
     expect(aiProviders.loadProviderModels).toHaveBeenCalledWith({
       baseUrl: 'http://localhost:11434/v1',
     });
+  });
+
+  it('normalizes and delegates AI diagnostic log queries', async () => {
+    const aiDiagnostics = {
+      list: jest.fn().mockResolvedValue({ items: [] }),
+      detail: jest.fn().mockResolvedValue({ jobId: 'job-id' }),
+    };
+    const controller = new SettingsController(
+      {} as never,
+      {} as never,
+      aiDiagnostics as never,
+    );
+
+    await controller.listAiProcessingLogs({
+      page: '2',
+      pageSize: '10',
+      status: 'FAILED',
+      errorCode: 'AI_INVALID_JSON',
+    });
+
+    expect(aiDiagnostics.list).toHaveBeenCalledWith({
+      page: 2,
+      pageSize: 10,
+      status: 'FAILED',
+      errorCode: 'AI_INVALID_JSON',
+    });
+
+    await controller.aiProcessingLogDetail(
+      '018f1a44-9093-7f55-a515-278f4d9bd700',
+    );
+    expect(aiDiagnostics.detail).toHaveBeenCalledWith(
+      '018f1a44-9093-7f55-a515-278f4d9bd700',
+    );
   });
 });

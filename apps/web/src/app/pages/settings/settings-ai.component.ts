@@ -52,6 +52,7 @@ import { UnsavedChangesWarningDirective } from '../../shared/navigation/unsaved-
 import { InfiniteTableScrollDirective } from '../../shared/table/infinite-table-scroll.directive';
 import { TableActionsComponent } from '../../shared/table/table-actions.component';
 import { TablePanelComponent } from '../../shared/table/table-panel.component';
+import { AiDiagnosticsComponent } from './ai-diagnostics.component';
 
 type ProviderEditForm = FormGroup<{
   isDisabled: FormControl<boolean>;
@@ -128,6 +129,7 @@ const API_KEY_MAX_LENGTH = 4000;
     TableActionsComponent,
     TablePanelComponent,
     UnsavedChangesWarningDirective,
+    AiDiagnosticsComponent,
   ],
   templateUrl: './settings-ai.component.html',
   styleUrls: ['./settings-page.scss', './settings-ai.component.scss'],
@@ -161,8 +163,10 @@ export class SettingsAiComponent implements OnInit, PendingChangesAware {
   readonly visibleProviderRows = computed(() => this.providerRows());
   readonly hasProviderChanges = computed(() => {
     this.editRevision();
-    return this.providerRows().some((row) => this.hasProviderRowChanges(row)) ||
-      this.hasProviderOrderChanges();
+    return (
+      this.providerRows().some((row) => this.hasProviderRowChanges(row)) ||
+      this.hasProviderOrderChanges()
+    );
   });
   readonly hasInvalidProviderChanges = computed(() => {
     this.editRevision();

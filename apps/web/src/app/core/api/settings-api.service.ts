@@ -2,6 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import type {
   AiMetadataPromptDto,
+  AiProcessingLogDetail,
+  AiProcessingLogListResponse,
+  AiProcessingLogQuery,
   AiProviderDto,
   AiProviderModelsResponse,
   CreateAiProviderRequest,
@@ -21,6 +24,7 @@ import type {
 } from '@smart-dms/shared-dto';
 import type { Observable } from 'rxjs';
 import { ApiUrlService } from './api-url.service';
+import { toHttpParams } from './http-params';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsApiService {
@@ -62,9 +66,7 @@ export class SettingsApiService {
     return this.http.get<AiProviderDto[]>(this.urls.endpoint('/settings/ai-providers'));
   }
 
-  loadAiProviderModels(
-    input: LoadAiProviderModelsRequest,
-  ): Observable<AiProviderModelsResponse> {
+  loadAiProviderModels(input: LoadAiProviderModelsRequest): Observable<AiProviderModelsResponse> {
     return this.http.post<AiProviderModelsResponse>(
       this.urls.endpoint('/settings/ai-providers/models/preview'),
       input,
@@ -99,6 +101,19 @@ export class SettingsApiService {
     return this.http.post<AiProviderDto>(
       this.urls.endpoint(`/settings/ai-providers/${encodeURIComponent(id)}/models/refresh`),
       {},
+    );
+  }
+
+  aiProcessingLogs(query: AiProcessingLogQuery): Observable<AiProcessingLogListResponse> {
+    return this.http.get<AiProcessingLogListResponse>(
+      this.urls.endpoint('/settings/ai-processing-logs'),
+      { params: toHttpParams(query) },
+    );
+  }
+
+  aiProcessingLogDetail(jobId: string): Observable<AiProcessingLogDetail> {
+    return this.http.get<AiProcessingLogDetail>(
+      this.urls.endpoint(`/settings/ai-processing-logs/${encodeURIComponent(jobId)}`),
     );
   }
 

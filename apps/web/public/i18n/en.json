@@ -3,13 +3,16 @@
     "activate": "Activate",
     "active": "Active",
     "ai": "AI",
+    "apply": "Apply",
     "appName": "Smart DMS",
     "productName": "SmartDMS",
     "cancel": "Cancel",
     "create": "Create",
+    "copy": "Copy",
     "cpu": "CPU",
     "deactivate": "Deactivate",
     "delete": "Delete",
+    "details": "Details",
     "done": "Done",
     "edit": "Edit",
     "empty": "empty",
@@ -24,6 +27,7 @@
     "open": "Open",
     "refresh": "Refresh",
     "remove": "Remove",
+    "reset": "Reset",
     "save": "Save",
     "search": "Search",
     "system": "System",
@@ -1027,6 +1031,78 @@
   },
   "settings": {
     "ai": {
+      "diagnostics": {
+        "attemptKind": {
+          "INITIAL": "Initial attempt",
+          "REPAIR": "Repair attempt"
+        },
+        "attemptStatus": {
+          "ACTIVE": "Running",
+          "FAILED": "Failed",
+          "INTERRUPTED": "Interrupted",
+          "SUCCESS": "Successful"
+        },
+        "columns": {
+          "attempts": "Attempts / failed",
+          "cause": "Cause",
+          "document": "Document",
+          "duration": "Duration",
+          "provider": "Provider / model",
+          "status": "Result",
+          "time": "Started"
+        },
+        "description": "Technical metadata is retained for 14 days. Raw provider responses are stored only for failed attempts.",
+        "detailLoadFailed": "AI diagnostic details could not be loaded.",
+        "detailTitle": "AI processing details",
+        "errorCodes": {
+          "AI_AUTH_ERROR": "Provider authentication failed",
+          "AI_EMPTY_OUTPUT": "Provider returned no final output",
+          "AI_INCOMPLETE_OUTPUT": "Provider output was incomplete",
+          "AI_INTERNAL_ERROR": "Internal processing error",
+          "AI_INVALID_JSON": "Final output was not valid JSON",
+          "AI_NETWORK_ERROR": "Provider network error",
+          "AI_PROCESS_INTERRUPTED": "Processing was interrupted",
+          "AI_PROVIDER_HTTP_ERROR": "Provider returned an HTTP error",
+          "AI_RATE_LIMIT": "Provider rate limit reached",
+          "AI_SCHEMA_MISMATCH": "JSON did not match the required schema",
+          "AI_TIMEOUT": "Provider request timed out"
+        },
+        "filters": {
+          "error": "Error category",
+          "from": "From",
+          "provider": "Provider",
+          "status": "Result",
+          "to": "To"
+        },
+        "hints": {
+          "AI_AUTH_ERROR": "Check the configured API key and provider permissions.",
+          "AI_EMPTY_OUTPUT": "The provider completed without final text. Check the model template and output token budget.",
+          "AI_INCOMPLETE_OUTPUT": "The provider stopped before producing complete JSON. Increase the output budget or reduce the prompt size.",
+          "AI_INTERNAL_ERROR": "Inspect the technical error and correlated application log entry.",
+          "AI_INVALID_JSON": "Inspect the raw response for extra text, truncated JSON, or an incompatible response envelope.",
+          "AI_NETWORK_ERROR": "Check provider reachability, DNS, routing, and service availability.",
+          "AI_PROCESS_INTERRUPTED": "The API process ended while the provider request was active. Check restarts and resource limits.",
+          "AI_PROVIDER_HTTP_ERROR": "Inspect the HTTP status and provider response for the concrete provider-side error.",
+          "AI_RATE_LIMIT": "Reduce request frequency or increase the provider quota.",
+          "AI_SCHEMA_MISMATCH": "Inspect the JSON fields and validation error for missing or incorrectly typed values.",
+          "AI_TIMEOUT": "Check provider performance and model load time. The request exceeded the configured timeout."
+        },
+        "legacy": "No detailed diagnostic data is available for this historical job.",
+        "loadFailed": "AI diagnostic logs could not be loaded.",
+        "rawResponse": "Raw provider response",
+        "requestMetadata": "Request metadata",
+        "responseMetadata": "Response metadata",
+        "sensitiveWarning": "This response may contain document data and is visible to administrators only.",
+        "status": {
+          "FAILED": "Failed",
+          "INTERRUPTED": "Interrupted",
+          "RECOVERED": "Recovered",
+          "RUNNING": "Running",
+          "SUCCESS": "Successful"
+        },
+        "title": "Diagnostic logs",
+        "truncated": "The stored response was truncated at 256 KiB."
+      },
       "errors": {
         "loadFailed": "AI settings could not be loaded.",
         "modelPreviewEmpty": "No models were found.",
@@ -1097,6 +1173,7 @@
         "promptSaved": "AI prompt was saved."
       },
       "tabs": {
+        "diagnostics": "Diagnostics",
         "prompts": "Prompts",
         "providers": "Providers",
         "status": "Status"

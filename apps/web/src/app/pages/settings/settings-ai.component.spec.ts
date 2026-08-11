@@ -61,6 +61,18 @@ function createSettingsApiMock(providers: AiProviderDto[] = [aiProvider]) {
     deleteAiProvider: vi.fn().mockReturnValue(of({ success: true })),
     reorderAiProviders: vi.fn().mockReturnValue(of(providers)),
     refreshAiProviderModels: vi.fn().mockReturnValue(of(aiProvider)),
+    aiProcessingLogs: vi.fn().mockReturnValue(
+      of({
+        items: [],
+        pagination: {
+          page: 1,
+          pageSize: 25,
+          totalItems: 0,
+          totalPages: 0,
+        },
+      }),
+    ),
+    aiProcessingLogDetail: vi.fn(),
     updateAiMetadataPrompt: vi.fn(),
     resetAiMetadataPrompt: vi.fn(),
   };

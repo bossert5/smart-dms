@@ -1,0 +1,240 @@
+<section class="ai-diagnostics" aria-labelledby="ai-diagnostics-heading">
+  <header class="diagnostics-header">
+    <div>
+      <h2 id="ai-diagnostics-heading">{{ 'settings.ai.diagnostics.title' | translate }}</h2>
+      <p>{{ 'settings.ai.diagnostics.description' | translate }}</p>
+    </div>
+    <button nz-button type="button" (click)="load(page())">
+      {{ 'common.refresh' | translate }}
+    </button>
+  </header>
+
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()! | translate"></nz-alert>
+  }
+
+  <div class="diagnostics-filters">
+    <label>
+      <span>{{ 'settings.ai.diagnostics.filters.status' | translate }}</span>
+      <nz-select nzAllowClear [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+        @for (status of statuses; track status) {
+          <nz-option
+            [nzValue]="status"
+            [nzLabel]="'settings.ai.diagnostics.status.' + status | translate"
+          ></nz-option>
+        }
+      </nz-select>
+    </label>
+    <label>
+      <span>{{ 'settings.ai.diagnostics.filters.provider' | translate }}</span>
+      <nz-select
+        nzAllowClear
+        [ngModel]="providerFilter()"
+        (ngModelChange)="providerFilter.set($event)"
+      >
+        @for (provider of providers(); track provider.id) {
+          <nz-option [nzValue]="provider.id" [nzLabel]="provider.name"></nz-option>
+        }
+      </nz-select>
+    </label>
+    <label>
+      <span>{{ 'settings.ai.diagnostics.filters.error' | translate }}</span>
+      <nz-select
+        nzAllowClear
+        [ngModel]="errorCodeFilter()"
+        (ngModelChange)="errorCodeFilter.set($event)"
+      >
+        @for (code of errorCodes; track code) {
+          <nz-option
+            [nzValue]="code"
+            [nzLabel]="'settings.ai.diagnostics.errorCodes.' + code | translate"
+          ></nz-option>
+        }
+      </nz-select>
+    </label>
+    <label>
+      <span>{{ 'settings.ai.diagnostics.filters.from' | translate }}</span>
+      <input
+        type="datetime-local"
+        [ngModel]="fromFilter()"
+        (ngModelChange)="fromFilter.set($event)"
+      />
+    </label>
+    <label>
+      <span>{{ 'settings.ai.diagnostics.filters.to' | translate }}</span>
+      <input type="datetime-local" [ngModel]="toFilter()" (ngModelChange)="toFilter.set($event)" />
+    </label>
+    <div class="filter-actions">
+      <button nz-button nzType="primary" type="button" (click)="load(1)">
+        {{ 'common.apply' | translate }}
+      </button>
+      <button nz-button type="button" (click)="resetFilters()">
+        {{ 'common.reset' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <nz-table
+    class="diagnostics-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    [nzFrontPagination]="false"
+    [nzPageIndex]="page()"
+    [nzPageSize]="25"
+    [nzTotal]="totalItems()"
+    (nzPageIndexChange)="load($event)"
+  >
+    <thead>
+      <tr>
+        <th>{{ 'settings.ai.diagnostics.columns.time' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.status' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.document' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.provider' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.attempts' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.duration' | translate }}</th>
+        <th>{{ 'settings.ai.diagnostics.columns.cause' | translate }}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of items(); track item.jobId) {
+        <tr>
+          <td>{{ item.startedAt | date: 'short' }}</td>
+          <td>
+            <nz-tag [nzColor]="statusColor(item.status)">
+              {{ 'settings.ai.diagnostics.status.' + item.status | translate }}
+            </nz-tag>
+          </td>
+          <td>
+            <strong>{{ item.documentTitle || ('common.emptyValue' | translate) }}</strong>
+            <small>{{ item.documentId || item.jobId }}</small>
+          </td>
+          <td>
+            {{ item.providerName || ('common.emptyValue' | translate) }}
+            @if (item.model) {
+              <small>{{ item.model }}</small>
+            }
+          </td>
+          <td>{{ item.attemptCount }} / {{ item.failedAttemptCount }}</td>
+          <td>{{ formatDuration(item.durationMs) }}</td>
+          <td>
+            @if (item.errorCode) {
+              {{ 'settings.ai.diagnostics.errorCodes.' + item.errorCode | translate }}
+            } @else if (!item.hasDetailedDiagnostics) {
+              {{ 'settings.ai.diagnostics.legacy' | translate }}
+            } @else {
+              {{ 'common.emptyValue' | translate }}
+            }
+          </td>
+          <td>
+            <button
+              nz-button
+              type="button"
+              [disabled]="isDetailLoading()"
+              (click)="openDetail(item)"
+            >
+              {{ 'common.details' | translate }}
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+</section>
+
+<nz-modal
+  [nzVisible]="detail() !== null"
+  [nzTitle]="'settings.ai.diagnostics.detailTitle' | translate"
+  [nzFooter]="null"
+  [nzWidth]="900"
+  (nzOnCancel)="closeDetail()"
+>
+  <ng-container *nzModalContent>
+    @if (detail(); as log) {
+      <dl class="diagnostic-summary">
+        <div>
+          <dt>Job ID</dt>
+          <dd>{{ log.jobId }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'settings.ai.diagnostics.columns.document' | translate }}</dt>
+          <dd>{{ log.documentTitle || '–' }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'settings.ai.diagnostics.columns.provider' | translate }}</dt>
+          <dd>{{ log.providerName || '–' }} · {{ log.model || '–' }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'settings.ai.diagnostics.columns.duration' | translate }}</dt>
+          <dd>{{ formatDuration(log.durationMs) }}</dd>
+        </div>
+      </dl>
+
+      @if (!log.hasDetailedDiagnostics) {
+        <nz-alert
+          nzType="info"
+          [nzMessage]="'settings.ai.diagnostics.legacy' | translate"
+        ></nz-alert>
+      } @else {
+        <nz-timeline>
+          @for (attempt of log.attempts; track attempt.id) {
+            <nz-timeline-item [nzColor]="attemptColor(attempt.status)">
+              <article class="diagnostic-attempt">
+                <header>
+                  <strong>{{ attempt.promptKey }}</strong>
+                  <nz-tag>{{
+                    'settings.ai.diagnostics.attemptKind.' + attempt.attemptKind | translate
+                  }}</nz-tag>
+                  <nz-tag [nzColor]="attemptColor(attempt.status)">{{
+                    'settings.ai.diagnostics.attemptStatus.' + attempt.status | translate
+                  }}</nz-tag>
+                </header>
+                <p>
+                  {{ attempt.startedAt | date: 'medium' }} ·
+                  {{ formatDuration(attempt.durationMs) }} · HTTP {{ attempt.httpStatus ?? '–' }}
+                </p>
+                @if (attempt.errorCode) {
+                  <nz-alert
+                    nzType="error"
+                    [nzMessage]="
+                      'settings.ai.diagnostics.errorCodes.' + attempt.errorCode | translate
+                    "
+                    [nzDescription]="
+                      'settings.ai.diagnostics.hints.' + attempt.errorCode | translate
+                    "
+                  ></nz-alert>
+                  @if (attempt.errorMessage) {
+                    <p class="technical-error">{{ attempt.errorMessage }}</p>
+                  }
+                }
+                <details>
+                  <summary>{{ 'settings.ai.diagnostics.requestMetadata' | translate }}</summary>
+                  <pre>{{ attempt.requestMetadata | json }}</pre>
+                </details>
+                @if (attempt.responseMetadata) {
+                  <details>
+                    <summary>{{ 'settings.ai.diagnostics.responseMetadata' | translate }}</summary>
+                    <pre>{{ attempt.responseMetadata | json }}</pre>
+                  </details>
+                }
+                @if (attempt.rawResponse) {
+                  <details class="raw-response">
+                    <summary>{{ 'settings.ai.diagnostics.rawResponse' | translate }}</summary>
+                    <p>{{ 'settings.ai.diagnostics.sensitiveWarning' | translate }}</p>
+                    <button nz-button type="button" (click)="copyRawResponse(attempt)">
+                      {{ 'common.copy' | translate }}
+                    </button>
+                    <pre>{{ attempt.rawResponse }}</pre>
+                    @if (attempt.rawResponseTruncated) {
+                      <small>{{ 'settings.ai.diagnostics.truncated' | translate }}</small>
+                    }
+                  </details>
+                }
+              </article>
+            </nz-timeline-item>
+          }
+        </nz-timeline>
+      }
+    }
+  </ng-container>
+</nz-modal>

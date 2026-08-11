@@ -3,6 +3,8 @@ import {
   AI_PROVIDER_CHANGED_EVENT,
   AiMetadataExtractionResultSchema,
   AiMetadataExtractionJobPayloadSchema,
+  AiProcessingLogDetailSchema,
+  AiProcessingLogQuerySchema,
   AiProviderDtoSchema,
   AiProviderModelsResponseSchema,
   CreateAiProviderRequestSchema,
@@ -1319,6 +1321,70 @@ describe("@smart-dms/shared-dto", () => {
         providerIds: [providerId],
       }).providerIds,
     ).toEqual([providerId]);
+  });
+
+  it("validates AI diagnostic list and detail contracts", () => {
+    expect(
+      AiProcessingLogQuerySchema.parse({
+        page: "2",
+        pageSize: "25",
+        status: "FAILED",
+        errorCode: "AI_INVALID_JSON",
+      }),
+    ).toMatchObject({
+      page: 2,
+      pageSize: 25,
+      status: "FAILED",
+      errorCode: "AI_INVALID_JSON",
+    });
+
+    const detail = AiProcessingLogDetailSchema.parse({
+      jobId: "018f1a44-9093-7f55-a515-278f4d9bd700",
+      documentId: null,
+      documentTitle: "invoice.pdf",
+      providerId,
+      providerName: "PC-PB",
+      model: "gemma4-12b",
+      status: "FAILED",
+      startedAt: createdAt,
+      finishedAt: createdAt,
+      durationMs: 100,
+      attemptCount: 1,
+      failedAttemptCount: 1,
+      errorCode: "AI_INVALID_JSON",
+      errorMessage: "invalid JSON",
+      hasDetailedDiagnostics: true,
+      attempts: [
+        {
+          id: "018f1a44-9093-7f55-a515-278f4d9bd702",
+          status: "FAILED",
+          attemptKind: "INITIAL",
+          promptKey: "TITLE",
+          sequenceIndex: 0,
+          providerId,
+          providerName: "PC-PB",
+          model: "gemma4-12b",
+          startedAt: createdAt,
+          finishedAt: createdAt,
+          durationMs: 100,
+          httpStatus: 200,
+          requestMetadata: {
+            temperature: 0.1,
+            maxOutputTokens: 1200,
+            reasoningEffort: "none",
+            inputCharacterCount: 100,
+            resultSchemaHash: "a".repeat(64),
+          },
+          responseMetadata: null,
+          errorCode: "AI_INVALID_JSON",
+          errorMessage: "invalid JSON",
+          rawResponse: "not json",
+          rawResponseTruncated: false,
+        },
+      ],
+    });
+
+    expect(detail.attempts[0].rawResponse).toBe("not json");
   });
 
   it("validates realtime notification messages", () => {

@@ -6,6 +6,8 @@ This project follows semantic versioning for public source releases.
 
 ## 1.1.0
 
+- Added administrator-only AI diagnostic logs with per-attempt provider, model, timing, token, response-shape and error details, automatic 14-day retention, and raw provider responses only for failed attempts.
+- Fixed OpenAI Responses parsing so llama.cpp reasoning output is ignored and only final `output_text` content is validated as metadata JSON.
 - Reworked realtime notifications to use structured events and localized user-facing text while preserving compatibility with legacy Redis payloads.
 - Localized document history event names, field labels, document statuses and processing job types in the web application.
 - Synchronized the German and English translation catalogs.

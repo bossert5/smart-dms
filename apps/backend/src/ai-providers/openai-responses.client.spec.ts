@@ -1,4 +1,9 @@
 import { OpenAiResponsesClient } from './openai-responses.client';
+import type {
+  FailAiDiagnosticAttemptInput,
+  FinishAiDiagnosticAttemptInput,
+  StartAiDiagnosticAttemptInput,
+} from './ai-processing-diagnostics.service';
 import {
   AiProviderHealthError,
   AiProviderResponseError,
@@ -6,6 +11,8 @@ import {
 import { expectStringContaining, mockArg } from '../testing/expect-matchers';
 
 const provider = {
+  id: '018f1a44-9093-7f55-a515-278f4d9bd777',
+  name: 'Local llama.cpp',
   baseUrl: 'http://localhost:11434/v1',
   encryptedApiKey: null,
   selectedModel: 'gemma4:12b',
@@ -38,10 +45,14 @@ describe('OpenAiResponsesClient', () => {
   it('disables provider reasoning for non-thinking extraction prompts', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({
+        output_text: '{"title":"Wrong top-level output"}',
         output: [
           {
             type: 'message',
-            content: [{ type: 'output_text', text: '{"title":"Invoice"}' }],
+            content: [
+              '{"title":"Wrong untyped message content"}',
+              { type: 'output_text', text: '{"title":"Invoice"}' },
+            ],
           },
         ],
       }),
@@ -58,6 +69,32 @@ describe('OpenAiResponsesClient', () => {
       max_output_tokens: 1200,
       reasoning: { effort: 'none' },
     });
+  });
+
+  it('ignores llama.cpp reasoning text and parses only final output text', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        output: [
+          {
+            type: 'reasoning',
+            content: [
+              {
+                type: 'reasoning_text',
+                text: 'Schema {"type":"object"}; candidate {"title":"Draft"}',
+              },
+            ],
+          },
+          {
+            type: 'message',
+            content: [{ type: 'output_text', text: '{"title":"Invoice"}' }],
+          },
+        ],
+      }),
+    );
+
+    await expect(
+      new OpenAiResponsesClient().runPrompt(provider, secrets, input),
+    ).resolves.toEqual({ title: 'Invoice' });
   });
 
   it('adds output headroom for thinking extraction prompts', async () => {
@@ -129,16 +166,23 @@ describe('OpenAiResponsesClient', () => {
     });
   });
 
-  it.each([500, 429])(
+  it.each([
+    [401, 'AI_AUTH_ERROR'],
+    [429, 'AI_RATE_LIMIT'],
+    [500, 'AI_PROVIDER_HTTP_ERROR'],
+  ] as const)(
     'classifies HTTP %s responses as provider health failures',
-    async (status) => {
+    async (status, code) => {
       fetchMock.mockResolvedValueOnce(
         jsonResponse({ error: { message: 'provider unavailable' } }, status),
       );
 
       await expect(
         new OpenAiResponsesClient().runPrompt(provider, secrets, input),
-      ).rejects.toBeInstanceOf(AiProviderHealthError);
+      ).rejects.toMatchObject({
+        name: AiProviderHealthError.name,
+        code,
+      });
       expect(fetchMock).toHaveBeenCalledTimes(1);
     },
   );
@@ -148,8 +192,22 @@ describe('OpenAiResponsesClient', () => {
 
     await expect(
       new OpenAiResponsesClient().runPrompt(provider, secrets, input),
-    ).rejects.toBeInstanceOf(AiProviderHealthError);
+    ).rejects.toMatchObject({
+      name: AiProviderHealthError.name,
+      code: 'AI_TIMEOUT',
+    });
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('distinguishes non-timeout network failures', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('socket closed'));
+
+    await expect(
+      new OpenAiResponsesClient().runPrompt(provider, secrets, input),
+    ).rejects.toMatchObject({
+      name: AiProviderHealthError.name,
+      code: 'AI_NETWORK_ERROR',
+    });
   });
 
   it('classifies schema failures after repair as AI response failures', async () => {
@@ -184,7 +242,10 @@ describe('OpenAiResponsesClient', () => {
           required: ['title'],
         },
       }),
-    ).rejects.toBeInstanceOf(AiProviderResponseError);
+    ).rejects.toMatchObject({
+      name: AiProviderResponseError.name,
+      code: 'AI_SCHEMA_MISMATCH',
+    });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -223,13 +284,119 @@ describe('OpenAiResponsesClient', () => {
       ),
     });
   });
+
+  it('classifies incomplete provider output separately', async () => {
+    const incomplete = {
+      status: 'incomplete',
+      incomplete_details: { reason: 'max_output_tokens' },
+      output: [{ type: 'reasoning', content: [] }],
+      usage: { output_tokens: 1200 },
+    };
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(incomplete))
+      .mockResolvedValueOnce(jsonResponse(incomplete));
+
+    await expect(
+      new OpenAiResponsesClient().runPrompt(provider, secrets, input),
+    ).rejects.toMatchObject({
+      name: AiProviderResponseError.name,
+      code: 'AI_INCOMPLETE_OUTPUT',
+    });
+  });
+
+  it('records failed response bodies but only metadata for successful repair attempts', async () => {
+    const diagnostics = {
+      tryStartAttempt: jest
+        .fn()
+        .mockImplementation((attemptInput: Record<string, unknown>) =>
+          Promise.resolve({
+            ...attemptInput,
+            id: `attempt-${diagnostics.tryStartAttempt.mock.calls.length}`,
+            startedAt: new Date('2026-08-11T20:00:00.000Z'),
+          }),
+        ),
+      tryFailAttempt: jest.fn().mockResolvedValue(undefined),
+      tryCompleteAttempt: jest.fn().mockResolvedValue(undefined),
+    };
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          status: 'completed',
+          output: [
+            {
+              type: 'message',
+              content: [{ type: 'output_text', text: 'not json' }],
+            },
+          ],
+          usage: { input_tokens: 20, output_tokens: 10, total_tokens: 30 },
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          status: 'completed',
+          output: [
+            {
+              type: 'message',
+              content: [{ type: 'output_text', text: '{"title":"Invoice"}' }],
+            },
+          ],
+          usage: { input_tokens: 22, output_tokens: 8, total_tokens: 30 },
+        }),
+      );
+
+    await expect(
+      new OpenAiResponsesClient(diagnostics as never).runPrompt(
+        provider,
+        secrets,
+        {
+          ...input,
+          promptKey: 'TITLE',
+          promptSequenceIndex: 2,
+          diagnosticContext: {
+            processingJobId: '018f1a44-9093-7f55-a515-278f4d9bd700',
+            documentId: '018f1a44-9093-7f55-a515-278f4d9bd701',
+          },
+        },
+      ),
+    ).resolves.toEqual({ title: 'Invoice' });
+
+    expect(diagnostics.tryStartAttempt).toHaveBeenCalledTimes(2);
+    const initialAttempt = mockArg<StartAiDiagnosticAttemptInput>(
+      diagnostics.tryStartAttempt,
+    );
+    expect(initialAttempt).toMatchObject({
+      attemptKind: 'INITIAL',
+      promptKey: 'TITLE',
+      sequenceIndex: 2,
+    });
+    expect(initialAttempt.requestMetadata).not.toHaveProperty('text');
+    expect(
+      mockArg<StartAiDiagnosticAttemptInput>(diagnostics.tryStartAttempt, 1),
+    ).toMatchObject({ attemptKind: 'REPAIR' });
+    const failedAttempt = mockArg<FailAiDiagnosticAttemptInput>(
+      diagnostics.tryFailAttempt,
+      0,
+      2,
+    );
+    expect(failedAttempt.errorCode).toBe('AI_INVALID_JSON');
+    expect(failedAttempt.rawResponse).toContain('not json');
+    expect(diagnostics.tryCompleteAttempt).toHaveBeenCalledTimes(1);
+    expect(
+      mockArg<FinishAiDiagnosticAttemptInput>(
+        diagnostics.tryCompleteAttempt,
+        0,
+        1,
+      ),
+    ).not.toHaveProperty('rawResponse');
+  });
 });
 
 function jsonResponse(body: unknown, status = 200): Response {
+  const serialized = JSON.stringify(body);
   return {
     ok: status >= 200 && status < 300,
     status,
-    json: () => Promise.resolve(body),
+    text: () => Promise.resolve(serialized),
   } as Response;
 }
 

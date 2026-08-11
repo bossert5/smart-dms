@@ -7,6 +7,7 @@ import { AiProviderSecretService } from './ai-provider-secret.service';
 import { AiProviderService } from './ai-provider.service';
 import { OpenAiModelsClient } from './openai-models.client';
 import { OpenAiResponsesClient } from './openai-responses.client';
+import { AiProcessingDiagnosticsService } from './ai-processing-diagnostics.service';
 
 @Module({
   imports: [AppConfigModule, PrismaModule, RealtimeNotificationsModule],
@@ -14,9 +15,14 @@ import { OpenAiResponsesClient } from './openai-responses.client';
     AiProviderRouter,
     AiProviderSecretService,
     AiProviderService,
+    AiProcessingDiagnosticsService,
     OpenAiModelsClient,
     OpenAiResponsesClient,
   ],
-  exports: [AiProviderRouter, AiProviderService],
+  exports: [
+    AiProviderRouter,
+    AiProviderService,
+    AiProcessingDiagnosticsService,
+  ],
 })
 export class AiProvidersModule {}

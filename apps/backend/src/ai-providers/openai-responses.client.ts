@@ -1,30 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import type {
+  AiProcessingAttemptKind,
+  AiProcessingResponseMetadata,
+} from '@smart-dms/shared-dto';
 import Ajv from 'ajv';
 import type { ErrorObject, ValidateFunction } from 'ajv';
+import { createHash } from 'node:crypto';
 import type { AiPromptRunInput } from '../ai/ai-processing.service';
+import {
+  AiProcessingDiagnosticsService,
+  type StartAiDiagnosticAttemptInput,
+} from './ai-processing-diagnostics.service';
 import type { AiProviderSecretService } from './ai-provider-secret.service';
 import {
+  AiProviderResponseError,
+  aiProcessingErrorCode,
   AiProviderHealthError,
   errorMessage,
   isAiProviderHealthError,
+  isAiProviderResponseError,
   providerHttpError,
   providerNetworkError,
   providerResponseError,
 } from './ai-provider-errors';
 
 export interface OpenAiResponsesProvider {
+  id: string;
+  name: string;
   baseUrl: string;
   encryptedApiKey: string | null;
   selectedModel: string | null;
 }
 
 type ResponsesBody = {
-  output_text?: unknown;
   output?: unknown;
   status?: unknown;
   incomplete_details?: unknown;
   usage?: {
+    input_tokens?: unknown;
     output_tokens?: unknown;
+    total_tokens?: unknown;
   };
   error?: {
     message?: unknown;
@@ -44,6 +59,8 @@ export class OpenAiResponsesClient {
   });
   private readonly validators = new Map<string, ValidateFunction>();
 
+  constructor(private readonly diagnostics?: AiProcessingDiagnosticsService) {}
+
   async runPrompt(
     provider: OpenAiResponsesProvider,
     secrets: AiProviderSecrets,
@@ -55,13 +72,27 @@ export class OpenAiResponsesClient {
     }
 
     try {
-      return await this.runPromptOnce(provider, secrets, input, input.text);
+      return await this.runPromptOnce(
+        provider,
+        secrets,
+        input,
+        input.text,
+        'INITIAL',
+      );
     } catch (error) {
       if (isAiProviderHealthError(error)) {
         throw error;
       }
       const repairText = repairPrompt(input.text, input.resultSchema, error);
-      return this.runPromptOnce(provider, secrets, input, repairText, 0, false);
+      return this.runPromptOnce(
+        provider,
+        secrets,
+        input,
+        repairText,
+        'REPAIR',
+        0,
+        false,
+      );
     }
   }
 
@@ -70,37 +101,80 @@ export class OpenAiResponsesClient {
     secrets: AiProviderSecrets,
     input: AiPromptRunInput,
     text: string,
+    attemptKind: AiProcessingAttemptKind,
     temperature = input.temperature,
     enableThinking = input.enableThinking,
   ): Promise<Record<string, unknown>> {
     const maxOutputTokens = maxOutputTokensFor(input, enableThinking);
-    const response = await this.fetchResponses(provider, secrets, {
-      model: provider.selectedModel,
-      input: text,
+    const diagnosticInput = diagnosticAttemptInput(
+      provider,
+      input,
+      attemptKind,
       temperature,
-      max_output_tokens: maxOutputTokens,
-      reasoning: {
-        effort: enableThinking ? 'low' : 'none',
-      },
-      stream: false,
-    });
-
-    const body = (await response.json().catch(() => ({}))) as ResponsesBody;
-    if (!response.ok) {
-      throw providerHttpError(
-        response.status,
-        stringValue(body.error?.message),
-        `OpenAI Responses request failed with HTTP ${response.status}.`,
-      );
-    }
-
+      maxOutputTokens,
+      enableThinking,
+      text,
+    );
+    const attempt =
+      diagnosticInput && this.diagnostics
+        ? await this.diagnostics.tryStartAttempt(diagnosticInput)
+        : null;
+    let rawResponse: string | null = null;
+    let httpStatus: number | null = null;
+    let responseMetadata: AiProcessingResponseMetadata | null = null;
     try {
+      const response = await this.fetchResponses(provider, secrets, {
+        model: provider.selectedModel,
+        input: text,
+        temperature,
+        max_output_tokens: maxOutputTokens,
+        reasoning: {
+          effort: enableThinking ? 'low' : 'none',
+        },
+        stream: false,
+      });
+      httpStatus = response.status;
+      try {
+        rawResponse = await response.text();
+      } catch (error) {
+        throw providerNetworkError(
+          error,
+          'OpenAI Responses response read failed',
+        );
+      }
+      const body = parseResponseBody(rawResponse, response.ok);
+      responseMetadata = responseMetadataFor(body);
+      if (!response.ok) {
+        throw providerHttpError(
+          response.status,
+          stringValue(body.error?.message),
+          `OpenAI Responses request failed with HTTP ${response.status}.`,
+        );
+      }
+
       const outputText = responseText(body, maxOutputTokens);
       const parsed = parseJsonObject(outputText);
       this.validateResult(input.resultSchema, parsed);
+      await this.diagnostics?.tryCompleteAttempt(attempt, {
+        httpStatus,
+        responseMetadata,
+      });
       return parsed;
     } catch (error) {
-      throw providerResponseError(error);
+      const classifiedError =
+        isAiProviderHealthError(error) || isAiProviderResponseError(error)
+          ? error
+          : providerResponseError(error);
+      if (diagnosticInput) {
+        await this.diagnostics?.tryFailAttempt(attempt, diagnosticInput, {
+          httpStatus,
+          responseMetadata,
+          errorCode: aiProcessingErrorCode(classifiedError),
+          errorMessage: errorMessage(classifiedError),
+          rawResponse,
+        });
+      }
+      throw classifiedError;
     }
   }
 
@@ -140,8 +214,9 @@ export class OpenAiResponsesClient {
   ): void {
     const validator = this.validatorFor(resultSchema);
     if (!validator(result)) {
-      throw new Error(
+      throw new AiProviderResponseError(
         `AI result did not match schema: ${formatAjvErrors(validator.errors)}`,
+        'AI_SCHEMA_MISMATCH',
       );
     }
   }
@@ -169,38 +244,42 @@ function maxOutputTokensFor(
 }
 
 function responseText(body: ResponsesBody, maxOutputTokens: number): string {
-  const outputText = stringValue(body.output_text);
-  if (outputText) {
-    return outputText;
-  }
-
-  const collected = collectOutputText(body.output);
+  const collected = collectFinalOutputText(body.output);
   if (collected.trim()) {
     return collected;
   }
 
-  throw new Error(emptyOutputErrorMessage(body, maxOutputTokens));
+  throw new AiProviderResponseError(
+    emptyOutputErrorMessage(body, maxOutputTokens),
+    isIncompleteResponse(body) ? 'AI_INCOMPLETE_OUTPUT' : 'AI_EMPTY_OUTPUT',
+  );
 }
 
-function collectOutputText(value: unknown): string {
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (Array.isArray(value)) {
-    return value.map(collectOutputText).join('');
-  }
-  if (!value || typeof value !== 'object') {
+function collectFinalOutputText(value: unknown): string {
+  if (!Array.isArray(value)) {
     return '';
   }
-
-  const record = value as Record<string, unknown>;
-  if (typeof record.text === 'string') {
-    return record.text;
-  }
-  if (typeof record.content === 'string') {
-    return record.content;
-  }
-  return collectOutputText(record.content ?? record.output ?? record.message);
+  return value
+    .filter(
+      (item): item is Record<string, unknown> =>
+        Boolean(item) &&
+        typeof item === 'object' &&
+        (item as { type?: unknown }).type === 'message',
+    )
+    .flatMap((message) => {
+      if (!Array.isArray(message.content)) {
+        return [];
+      }
+      return message.content
+        .filter(
+          (content): content is Record<string, unknown> =>
+            Boolean(content) &&
+            typeof content === 'object' &&
+            (content as { type?: unknown }).type === 'output_text',
+        )
+        .map((content) => stringValue(content.text) ?? '');
+    })
+    .join('');
 }
 
 function parseJsonObject(text: string): Record<string, unknown> {
@@ -223,7 +302,10 @@ function parseJsonObject(text: string): Record<string, unknown> {
     }
   }
 
-  throw new Error('AI response did not contain a valid JSON object.');
+  throw new AiProviderResponseError(
+    'AI response did not contain a valid JSON object.',
+    'AI_INVALID_JSON',
+  );
 }
 
 function jsonObjectSlice(text: string): string | null {
@@ -305,4 +387,101 @@ function outputTypes(value: unknown): string[] {
 
 function numberValue(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function parseResponseBody(
+  rawResponse: string,
+  responseOk: boolean,
+): ResponsesBody {
+  try {
+    const parsed = JSON.parse(rawResponse) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed;
+    }
+  } catch {
+    if (!responseOk) {
+      return {};
+    }
+  }
+  if (!responseOk) {
+    return {};
+  }
+  throw new AiProviderResponseError(
+    'OpenAI Responses result was not a valid JSON response envelope.',
+    'AI_INVALID_JSON',
+  );
+}
+
+function responseMetadataFor(
+  body: ResponsesBody,
+): AiProcessingResponseMetadata {
+  return {
+    responseStatus: stringValue(body.status),
+    outputTypes: outputTypes(body.output),
+    outputContentTypes: outputContentTypes(body.output),
+    inputTokens: numberValue(body.usage?.input_tokens),
+    outputTokens: numberValue(body.usage?.output_tokens),
+    totalTokens: numberValue(body.usage?.total_tokens),
+    incompleteDetails: body.incomplete_details ?? null,
+  };
+}
+
+function outputContentTypes(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') {
+      return [];
+    }
+    const content = (item as { content?: unknown }).content;
+    if (!Array.isArray(content)) {
+      return [];
+    }
+    return content
+      .map((entry) =>
+        entry && typeof entry === 'object'
+          ? stringValue((entry as { type?: unknown }).type)
+          : null,
+      )
+      .filter((type): type is string => type !== null);
+  });
+}
+
+function isIncompleteResponse(body: ResponsesBody): boolean {
+  return (
+    stringValue(body.status) === 'incomplete' ||
+    Boolean(body.incomplete_details)
+  );
+}
+
+function diagnosticAttemptInput(
+  provider: OpenAiResponsesProvider,
+  input: AiPromptRunInput,
+  attemptKind: AiProcessingAttemptKind,
+  temperature: number,
+  maxOutputTokens: number,
+  enableThinking: boolean,
+  text: string,
+): StartAiDiagnosticAttemptInput | null {
+  if (!input.diagnosticContext) {
+    return null;
+  }
+  return {
+    ...input.diagnosticContext,
+    providerId: provider.id,
+    model: provider.selectedModel?.trim() || 'unknown',
+    promptKey: input.promptKey ?? 'UNKNOWN',
+    sequenceIndex: input.promptSequenceIndex ?? 0,
+    attemptKind,
+    requestMetadata: {
+      temperature,
+      maxOutputTokens,
+      reasoningEffort: enableThinking ? 'low' : 'none',
+      inputCharacterCount: text.length,
+      resultSchemaHash: createHash('sha256')
+        .update(JSON.stringify(input.resultSchema), 'utf8')
+        .digest('hex'),
+    },
+  };
 }

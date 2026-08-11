@@ -87,6 +87,8 @@ export interface ClaimedAiJob {
 export interface AiPromptRunInput {
   text: string;
   resultSchema: Record<string, unknown>;
+  promptKey?: string;
+  promptSequenceIndex?: number;
   maxTokens: number;
   temperature: number;
   enableThinking: boolean;
@@ -95,6 +97,10 @@ export interface AiPromptRunInput {
   evidencePack?: AiMetadataEvidencePack;
   sourceTextKind?: AiPromptSourceTextKind;
   skipReason?: string;
+  diagnosticContext?: {
+    readonly processingJobId: string;
+    readonly documentId: string;
+  };
 }
 
 export type AiPromptRunner = (
@@ -842,7 +848,10 @@ export class AiProcessingService {
     try {
       const result = await this.extractMetadataWithPromptRunner(
         claimed.payload,
-        this.aiProviderRouter.promptRunner(),
+        this.aiProviderRouter.promptRunner({
+          processingJobId: claimed.jobId,
+          documentId: claimed.documentId,
+        }),
         async (percent) => {
           await this.prisma.processingJob.update({
             where: { id: claimed.jobId },
@@ -943,6 +952,8 @@ export class AiProcessingService {
     const merged = await runPrompt({
       text: mergePrompt.text,
       resultSchema: mergePrompt.resultSchema,
+      promptKey: 'MERGE_METADATA',
+      promptSequenceIndex: chunks.length,
       maxTokens: MAX_TOKENS_BY_PROMPT_KEY.MERGE_METADATA,
       temperature: GEMMA_THINKING_TEMPERATURE,
       enableThinking: true,
@@ -1223,6 +1234,8 @@ export class AiProcessingService {
       const result = await runPrompt({
         text: prompt.text,
         resultSchema: prompt.resultSchema,
+        promptKey: prompt.key,
+        promptSequenceIndex: index,
         maxTokens: MAX_TOKENS_BY_PROMPT_KEY[prompt.key] ?? 1200,
         temperature: enableThinking
           ? GEMMA_THINKING_TEMPERATURE

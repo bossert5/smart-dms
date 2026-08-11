@@ -462,5 +462,9 @@
         </nz-skeleton>
       </section>
     </nz-tab>
+
+    <nz-tab [nzTitle]="'settings.ai.tabs.diagnostics' | translate">
+      <app-ai-diagnostics [providers]="aiProviders()"></app-ai-diagnostics>
+    </nz-tab>
   </nz-tabs>
 </section>

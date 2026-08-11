@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AiMetadataProcessingDispatcher } from './ai/ai-metadata-processing.dispatcher';
 import { AiModule } from './ai/ai.module';
 import { AiProvidersModule } from './ai-providers/ai-providers.module';
+import { AiDiagnosticsRetentionService } from './ai-providers/ai-processing-diagnostics.service';
 import { AuditModule } from './audit/audit.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { AuthModule } from './auth/auth.module';
@@ -74,6 +75,7 @@ import { UsersModule } from './users/users.module';
       useClass: RolesGuard,
     },
     AiMetadataProcessingDispatcher,
+    AiDiagnosticsRetentionService,
   ],
 })
 export class AppModule {}

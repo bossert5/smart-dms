@@ -1,0 +1,140 @@
+.ai-diagnostics {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px;
+  gap: 16px;
+  overflow: auto;
+}
+
+.diagnostics-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.diagnostics-header h2,
+.diagnostics-header p {
+  margin: 0;
+}
+
+.diagnostics-header p {
+  margin-top: 4px;
+  color: var(--app-text-secondary);
+}
+
+.diagnostics-filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr)) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.diagnostics-filters label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.diagnostics-filters nz-select,
+.diagnostics-filters input {
+  width: 100%;
+}
+
+.diagnostics-filters input {
+  height: 32px;
+  padding: 4px 11px;
+  color: var(--app-text);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.diagnostics-table small,
+.diagnostics-table strong {
+  display: block;
+}
+
+.diagnostics-table small {
+  color: var(--app-text-secondary);
+}
+
+.diagnostic-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+.diagnostic-summary div {
+  min-width: 0;
+  padding: 12px;
+  background: var(--app-surface-muted);
+  border-radius: 6px;
+}
+
+.diagnostic-summary dt {
+  color: var(--app-text-secondary);
+}
+
+.diagnostic-summary dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.diagnostic-attempt header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.diagnostic-attempt details {
+  margin-top: 10px;
+}
+
+.diagnostic-attempt summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.diagnostic-attempt pre {
+  max-height: 320px;
+  margin: 8px 0 0;
+  padding: 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--app-surface-muted);
+  border-radius: 6px;
+}
+
+.technical-error,
+.raw-response > p {
+  color: var(--app-text-secondary);
+}
+
+.raw-response button {
+  margin-top: 8px;
+}
+
+@media (max-width: 1100px) {
+  .diagnostics-filters {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .diagnostics-filters,
+  .diagnostic-summary {
+    grid-template-columns: 1fr;
+  }
+}

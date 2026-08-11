@@ -1,12 +1,22 @@
+import type { AiProcessingErrorCode } from '@smart-dms/shared-dto';
+
 export class AiProviderHealthError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly code: AiProcessingErrorCode = 'AI_NETWORK_ERROR',
+    readonly httpStatus: number | null = null,
+  ) {
     super(message);
     this.name = 'AiProviderHealthError';
   }
 }
 
 export class AiProviderResponseError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly code: AiProcessingErrorCode = 'AI_INTERNAL_ERROR',
+    readonly httpStatus: number | null = null,
+  ) {
     super(message);
     this.name = 'AiProviderResponseError';
   }
@@ -31,19 +41,32 @@ export function providerHttpError(
 ): Error {
   const errorMessage = message ?? fallback;
   return isProviderHealthStatus(status)
-    ? new AiProviderHealthError(errorMessage)
-    : new AiProviderResponseError(errorMessage);
+    ? new AiProviderHealthError(errorMessage, httpErrorCode(status), status)
+    : new AiProviderResponseError(errorMessage, httpErrorCode(status), status);
 }
 
 export function providerNetworkError(error: unknown, context: string): Error {
-  return new AiProviderHealthError(`${context}: ${errorMessage(error)}`);
+  return new AiProviderHealthError(
+    `${context}: ${errorMessage(error)}`,
+    isTimeoutError(error) ? 'AI_TIMEOUT' : 'AI_NETWORK_ERROR',
+  );
 }
 
-export function providerResponseError(error: unknown): AiProviderResponseError {
+export function providerResponseError(
+  error: unknown,
+  fallbackCode: AiProcessingErrorCode = 'AI_INTERNAL_ERROR',
+): AiProviderResponseError {
   if (error instanceof AiProviderResponseError) {
     return error;
   }
-  return new AiProviderResponseError(errorMessage(error));
+  return new AiProviderResponseError(errorMessage(error), fallbackCode);
+}
+
+export function aiProcessingErrorCode(error: unknown): AiProcessingErrorCode {
+  return error instanceof AiProviderHealthError ||
+    error instanceof AiProviderResponseError
+    ? error.code
+    : 'AI_INTERNAL_ERROR';
 }
 
 export function errorMessage(error: unknown): string {
@@ -59,4 +82,28 @@ function isProviderHealthStatus(status: number): boolean {
     status === 429 ||
     status >= 500
   );
+}
+
+function httpErrorCode(status: number): AiProcessingErrorCode {
+  if (status === 401 || status === 403) {
+    return 'AI_AUTH_ERROR';
+  }
+  if (status === 408) {
+    return 'AI_TIMEOUT';
+  }
+  if (status === 429) {
+    return 'AI_RATE_LIMIT';
+  }
+  return 'AI_PROVIDER_HTTP_ERROR';
+}
+
+function isTimeoutError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return (
+      error.name === 'AbortError' ||
+      error.name === 'TimeoutError' ||
+      /timed?\s*out|timeout/i.test(error.message)
+    );
+  }
+  return /timed?\s*out|timeout/i.test(String(error));
 }

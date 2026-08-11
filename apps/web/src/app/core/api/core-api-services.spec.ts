@@ -259,6 +259,22 @@ describe('core API services', () => {
     service.refreshAiProviderModels('provider/id').subscribe();
     expectRequest('POST', '/settings/ai-providers/provider%2Fid/models/refresh', {}).flush({});
 
+    service
+      .aiProcessingLogs({
+        page: 2,
+        pageSize: 25,
+        status: 'FAILED',
+        errorCode: 'AI_INVALID_JSON',
+      })
+      .subscribe();
+    expectRequest(
+      'GET',
+      '/settings/ai-processing-logs?page=2&pageSize=25&status=FAILED&errorCode=AI_INVALID_JSON',
+    ).flush({ items: [], pagination: {} });
+
+    service.aiProcessingLogDetail('job/id').subscribe();
+    expectRequest('GET', '/settings/ai-processing-logs/job%2Fid').flush({});
+
     service.documentTypes().subscribe();
     expectRequest('GET', '/settings/document-types').flush([]);
 

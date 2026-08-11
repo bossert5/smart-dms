@@ -3,13 +3,16 @@
     "activate": "Aktivieren",
     "active": "Aktiv",
     "ai": "KI",
+    "apply": "Anwenden",
     "appName": "Smart DMS",
     "productName": "SmartDMS",
     "cancel": "Abbrechen",
     "create": "Erstellen",
+    "copy": "Kopieren",
     "cpu": "CPU",
     "deactivate": "Deaktivieren",
     "delete": "Löschen",
+    "details": "Details",
     "done": "Erledigt",
     "edit": "Bearbeiten",
     "empty": "leer",
@@ -24,6 +27,7 @@
     "open": "Öffnen",
     "refresh": "Aktualisieren",
     "remove": "Entfernen",
+    "reset": "Zurücksetzen",
     "save": "Speichern",
     "search": "Suchen",
     "system": "System",
@@ -1027,6 +1031,78 @@
   },
   "settings": {
     "ai": {
+      "diagnostics": {
+        "attemptKind": {
+          "INITIAL": "Erstversuch",
+          "REPAIR": "Reparaturversuch"
+        },
+        "attemptStatus": {
+          "ACTIVE": "Läuft",
+          "FAILED": "Fehlgeschlagen",
+          "INTERRUPTED": "Unterbrochen",
+          "SUCCESS": "Erfolgreich"
+        },
+        "columns": {
+          "attempts": "Versuche / Fehler",
+          "cause": "Ursache",
+          "document": "Dokument",
+          "duration": "Dauer",
+          "provider": "Anbieter / Modell",
+          "status": "Ergebnis",
+          "time": "Gestartet"
+        },
+        "description": "Technische Metadaten werden 14 Tage aufbewahrt. Rohe Anbieterantworten werden nur für fehlgeschlagene Versuche gespeichert.",
+        "detailLoadFailed": "Die KI-Diagnosedetails konnten nicht geladen werden.",
+        "detailTitle": "Details der KI-Verarbeitung",
+        "errorCodes": {
+          "AI_AUTH_ERROR": "Anmeldung beim Anbieter fehlgeschlagen",
+          "AI_EMPTY_OUTPUT": "Anbieter lieferte keine finale Ausgabe",
+          "AI_INCOMPLETE_OUTPUT": "Anbieterausgabe war unvollständig",
+          "AI_INTERNAL_ERROR": "Interner Verarbeitungsfehler",
+          "AI_INVALID_JSON": "Finale Ausgabe war kein gültiges JSON",
+          "AI_NETWORK_ERROR": "Netzwerkfehler zum Anbieter",
+          "AI_PROCESS_INTERRUPTED": "Verarbeitung wurde unterbrochen",
+          "AI_PROVIDER_HTTP_ERROR": "Anbieter meldete einen HTTP-Fehler",
+          "AI_RATE_LIMIT": "Anfragelimit des Anbieters erreicht",
+          "AI_SCHEMA_MISMATCH": "JSON entsprach nicht dem erforderlichen Schema",
+          "AI_TIMEOUT": "Zeitüberschreitung beim Anbieter"
+        },
+        "filters": {
+          "error": "Fehlerkategorie",
+          "from": "Von",
+          "provider": "Anbieter",
+          "status": "Ergebnis",
+          "to": "Bis"
+        },
+        "hints": {
+          "AI_AUTH_ERROR": "Konfigurierten API-Schlüssel und Berechtigungen des Anbieters prüfen.",
+          "AI_EMPTY_OUTPUT": "Der Anbieter beendete die Anfrage ohne finalen Text. Modellvorlage und Ausgabetoken prüfen.",
+          "AI_INCOMPLETE_OUTPUT": "Der Anbieter stoppte vor einem vollständigen JSON. Ausgabelimit erhöhen oder Prompt verkürzen.",
+          "AI_INTERNAL_ERROR": "Technischen Fehler und den korrelierten Eintrag im Anwendungslog prüfen.",
+          "AI_INVALID_JSON": "Rohe Antwort auf Zusatztext, abgeschnittenes JSON oder eine inkompatible Antwortstruktur prüfen.",
+          "AI_NETWORK_ERROR": "Erreichbarkeit, DNS, Routing und Verfügbarkeit des Anbieters prüfen.",
+          "AI_PROCESS_INTERRUPTED": "Der API-Prozess endete während der Anfrage. Neustarts und Ressourcenlimits prüfen.",
+          "AI_PROVIDER_HTTP_ERROR": "HTTP-Status und Anbieterantwort auf den konkreten Fehler prüfen.",
+          "AI_RATE_LIMIT": "Anfragefrequenz reduzieren oder Anbieterlimit erhöhen.",
+          "AI_SCHEMA_MISMATCH": "JSON-Felder und Validierungsfehler auf fehlende oder falsch typisierte Werte prüfen.",
+          "AI_TIMEOUT": "Anbieterleistung und Modellladezeit prüfen. Die Anfrage überschritt das Zeitlimit."
+        },
+        "legacy": "Für diesen historischen Job sind keine detaillierten Diagnosedaten vorhanden.",
+        "loadFailed": "Die KI-Diagnoseprotokolle konnten nicht geladen werden.",
+        "rawResponse": "Rohe Anbieterantwort",
+        "requestMetadata": "Anfragemetadaten",
+        "responseMetadata": "Antwortmetadaten",
+        "sensitiveWarning": "Diese Antwort kann Dokumentdaten enthalten und ist nur für Administratoren sichtbar.",
+        "status": {
+          "FAILED": "Fehlgeschlagen",
+          "INTERRUPTED": "Unterbrochen",
+          "RECOVERED": "Repariert",
+          "RUNNING": "Läuft",
+          "SUCCESS": "Erfolgreich"
+        },
+        "title": "Diagnoseprotokolle",
+        "truncated": "Die gespeicherte Antwort wurde bei 256 KiB abgeschnitten."
+      },
       "errors": {
         "loadFailed": "KI-Einstellungen konnten nicht geladen werden.",
         "modelPreviewEmpty": "Es wurden keine Modelle gefunden.",
@@ -1097,6 +1173,7 @@
         "promptSaved": "KI-Prompt wurde gespeichert."
       },
       "tabs": {
+        "diagnostics": "Diagnoseprotokolle",
         "prompts": "Prompts",
         "providers": "Anbieter",
         "status": "Status"

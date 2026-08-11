@@ -20,8 +20,14 @@ export class AiProviderRouter {
     return (await this.providers.availableProviders()).length > 0;
   }
 
-  promptRunner(): AiPromptRunner {
-    return (input) => this.runPrompt(input);
+  promptRunner(diagnosticContext?: {
+    readonly processingJobId: string;
+    readonly documentId: string;
+  }): AiPromptRunner {
+    return (input) =>
+      this.runPrompt(
+        diagnosticContext ? { ...input, diagnosticContext } : input,
+      );
   }
 
   async runPrompt(input: AiPromptRunInput): Promise<Record<string, unknown>> {

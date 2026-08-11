@@ -6,9 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   AiMetadataPromptScopeSchema,
+  AiProcessingLogQuerySchema,
+  UuidSchema,
   LoadAiProviderModelsRequestSchema,
   CreateDocumentFieldDefinitionRequestSchema,
   CreateAiProviderRequestSchema,
@@ -24,6 +27,9 @@ import {
   type AiProviderModelsResponse,
   type AiMetadataPromptDto,
   type AiMetadataPromptScope,
+  type AiProcessingLogDetail,
+  type AiProcessingLogListResponse,
+  type AiProcessingLogQuery,
   type CreateAiProviderRequest,
   type CreateDocumentFieldDefinitionRequest,
   type CreateDocumentTypeRequest,
@@ -39,6 +45,7 @@ import {
   type UpdateDocumentTypeRequest,
   type UpdateSystemSettingsRequest,
 } from '@smart-dms/shared-dto';
+import { AiProcessingDiagnosticsService } from '../ai-providers/ai-processing-diagnostics.service';
 import { AiProviderService } from '../ai-providers/ai-provider.service';
 import { Roles } from '../common/auth.decorators';
 import { ZodValidationPipe } from '../common/zod-validation.pipe';
@@ -50,6 +57,7 @@ export class SettingsController {
   constructor(
     private readonly settingsService: SettingsService,
     private readonly aiProviders: AiProviderService,
+    private readonly aiDiagnostics: AiProcessingDiagnosticsService,
   ) {}
 
   @Get()
@@ -164,6 +172,20 @@ export class SettingsController {
     return this.aiProviders.listProviders();
   }
 
+  @Get('ai-processing-logs')
+  listAiProcessingLogs(
+    @Query() query: Record<string, unknown>,
+  ): Promise<AiProcessingLogListResponse> {
+    return this.aiDiagnostics.list(normalizeAiProcessingLogQuery(query));
+  }
+
+  @Get('ai-processing-logs/:jobId')
+  aiProcessingLogDetail(
+    @Param('jobId') jobId: string,
+  ): Promise<AiProcessingLogDetail> {
+    return this.aiDiagnostics.detail(UuidSchema.parse(jobId));
+  }
+
   @Post('ai-providers')
   createAiProvider(
     @Body(new ZodValidationPipe(CreateAiProviderRequestSchema))
@@ -211,4 +233,18 @@ export class SettingsController {
   private parseAiMetadataPromptScope(key: string): AiMetadataPromptScope {
     return AiMetadataPromptScopeSchema.parse(key);
   }
+}
+
+function normalizeAiProcessingLogQuery(
+  query: Record<string, unknown>,
+): AiProcessingLogQuery {
+  return AiProcessingLogQuerySchema.parse({
+    page: query.page,
+    pageSize: query.pageSize,
+    status: query.status || undefined,
+    providerId: query.providerId || undefined,
+    errorCode: query.errorCode || undefined,
+    from: query.from || undefined,
+    to: query.to || undefined,
+  });
 }
