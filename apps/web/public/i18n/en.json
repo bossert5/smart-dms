@@ -1057,6 +1057,7 @@
         "errorCodes": {
           "AI_AUTH_ERROR": "Provider authentication failed",
           "AI_EMPTY_OUTPUT": "Provider returned no final output",
+          "AI_REASONING_BUDGET_EXHAUSTED": "Reasoning exhausted the output token budget",
           "AI_INCOMPLETE_OUTPUT": "Provider output was incomplete",
           "AI_INTERNAL_ERROR": "Internal processing error",
           "AI_INVALID_JSON": "Final output was not valid JSON",
@@ -1077,6 +1078,7 @@
         "hints": {
           "AI_AUTH_ERROR": "Check the configured API key and provider permissions.",
           "AI_EMPTY_OUTPUT": "The provider completed without final text. Check the model template and output token budget.",
+          "AI_REASONING_BUDGET_EXHAUSTED": "The model used the entire output limit for reasoning. Disable thinking for this processing step on llama.cpp or adjust the reasoning budget.",
           "AI_INCOMPLETE_OUTPUT": "The provider stopped before producing complete JSON. Increase the output budget or reduce the prompt size.",
           "AI_INTERNAL_ERROR": "Inspect the technical error and correlated application log entry.",
           "AI_INVALID_JSON": "Inspect the raw response for extra text, truncated JSON, or an incompatible response envelope.",

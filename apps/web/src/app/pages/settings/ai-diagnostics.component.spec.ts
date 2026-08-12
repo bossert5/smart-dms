@@ -84,6 +84,7 @@ describe('AiDiagnosticsComponent', () => {
     const api = apiMock([legacy]);
     const fixture = await createComponent(api);
 
+    expect(fixture.componentInstance.errorCodes).toContain('AI_REASONING_BUDGET_EXHAUSTED');
     expect(api.aiProcessingLogs).toHaveBeenCalledWith({
       page: 1,
       pageSize: 25,

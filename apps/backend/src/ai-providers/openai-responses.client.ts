@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type {
   AiProcessingAttemptKind,
+  AiProcessingErrorCode,
   AiProcessingResponseMetadata,
 } from '@smart-dms/shared-dto';
 import Ajv from 'ajv';
@@ -30,6 +31,7 @@ export interface OpenAiResponsesProvider {
   baseUrl: string;
   encryptedApiKey: string | null;
   selectedModel: string | null;
+  availableModels: unknown;
 }
 
 type ResponsesBody = {
@@ -123,6 +125,8 @@ export class OpenAiResponsesClient {
     let httpStatus: number | null = null;
     let responseMetadata: AiProcessingResponseMetadata | null = null;
     try {
+      const disableLlamaCppThinking =
+        !enableThinking && isLlamaCppProvider(provider);
       const response = await this.fetchResponses(provider, secrets, {
         model: provider.selectedModel,
         input: text,
@@ -131,6 +135,9 @@ export class OpenAiResponsesClient {
         reasoning: {
           effort: enableThinking ? 'low' : 'none',
         },
+        ...(disableLlamaCppThinking
+          ? { chat_template_kwargs: { enable_thinking: false } }
+          : {}),
         stream: false,
       });
       httpStatus = response.status;
@@ -249,10 +256,25 @@ function responseText(body: ResponsesBody, maxOutputTokens: number): string {
     return collected;
   }
 
+  const errorCode = emptyOutputErrorCode(body, maxOutputTokens);
   throw new AiProviderResponseError(
-    emptyOutputErrorMessage(body, maxOutputTokens),
-    isIncompleteResponse(body) ? 'AI_INCOMPLETE_OUTPUT' : 'AI_EMPTY_OUTPUT',
+    errorCode === 'AI_REASONING_BUDGET_EXHAUSTED'
+      ? reasoningBudgetExhaustedErrorMessage(body, maxOutputTokens)
+      : emptyOutputErrorMessage(body, maxOutputTokens),
+    errorCode,
   );
+}
+
+function emptyOutputErrorCode(
+  body: ResponsesBody,
+  maxOutputTokens: number,
+): AiProcessingErrorCode {
+  if (isReasoningBudgetExhausted(body, maxOutputTokens)) {
+    return 'AI_REASONING_BUDGET_EXHAUSTED';
+  }
+  return isIncompleteResponse(body)
+    ? 'AI_INCOMPLETE_OUTPUT'
+    : 'AI_EMPTY_OUTPUT';
 }
 
 function collectFinalOutputText(value: unknown): string {
@@ -353,6 +375,27 @@ function emptyOutputErrorMessage(
   body: ResponsesBody,
   maxOutputTokens: number,
 ): string {
+  return [
+    'OpenAI Responses result did not contain final text output.',
+    'The provider may have spent the output budget on reasoning before producing JSON.',
+    `Response details: ${responseDetails(body, maxOutputTokens).join('; ')}.`,
+  ].join(' ');
+}
+
+function reasoningBudgetExhaustedErrorMessage(
+  body: ResponsesBody,
+  maxOutputTokens: number,
+): string {
+  return [
+    'The provider exhausted the output token budget with reasoning before producing final text.',
+    `Response details: ${responseDetails(body, maxOutputTokens).join('; ')}.`,
+  ].join(' ');
+}
+
+function responseDetails(
+  body: ResponsesBody,
+  maxOutputTokens: number,
+): string[] {
   const details = [
     `status=${stringValue(body.status) ?? 'unknown'}`,
     `outputTokens=${numberValue(body.usage?.output_tokens) ?? 'unknown'}`,
@@ -364,12 +407,7 @@ function emptyOutputErrorMessage(
       `incompleteDetails=${JSON.stringify(body.incomplete_details)}`,
     );
   }
-
-  return [
-    'OpenAI Responses result did not contain final text output.',
-    'The provider may have spent the output budget on reasoning before producing JSON.',
-    `Response details: ${details.join('; ')}.`,
-  ].join(' ');
+  return details;
 }
 
 function outputTypes(value: unknown): string[] {
@@ -387,6 +425,44 @@ function outputTypes(value: unknown): string[] {
 
 function numberValue(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function isReasoningBudgetExhausted(
+  body: ResponsesBody,
+  maxOutputTokens: number,
+): boolean {
+  const outputTokens = numberValue(body.usage?.output_tokens);
+  const types = outputTypes(body.output);
+  return (
+    outputTokens !== null &&
+    outputTokens >= maxOutputTokens &&
+    types.length > 0 &&
+    types.every((type) => type === 'reasoning')
+  );
+}
+
+function isLlamaCppProvider(provider: OpenAiResponsesProvider): boolean {
+  const selectedModel = provider.selectedModel?.trim();
+  if (!selectedModel || !Array.isArray(provider.availableModels)) {
+    return false;
+  }
+
+  return provider.availableModels.some((model) => {
+    if (!model || typeof model !== 'object') {
+      return false;
+    }
+    const candidate = model as {
+      name?: unknown;
+      model?: unknown;
+      ownedBy?: unknown;
+    };
+    const modelName =
+      stringValue(candidate.model) ?? stringValue(candidate.name);
+    return (
+      modelName === selectedModel &&
+      stringValue(candidate.ownedBy)?.toLowerCase() === 'llamacpp'
+    );
+  });
 }
 
 function parseResponseBody(

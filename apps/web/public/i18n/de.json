@@ -1057,6 +1057,7 @@
         "errorCodes": {
           "AI_AUTH_ERROR": "Anmeldung beim Anbieter fehlgeschlagen",
           "AI_EMPTY_OUTPUT": "Anbieter lieferte keine finale Ausgabe",
+          "AI_REASONING_BUDGET_EXHAUSTED": "Reasoning verbrauchte das Ausgabetoken-Limit",
           "AI_INCOMPLETE_OUTPUT": "Anbieterausgabe war unvollständig",
           "AI_INTERNAL_ERROR": "Interner Verarbeitungsfehler",
           "AI_INVALID_JSON": "Finale Ausgabe war kein gültiges JSON",
@@ -1077,6 +1078,7 @@
         "hints": {
           "AI_AUTH_ERROR": "Konfigurierten API-Schlüssel und Berechtigungen des Anbieters prüfen.",
           "AI_EMPTY_OUTPUT": "Der Anbieter beendete die Anfrage ohne finalen Text. Modellvorlage und Ausgabetoken prüfen.",
+          "AI_REASONING_BUDGET_EXHAUSTED": "Das Modell verbrauchte das gesamte Ausgabelimit für Reasoning. Bei llama.cpp Thinking für diesen Verarbeitungsschritt deaktivieren oder das Reasoning-Budget anpassen.",
           "AI_INCOMPLETE_OUTPUT": "Der Anbieter stoppte vor einem vollständigen JSON. Ausgabelimit erhöhen oder Prompt verkürzen.",
           "AI_INTERNAL_ERROR": "Technischen Fehler und den korrelierten Eintrag im Anwendungslog prüfen.",
           "AI_INVALID_JSON": "Rohe Antwort auf Zusatztext, abgeschnittenes JSON oder eine inkompatible Antwortstruktur prüfen.",

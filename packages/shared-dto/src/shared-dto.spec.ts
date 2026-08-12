@@ -3,6 +3,7 @@ import {
   AI_PROVIDER_CHANGED_EVENT,
   AiMetadataExtractionResultSchema,
   AiMetadataExtractionJobPayloadSchema,
+  AiProcessingErrorCodeSchema,
   AiProcessingLogDetailSchema,
   AiProcessingLogQuerySchema,
   AiProviderDtoSchema,
@@ -1324,6 +1325,9 @@ describe("@smart-dms/shared-dto", () => {
   });
 
   it("validates AI diagnostic list and detail contracts", () => {
+    expect(AiProcessingErrorCodeSchema.options).toContain(
+      "AI_REASONING_BUDGET_EXHAUSTED",
+    );
     expect(
       AiProcessingLogQuerySchema.parse({
         page: "2",

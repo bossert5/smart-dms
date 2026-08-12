@@ -16,6 +16,14 @@ const provider = {
   baseUrl: 'http://localhost:11434/v1',
   encryptedApiKey: null,
   selectedModel: 'gemma4:12b',
+  availableModels: [
+    {
+      name: 'gemma4:12b',
+      model: 'gemma4:12b',
+      createdAt: null,
+      ownedBy: 'llamacpp',
+    },
+  ],
 };
 
 const input = {
@@ -68,7 +76,43 @@ describe('OpenAiResponsesClient', () => {
     expect(parsedFetchBody(fetchMock)).toMatchObject({
       max_output_tokens: 1200,
       reasoning: { effort: 'none' },
+      chat_template_kwargs: { enable_thinking: false },
     });
+  });
+
+  it('does not send llama.cpp template options to other providers', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        output: [
+          {
+            type: 'message',
+            content: [{ type: 'output_text', text: '{"title":"Invoice"}' }],
+          },
+        ],
+      }),
+    );
+
+    await new OpenAiResponsesClient().runPrompt(
+      {
+        ...provider,
+        name: 'OpenAI',
+        selectedModel: 'gpt-5-mini',
+        availableModels: [
+          {
+            name: 'gpt-5-mini',
+            model: 'gpt-5-mini',
+            createdAt: null,
+            ownedBy: 'openai',
+          },
+        ],
+      },
+      secrets,
+      input,
+    );
+
+    expect(parsedFetchBody(fetchMock)).not.toHaveProperty(
+      'chat_template_kwargs',
+    );
   });
 
   it('ignores llama.cpp reasoning text and parses only final output text', async () => {
@@ -119,6 +163,9 @@ describe('OpenAiResponsesClient', () => {
       max_output_tokens: 5296,
       reasoning: { effort: 'low' },
     });
+    expect(parsedFetchBody(fetchMock)).not.toHaveProperty(
+      'chat_template_kwargs',
+    );
   });
 
   it('retries repair prompts without thinking after validation failures', async () => {
@@ -163,6 +210,7 @@ describe('OpenAiResponsesClient', () => {
       temperature: 0,
       max_output_tokens: 1200,
       reasoning: { effort: 'none' },
+      chat_template_kwargs: { enable_thinking: false },
     });
   });
 
@@ -289,7 +337,7 @@ describe('OpenAiResponsesClient', () => {
     const incomplete = {
       status: 'incomplete',
       incomplete_details: { reason: 'max_output_tokens' },
-      output: [{ type: 'reasoning', content: [] }],
+      output: [{ type: 'message', content: [] }],
       usage: { output_tokens: 1200 },
     };
     fetchMock
@@ -301,6 +349,32 @@ describe('OpenAiResponsesClient', () => {
     ).rejects.toMatchObject({
       name: AiProviderResponseError.name,
       code: 'AI_INCOMPLETE_OUTPUT',
+    });
+  });
+
+  it('classifies reasoning-only output at the token limit separately', async () => {
+    const reasoningOnly = {
+      status: 'completed',
+      output: [
+        {
+          type: 'reasoning',
+          content: [{ type: 'reasoning_text', text: 'Thinking only' }],
+        },
+      ],
+      usage: { output_tokens: 1200 },
+    };
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(reasoningOnly))
+      .mockResolvedValueOnce(jsonResponse(reasoningOnly));
+
+    await expect(
+      new OpenAiResponsesClient().runPrompt(provider, secrets, input),
+    ).rejects.toMatchObject({
+      name: AiProviderResponseError.name,
+      code: 'AI_REASONING_BUDGET_EXHAUSTED',
+      message: expectStringContaining(
+        'exhausted the output token budget with reasoning',
+      ),
     });
   });
 
